@@ -1,11 +1,42 @@
-# The `{openair}` book
+这是一本我正在翻译的介绍R语言中openair包的书，原书发布在： https://bookdown.org/david_carslaw/openair/
 
-This is the public repository for the `{openair}` book, an online guide for the `{openair}` R package. 
+进度：
 
-It is published at <https://bookdown.org/david_carslaw/openair/>.
-
-## Suggestions & Contributions
-
-If you have a suggestion for the `{openair}` book, or spot any mistakes, please feel free to raise it as an issue on this repository and we'll take a look.
-
-If you wish to contribute to the book, you may fork this repository and submit a pull request.
+Preface                                         初翻完成
+    1  Introduction                             初翻完成
+    2  The openair package                      初翻5%            
+Data Access                 
+    3  Accessing UK Air Quality Data
+    4  Access meteorological data
+Directional Analysis
+    5  Wind and Pollution Roses
+    6  Polar frequencies
+    7  Percentile roses
+    8  Polar plots
+    9  Polar annulus
+    10  Trajectory analysis
+Time Series and Trends
+    11  Time series plots
+    12  Temporal variations
+    13  Time proportion plots
+    14  Trend heat maps
+    15  Calendar plots
+    16  Theil-Sen trends
+    17  Smooth trends
+Model Evaluation
+    18  Model evaluation
+    19  Taylor Diagam
+    20  Conditional quantiles
+Interactive Maps
+    21  openairmaps primer
+    22  Network Visualisation
+    23  Directional Analysis
+    24  Trajectory Analysis
+Utility functions
+    25  Utility functions
+    26  Scatter plots
+References
+Appendices
+    A  Annotating openair plots
+    B  Production of HYSPLIT trajectory files
+    C  A closer look at trends

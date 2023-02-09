@@ -1,6 +1,6 @@
-# The openair package {#openair-package}
+# openair 包 {#openair-package}
 
-In this book two packages are frequently used and it is a good idea to load both.
+在这本书中以下两个包使用非常频繁，建议同时加载。
 
 ```{r}
 #| message: false
@@ -9,12 +9,12 @@ library(openair)
 library(tidyverse)
 ```
 
-Because the [openair]{.pkg} package (and R itself) are continually updated, it will be useful to know this document was produced using R version `r getRversion()` and [openair]{.pkg} version `r packageDescription("openair", field = "Version")`.
+由于 [openair]{.pkg} 包 (和 R 本身) 都会持续更新，所以有必要知道本文档使用 R `r getRversion()` 版本和 [openair]{.pkg} `r packageDescription("openair", field = "Version")`版本制作生成的。
 
 ::: callout-note
-## Function help
+## 有关函数的帮助信息
 
-Where code is shown in this document, function names are hyper-linked and will take you to the help page for the function.
+在本文档中当代码中的函数名带有超链接时，链接指向此函数的帮助信息。
 :::
 
 ## Installation and code access

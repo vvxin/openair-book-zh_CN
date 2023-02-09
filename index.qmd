@@ -3,41 +3,41 @@ execute:
   cache: false
 ---
 
-# Preface {.unnumbered}
+# 前言 {.unnumbered}
 
 ## Hello and welcome {.unnumbered}
 
 <img src="images/plume.png" alt="Cover image" width="304" height="250" align="right" style="margin: 0 0 1em 1em; border-width: 1px; border-style: solid; border-color: white;"/></a>
 
-This document has been a long time coming. The [openair]{.pkg} project started with funding from the UK Natural Environment Research Council (NERC) over 10 years ago. The main aim was to fill a perceived gap in that there was a lack of a dedicated set of *easily accessible, open source* tools for analysing air quality data. At that time R was becoming increasingly popular but far, far less than it is today.
+本书所介绍的内容由来已久。[openair]{.pkg} 项目最初由英国国家自然环境研究委员会(NERC)资助，启动至今已十年有余。项目旨在创建一个*开源、易用*的空气质量数据分析工具以弥补在该领域上的明显不足。R语言在当时还远远没有达到目前的流行程度，但是已经展现出蓬勃发展的态势。
 
-The book is split into broad sections that cover common aspects of air quality data analysis.
+本书分为以下几大部分内容，将涵盖空气质量数据分析的方方面面。
 
--   **Data Import** Mostly focused on the easy access of UK air quality data across national and regional networks and accessing global meteorological data.
+-   **数据导入** 主要介绍如何方便的获取英国国家和地方监测网络的空气质量数据以及全球气象数据。
 
--   **Directional Analysis** Many common functions such as wind and pollution roses, bivariate polar plots and back trajectories.
+-   **定向类分析** 包含风玫瑰和污染玫瑰、双变量极坐标图、后向轨迹等大量常用功能。
 
--   **Time Series and Trends** Various ways of considering changes in time and flexible methods for trend assessment.
+-   **时间序列和趋势类分析** 包含丰富的时间变化分析手段以及灵活的趋势评估方法。
 
--   **Model Evaluation** Functions such as Taylor Diagrams, common model evaluation statistics and conditional quantile plots.
+-   **模型评估** 包含泰勒图、常用模型评估指标分析、条件分位数图等功能。
 
--   **Interactive Maps** Considers effective ways of viewing UK air quality networks and plotting directional analyses on interactive plots; particularly useful for source characterisation.
+-   **交互式地图** 介绍如何在可交互地图上高效的浏览英国空气质量监测网络数据和绘制定向分析结果；主要用于对污染源的定位。
 
--   **Utility functions** various functions to flexibly carry out time-averaging, correlation analysis and other common tasks of relevance to air pollution.
+-   **Utility functions** 介绍多个小工具以满足不同时间尺度上的数据聚合，相关性分析以及在空气污染分析中可能遇到的各种常见需求。
 
-[openair]{.pkg} does not of course cover every conceivable analysis that users might be interested in, but a selection of flexible methods that should have wide appeal. However, by using R as the basis of development, users can greatly extend the types of analysis in many powerful and innovative ways.
+[openair]{.pkg} 当然不可能满足用户的一切分析设想，但是通过灵活的运用现有功能，相信对大部分需求能够具有广泛的适应性。同时，将R语言作为数据分析的平台环境，其本身也会不断赋予用户更多的拓展和创新空间。 
 
-[openair]{.pkg} is a product of the time it was started and used the highly capable [lattice]{.pkg} package for plotting. This was a time before [ggplot2]{.pkg} and the ['tidyverse'](https://www.tidyverse.org). Nevertheless, the package is used extensively around the world (see downloads [here](https://davidcarslaw.github.io/openair/)) and if anything, growing in popularity and use. The original aims of the project have been met in providing tools for academia, the private and public sectors --- all of which continue to use the software.
+[openair]{.pkg} 开发于前 [ggplot2]{.pkg} 和 ['tidyverse'](https://www.tidyverse.org)时代，使用当时功能最强大的  [lattice]{.pkg} 包来制图。尽管早已时过境迁，但是目前还在一直沿用之前的制图引擎，这主要是考虑到 [openair]{.pkg} 已经在世界范围内 (see downloads [here](https://davidcarslaw.github.io/openair/)) 被广泛使用，而且最初“为院校、机构、公司提供软件工具”的项目目标已经达成————因此我们选择维持现状。
 
-At some point there will need to be a transition to [ggplot2]{.pkg}; in particular to capitalise on the many extensions available and which [openair]{.pkg} can benefit from.
+未来我们可能终将切换到[ggplot2]{.pkg}，因为新生态中的大量拓展功能也将让 [openair]{.pkg} 受益。
 
-The reason for writing this book (or manual) in this form i.e. a website rather than a pdf or Word document is convenience for all involved. For me it makes it much easier to keep the information up to date and ensure that the information is reproducible. For the reader it is something that can easily be read and navigated in a browser. Where code is involved --- as it is heavily in this book --- it is very easy to use the copy icon at the top right of each code block to make it easy to copy into R. Finally, it is increasingly the case that information can be plotted interactively, which is not something that can easily be done in a pdf or Word document.
+以网站发布而不是pdf或者Word文档方式撰写本书（或称使用手册）的原因是为了方便各方。对我来说，可以更方便更新书中的内容同时保证所有内容的可复现性。对读者来说，可以更方便的在浏览器中阅读和跳转章节。由于书中包含大量代码，在网页上浏览本书只需要点击每个代码块右上角的拷贝图标就可以将代码复制进本地的R环境。最后，随着信息将越来越多的以可交互的方式呈现，pdf和Word文档的方式会显得力不从心。
 
 To cite [openair]{.pkg} please use:
 
 Carslaw, D. C., and K. Ropkins. 2012. "openair --- An R package for air quality data analysis." *Environmental Modelling & Software* 27--28 (0): 52--61. <https://doi.org/10.1016/j.envsoft.2011.09.008>.
 
-This document was produced using R version `r getRversion()` and [openair]{.pkg} version `r packageDescription("openair", field = "Version")`.
+本文档使用R `r getRversion()` 版本和 [openair]{.pkg} `r packageDescription("openair", field = "Version")`版本生成。
 
 ```{r}
 #| label: bibmake
