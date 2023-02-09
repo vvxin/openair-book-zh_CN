@@ -1,15 +1,17 @@
 # Introduction {#sec-intro}
 
-This document provides information on the use of R to analyse air pollution data. The document supports an initiative to develop and make available a consistent set of tools for analysing and understanding air pollution data in a free, open-source environment.
+本书介绍如何使用R语言开展空气污染数据分析。本书倡导通过开发一系列统一和共生的软件工具构建一个免费开源的环境，来分析和理解空气污染数据。
 
-The amount of monitoring data available is substantial and increasing. In the UK alone there are thought to be over 1000 continuous monitoring sites. Much of the data available is only briefly analysed; perhaps with the aim of comparing pollutant concentrations with national and international air quality limits. However, as it will hopefully be seen, the critical analysis of air pollution data can be highly rewarding, perhaps yielding important information on pollutant sources that was previously unknown or unquantified.
+空气质量监测数据的体量很大而且还在不断积累。仅在英国就有超过1000个连续监测站点。大多数的数据只进行过粗略的应用，比如将污染物浓度与国家和国际的污染物限值进行比较。但是我们希望看到这些数据能够被更深入的分析，获得此前不知道或者未定量的污染源信息是开展深入分析最重要的回报。
 
-While many of the options in these functions allow quite a sophisticated analysis to be undertaken, the defaults generally use the simplest (and fastest) assumptions. A more detailed analysis can refine these assumptions e.g. by accounting for autocorrelation, or fine-control over the appearance of a plot.
+所有功能函数都为复杂的分析场景提供了大量选项，但是缺省的配置通常都基于最简单（和最快速）的假设。进阶的分析可以调整这些假设，如配置自动修正，微调图标的外观等。
 
 It should be noted that while the aim is to keep this documentation up to date, the primary source of information related to the different functions is contained within the package itself. Once loaded, type `?openair` to see all the help pages associated with the package. The website for [openair]{.pkg} is <https://davidcarslaw.github.io/openair/>.
+
+需要指出的是尽管我们尽可能希望保持本文档处于最新状态，针对不同功能函数的第一手资料还是软件包里内置的信息。加载后，输入 `?openair` 可以看到所有和这个包有关的帮助页面。 [openair]{.pkg} 的官方网站位于 <https://davidcarslaw.github.io/openair/>.
 
 ::: callout-tip
 ## Note!
 
-The next Section contains important information on loading the [openair]{.pkg} package for the first time and the input data requirements. Users will need to consider the advice in this section to ensure that [openair]{.pkg} can be used without problems.
+下一章将介绍关于首次加载 [openair]{.pkg} 包和开始输入数据的重要信息。用户需要重视这一章中的建议，以便顺利开始 [openair]{.pkg} 之旅。
 :::
