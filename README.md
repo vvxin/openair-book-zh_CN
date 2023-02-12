@@ -2,20 +2,20 @@
 
 **进度：**
 
-- [x] Preface
+Preface
 - [x] 1  Introduction
-- [ ] 2  The openair package
-- [ ] Data Access
+- [x] 2  The openair package
+Data Access
 - [ ] 3  Accessing UK Air Quality Data
 - [ ] 4  Access meteorological data
-- [ ] Directional Analysis
+Directional Analysis
 - [ ] 5  Wind and Pollution Roses
 - [ ] 6  Polar frequencies
 - [ ] 7  Percentile roses
 - [ ] 8  Polar plots
 - [ ] 9  Polar annulus
 - [ ] 10  Trajectory analysis
-- [ ] Time Series and Trends
+Time Series and Trends
 - [ ] 11  Time series plots
 - [ ] 12  Temporal variations
 - [ ] 13  Time proportion plots
@@ -23,20 +23,20 @@
 - [ ] 15  Calendar plots
 - [ ] 16  Theil-Sen trends
 - [ ] 17  Smooth trends
-- [ ] Model Evaluation
+Model Evaluation
 - [ ] 18  Model evaluation
 - [ ] 19  Taylor Diagam
 - [ ] 20  Conditional quantiles
-- [ ] Interactive Maps
+Interactive Maps
 - [ ] 21  openairmaps primer
 - [ ] 22  Network Visualisation
 - [ ] 23  Directional Analysis
 - [ ] 24  Trajectory Analysis
-- [ ] Utility functions
+Utility functions
 - [ ] 25  Utility functions
 - [ ] 26  Scatter plots
-- [ ] References
-- [ ] Appendices
+References
+Appendices
 - [ ] A  Annotating openair plots
 - [ ] B  Production of HYSPLIT trajectory files
 - [ ] C  A closer look at trends
