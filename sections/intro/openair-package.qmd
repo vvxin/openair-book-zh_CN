@@ -136,34 +136,32 @@ force_tz(date_time, tz = "Etc/GMT+8")
 
 ## Brief overview of openair {#brief-intr-open}
 
-This section gives a brief overview of the functions in [openair]{.pkg}. Having read some data into a data frame it is then straightforward to run any function. Almost all functions are run as:
-
-
+本小节将概述 [openair]{.pkg} 中函数的使用方法。成功导入数据框后就可以对其执行任意的函数了，几乎所有的函数都以如下方式运行：
 
 ```{r}
 #| eval: false
 functionName(thedata, options, ...)
 ```
 
-The usage is best illustrated through a specific example, in this case the `polarPlot` function. The details of the function are shown in @sec-polarPlot and through the help pages (type ?polarPlot). As it can be seen there are numerous options associated with `polarPlot` --- and most other functions and each of these has a default. For example, the default pollutant considered in `polarPlot` is `nox`. If the user has a data frame called `theData` then `polarPlot` could minimally be called by:
+我们接下来用 `polarPlot` 这样一个特定的函数作为例子进一步解释大部分函数的使用方法。关于这个函数的详细资料会在 @sec-polarPlot 介绍，也可以查看其帮助页 (输入 ?polarPlot)。 包括 `polarPlot` 在内的大部分函数都有很多参数选项，但是这些选项也都预先设置了缺省值。比如`polarPlot` 中污染物选项的缺省值是 `nox`。如果用户已经导入了明白 `theData` 的数据框，那么极简的执行 `polarPlot` 的方式是：
 
 ```{r}
 #| eval: false
 polarPlot(theData)
 ```
 
-which would plot a `nox` polar plot if `nox` was available in the data frame `theData`.
+这时候 `theData` 数据框中 的 `nox` （如果有的话）会被缺省的用来绘制一张 `nox` 的 polar plot。
 
-Note that the options do not need to be specified in order nor is it always necessary to write the whole word. For example, it is possible to write:
+函数的输入参数不需要特定的顺序，参数名在不引起歧义的情况下也不需要输入完整。下面就是一条合法的命令代码：
 
 ```{r}
 #| eval: false
 polarPlot(theData, type = "year", poll = "so2")
 ```
 
-In this case writing `poll` is sufficient to uniquely identify that the option is `pollutant`.
+在上例中 `poll` 已经可以足够代表 `pollutant` 这个参数。
 
-Also there are many common options available in functions that are not explicitly documented, but are part of lattice graphics. Some common ones are summarised in @tbl-options. The `layout` option allows the user to control the layout of multi-panel plots e.g. `layout = c(4, 1)` would ensure a four-panel plot is 4 columns by 1 row.
+另外你会发现函数中有很多可用的参数却并没有在文档中体现，因为这些参数是从lattice绘图系统中继承下来的。其中常用的几个汇总在 @tbl-options 中。 比如 `layout` 输入参数允许用户控制 multi-panel plots 的具体布局。比如 `layout = c(4, 1)` 参数将使用4列1行的布局来输出。
 
 ```{r}
 #| echo: false
@@ -188,13 +186,13 @@ tab_dat <- tibble(
 knitr::kable(tab_dat, booktabs = TRUE)
 ```
 
-## The type option
+## type 选项
 
-One of the central themes in [openair]{.pkg} is the idea of *conditioning*. Rather than plot $x$ against $y$, considerably more information can usually be gained by considering a third variable, $z$. In this case, $x$ is plotted against $y$ for many different intervals of $z$. This idea can be further extended. For example, a trend of NO~x~ against time can be *conditioned* in many ways: NO~x~ vs. time split by wind sector, day of the week, wind speed, temperature, hour of the day ... and so on. This type of analysis is rarely carried out when analysing air pollution data, in part because it is time consuming to do. However, thanks to the capabilities of R and packages such as [lattice]{.pkg} and [ggplot2]{.pkg}, it becomes easier to work in this way.
+[openair]{.pkg} 的一个核心主题是 *条件* 思维。 在分析 $x$ 和 $y$ 之间关系的时候，引入第三个参数 $z$ 通常会让我们得到更多的信息，也就是看在 $z$ 的不同取值区间下 $x$ 和 $y$ 之前关系的区别。比如，我们可以为 NO~x~ 随时间的变化趋势增加多种不同的 *条件* ：不同风向条件下的 NO~x~ 随时间变化，一周中不同日的 NO~x~ 随时间变化，不同风速条件下的 NO~x~ 随时间变化，不同气温条件下的 NO~x~ 随时间变化，一天中不同小时的 NO~x~ 随时间变化……等等。这类分析手段比较少的用于空气污染数据分析，一定程度上是由于数据处理起来很麻烦。现在在R语言环境中借助 [lattice]{.pkg} 和 [ggplot2]{.pkg} 包，条件分析变得简单方便多了。
 
-In most [openair]{.pkg} functions conditioning is controlled using the `type` option. `type` can be any other variable available in a data frame (numeric, character or factor). A simple example of `type` would be a variable representing a 'before' and 'after' situation, say a variable called `period` i.e. the option `type = "period"` is supplied. In this case a plot or analysis would be separately shown for 'before' and 'after'. When `type` is a numeric variable then the data will be split into four *quantiles* and labelled accordingly. Note however the user can set the quantile intervals to other values using the option `n.levels`. For example, the user could choose to plot a variable by different levels of temperature. If `n.levels = 3` then the data could be split by 'low', 'medium' and 'high' temperatures, and so on. Some variables are treated in a special way. For example if `type = "wd"` then the data are split into 8 wind sectors (N, NE, E, ...) and plots are organised by points of the compass.
+[openair]{.pkg} 中函数通过 `type` 选项来控制条件分析。 `type` 可以是数据框中任何一个可用的参数 (numeric, character or factor)。一个简单的通过 `type` 分类的例子是用一个叫做 `period` 的参数来代表 'before' 和 'after' 两种情景, 然后输入 `type = "period"` 这个参数。 这时图表会将代表 'before' 和 'after' 两个情景的数据分开进行绘制和和对比。当 `type` 是数值型的参数时，数据会将这个参数的4个分位数作为条件进行分割然后分别绘图，相应的图例也会自动生成。用户可以通过 `n.levels` 参数自定义分割的区间。如：通过 `n.levels = 3` 将气温分为 'low'、'medium' 和 'high'三个条件区间。有个别的参数会特殊处理，比如 `type = "wd"` 将会把风向自动分成8个区间 (N, NE, E, ...)， 生成的图表也会按照方向方位来进行排版。
 
-There are a series of pre-defined values that `type` can take related to the temporal components of the data as summarised in @tbl-openairType. To use these there *must* be a `date` field so that it can be calculated. These pre-defined values of `type` are shown below are both useful and convenient. Given a data frame containing several years of data it is easy to analyse the data e.g. plot it, by year by supplying the option `type = "year"`. Other useful and straightforward values are "hour" and "month". When `type = "season"` [openair]{.pkg} will split the data by the four seasons (winter = Dec/Jan/Feb etc.). Note for southern hemisphere users that the option `hemisphere = "southern"` can be given. When `type = "daylight"` is used the data are split between nighttime and daylight hours. In this case the user can also supply the options `latitude` and `longitude` for their location (the default is London).
+@tbl-openairType 中列出 两关于时间区间的内置 `type` 选项，这可以进一步方便按条件分析的相关操作。注意*只有*当数据框中包含 `date` 参数才可以进行时间区间的计算。例如当数据集包含多年的长时间序列时，只需要加入 `type = "year"` 参数就可以轻松的按年来分别绘图。按 "hour" 和按 "month" 也比较常用。 当选择 `type = "daylight"` 时，[openair]{.pkg} 会自动将数据分为四个季节(冬天为十二月/一月/二月，以此类推)。南半球的用户需要同时使用 `hemisphere = "southern"` 参数。`type = "daylight"` 参数将数据分为白天和夜间，这时用户需要通过 `latitude` and `longitude` 参数提供位置信息（默认位置为伦敦）。
 
 ```{r}
 #| echo: false
@@ -227,11 +225,11 @@ knitr::kable(
 )
 ```
 
-If a categorical variable is present in a data frame e.g. `site` then that variables can be used directly e.g. `type = "site"`.
+数据框中可以作为分类的参数，如站点名`site` 等，都可以直接用 `type = "site"` 的方式进行条件分析。
 
-### Make your own type
+### 自定义 type
 
-In some cases it is useful to categorise numeric variables according to one's own intervals. One example is air quality bands where concentrations might be described as "good", "fair", "bad". For this situation we can use the `cut` function. In the example below, concentrations of NO~2~ are divided into intervals 0-50, 50-100, 100-150 and \>150 using the `breaks` option. Also shown are user-defined labels. Note there is 1 more break than label. There are a couple of things to note here. First, `include.lowest = TRUE` ensures that the lowest value is included in the lowest break (in this case 0). Second, the maximum value (1000) is set to be more than the maximum value in the data to ensure the final break encompasses all the data.
+有时用户希望将数值型的参数按照自己希望的区间进行分段。一个典型的场景是为污染物浓度设置区间来将空气质量归类为 "good", "fair", "bad"等。在这种情况下我们需要用到 `cut` 函数。下面的例子用 `breaks` 参数将 NO~2~ 的浓度分为0-50、50、100、100-150和\>150这几个区间，同时为每个区间指定了标签，注意提供的分割点会比标签名多一个。还有几个注意事项，首先 `include.lowest = TRUE` 确保最小的值被包含到最小的浓度区间（这个例子中的0）；第二，设置一个比最高的浓度值还要大的最大分段值（这个例子中的1000）以确保全部数据被纳入分段。
 
 ```{r}
 mydata$intervals <- cut(mydata$no2, 
@@ -244,9 +242,11 @@ mydata$intervals <- cut(mydata$no2,
 head(mydata)
 ```
 
-Then it is possible to use the new `intervals` variable in most [openair]{.pkg} functions e.g. `windRose(mydata, type = "intervals")`.
+接下来就可以在 [openair]{.pkg} 的大部分函数使用用新生成的 `intervals` 参数作为分段条件了，如：`windRose(mydata, type = "intervals")`。
 
 A special case is splitting data by date. In this scenario there might be interest in a 'before-after' situation e.g. due to an intervention. The [openair]{.pkg} function `splitByDate` should make this easy. Here is an example:
+
+对时间进行分段和对数值进行有所不同，就像前文提到的空气改善措施“前-后”对比分析的场景。我们可以通过 [openair]{.pkg} 的`splitByDate` 函数轻松实现：
 
 ```{r}
 #| label: splitbydate
@@ -258,24 +258,24 @@ splitByDate(
 )
 ```
 
-This code adds a new column `scenario` that is labelled `before` and `after` depending on the date. Note that the `dates` input by the user is in British format (dd/mm/YYYY) and that several dates (and labels) can be provided.
+这段代码为数据增加了一列新的 `scenario` 场景列，并根据时间赋值为 `before` 和 `after`。 Note that the `dates` input by the user is in British format (dd/mm/YYYY) and that several dates (and labels) can be provided.
 
-## Controlling font size {#font-size}
+## 字体大小 {#font-size}
 
-All [openair]{.pkg} plot functions have an option `fontsize`. Users can easily vary the size of the font for each plot e.g.
+所有的 [openair]{.pkg} 绘图函数都可以通过 `fontsize` 选项设置图表中的字号。例如：
 
 ```{r}
 #| eval: false
 polarPlot(mydata, fontsize = 20)
 ```
 
-The font size will be reset to the default sizes once the plot is complete. Finer control of individual font sizes is currently not easily possible.
+在制图执行完成后字号会重置到缺省状态。对特定文字的字号微调在目前还不太容易实现。
 
-## Using colours {#colours}
+## 颜色选项 {#colours}
 
-Many of the functions described require that colour scales are used; particularly for plots showing surfaces. It is only necessary to consider using other colours if the user does not wish to use the default scheme, shown at the top of @fig-colours. The choice of colours does seem to be a vexing issue as well as something that depends on what one is trying to show in the first place. For this reason, the colour schemes used in [openair]{.pkg} are very flexible: if you don't like them, you can change them easily. R itself can handle colours in many sophisticated ways; see for example the `RColorBrewer` package.
+我们提到的大部分函数都需要用不同的颜色来代表不同的类别或者程度，对需要在平面中展示高低数值的图来说颜色更加重要。如果 @fig-colours 中缺省的配色方案不能满足需求，那么就要特别的考虑颜色选项的问题了。选择一套合适的颜色并不简单，这很大程度上也取决去你在一开始打算如何表达这些数据。所以 [openair]{.pkg} 提供了丰富的颜色方案和灵活的配置方式。更多的例子可以查看 `RColorBrewer` 包。
 
-Several pre-defined colour schemes are available to make it easy to plot data. In fact, for most situations the default colour schemes should be adequate. The choice of colours can easily be set; either by using one of the pre-defined schemes or through a user-defined scheme. More details can be found in the [openair]{.pkg} `openColours` function. Some defined colours are shown in @fig-colours, together with an example of a user defined scale that provides a smooth transition from red to green.
+为了方便使用，软件中已经内置了几种配色方案。其实，在大多数情况下缺省的配色应该就可以满足需要了。调整配色也很简单，要么选择使用一种内置配色，要么使用用户自定义配色。详细信息请查看 [openair]{.pkg} 等 `openColours` 函数。@fig-colours 展示了部分内置的配色方案以及一个从红色到绿色渐变的用户自定义配色。
 
 ```{r}
 #| label: fig-colours
@@ -304,7 +304,7 @@ printCols("greyscale", 1.2)
 printCols(c("tomato", "white", "forestgreen" ), 1.4)
 ```
 
-The user-defined scheme is very flexible and the following provides examples of its use. In the examples shown next, the `polarPlot` function is used as a demonstration of their use.
+下面的几个例子展示了如何在 `polarPlot` 函数中应用用户自定义配色。
 
 ```{r}
 #| eval: false
@@ -321,7 +321,7 @@ polarPlot(mydata, cols = c("yellow", "green"))
 polarPlot(mydata, cols = c("red", "white", "blue"))
 ```
 
-For more detailed information on using appropriate colours, have a look at the [colorspace](https://cran.r-project.org/web/packages/colorspace/vignettes/colorspace.html) package. [colorspace]{.pkg} provides the definitive, comprehensive approach to using colours effectively. You will need to install the package, `install.packages("colorspace")`. To use the palettes with [openair]{.pkg}, you can for example do:
+如果希望了解更多关于在科技制图中如果正确运用颜色的知识，不妨查看一下 [colorspace](https://cran.r-project.org/web/packages/colorspace/vignettes/colorspace.html) 包。[colorspace]{.pkg} 提供了这方面权威和全面的方法论和工具集。你需要安装这个软件包 `install.packages("colorspace")`，然后按照下面的示例在 [openair]{.pkg} 中引用相关的调色板：
 
 ```{r}
 #| label: fig-colorspace
@@ -337,15 +337,15 @@ windRose(mydata, cols = qualitative_hcl(4, palette = "Dark 3"))
 
 ## Automatic text formatting {#quickText}
 
-[openair]{.pkg} tries to automate the process of annotating plots. It can be time-consuming (and tricky) to repetitively type in text to represent μg m^-3^ or PM~10~ (μg m^-3^) etc. in R. For this reason, an attempt is made to automatically detect strings such as `nox` or `NOx` and format them correctly. Where a user needs a y-axis label such as NO~x~ (μg m^-3^) it will only be necessary to type `ylab = "nox (ug/m3)"`. The same is also true for plot titles.
+[openair]{.pkg} 会尝试自动完成图表中的文字标注。实现类似 μg m^-3^ 或 PM~10~ (μg m^-3^) 这样的有特殊格式的文本在R中并不容易，而且一次一次的输入也很麻烦。因此，我们让 [openair]{.pkg} 可以自动识别 `nox` 或 `NOx` 这种字符串然后为它们匹配正确的格式。如果用户将 NO~x~ (μg m^-3^) 作为Y轴的标题，只需要键入 `ylab = "nox (ug/m3)"` 就可以了。同样的功能也适用于图表的大标题。
 
-Users can override this option by setting it to FALSE.
+如果用户需要避免这样的自动格式，可以将这个功能设置为 FALSE。
 
-## Multiple plots on a page {#sec-multiple-plots-page}
+## 一页多图 {#sec-multiple-plots-page}
 
-We often get asked how to combine multiple plots on one page. Recent changes to [openair]{.pkg} makes this a bit easier. Note that because [openair]{.pkg} uses [lattice]{.pkg} graphics the base graphics `par` settings will not work.
+我们经常需要在一个页面视图中合并几张图表。[openair]{.pkg} 的新近的更新简化了这项功能的实现。注意这里由于 [openair]{.pkg} 使用 [lattice]{.pkg} 图形系统作制图，所以R基本绘图系统中的 `par` 设置无法使用。
 
-It is possible to arrange plots based on a column $\times$ row layout. Let's put two plots side by side (2 columns, 1 row). First it is necessary to assign the plots to a variable:
+我们可以将几张图表安装列 $\times$ 行的方式进行排版，那么双图横行同列就是2列、1行。首先将两幅图分别赋值给一个变量：
 
 ```{r}
 #| eval: false
@@ -353,7 +353,7 @@ a <- windRose(mydata)
 b <- polarPlot(mydata)
 ```
 
-Now we can plot them using the `split` option:
+然后我们用 `split` 选项来组织输出：
 
 ```{r}
 #| eval: false
@@ -361,9 +361,9 @@ print(a, split = c(1, 1, 2, 1))
 print(b, split = c(2, 1, 2, 1), newpage = FALSE)
 ```
 
-In the code above for the `split` option, the last two numbers give the overall layout (2, 1) --- 2 columns, 1 row. The first two numbers give the column/row index for that particular plot. The last two numbers remain constant across the series of plots being plotted.
+上面代码中的 `split` 选项中，后两个数字代表总体的行列布局layout (2, 1)即2列1行，前两个数字代表所在的那一副图所在的行列坐标。所以在一组多图中后两个数字应该是保持不变的。
 
-There is one difficulty with plots that already contain sub-plots such as `timeVariation` where it is necessary to identify the particular plot of interest (see the `timeVariation` help for details). However, say we want a polar plot (`b` above) and a diurnal plot:
+当一副图已经是又几个子图组成的时候，如 `timeVariation` ，在进行多图同列的时候需要制定是其中的哪一个子图参与同列（详见 `timeVariation` 的帮助文档）。假设我们需要一个polar plot（上面的 `b` ）和一个日变化图放到一起，那么：
 
 ```{r}
 #| eval: false
@@ -372,9 +372,9 @@ print(b, split = c(1, 1, 2, 1))
 print(c, split = c(2, 1, 2, 1), subset = "hour", newpage = FALSE)
 ```
 
-For more control it is possible to use the `position` argument. `position` is a vector of 4 numbers, c(xmin, ymin, xmax, ymax) that give the lower-left and upper-right corners of a rectangle in which the plot is to be positioned. The coordinate system for this rectangle is \[0--1\] in both the x and y directions.
+ 还可以使用 `position` 参数更精确的控制每一副图的具体位置。`position` 由一组4个数的向量组成，c(xmin, ymin, xmax, ymax)通过定义左下角和右上角两个坐标来确定图表放置的矩形区域。整体绘图区域的x和y轴都是\[0--1\]的取值区间。
 
-As an example, consider plotting the first plot in the lower left quadrant and the second plot in the upper right quadrant:
+如果想要将一副图放在左下象限的位置，另一副图放在右上象限的位置，那么代码如下：
 
 ```{r}
 #| eval: false
