@@ -6,7 +6,7 @@
 - [x] 1  Introduction
 - [x] 2  The openair package
 - [ ] **Data Access**
-- [ ] 3  Accessing UK Air Quality Data
+- [x] 3  Accessing UK Air Quality Data
 - [ ] 4  Access meteorological data
 - [ ] **Directional Analysis**
 - [ ] 5  Wind and Pollution Roses
