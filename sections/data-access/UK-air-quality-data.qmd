@@ -6,65 +6,40 @@ editor_options:
 abstract: This section outlines the different ways users can access the abundant air quality data in the UK. The main functions provide easy access to hourly data and other statistical summaries such as annual means and data capture rates. Easy access is also provided to site meta data such as longitude, latitude, site type and details of the pollutants measured.
 ---
 
-# Accessing UK Air Quality Data {#sec-importUKAQ}
+# 获取英国空气质量数据 {#sec-importUKAQ}
 
-## Accessing data
+## 获取监测数据
 
-The UK has a surprisingly large amount of air quality data that is publicly
-accessible. The main UK AURN archive and regional (England, Scotland, Wales and
-Northern Ireland) together with Imperial College London's London Air Quality
-Network (LAQN) are important and large databases of information that allow free
-public access. Storing and managing data in this way has many advantages
-including consistent data format, and underlying high quality methods to process
-and store the data.
+英国有大量可公开访问的空气质量数据。其中最重要的几个大型数据库都可以免费访问，包括英国AURN全国数据库、地区（英格兰、苏格兰、威尔士和北爱尔兰）数据库以及伦敦帝国理工学院的伦敦空气质量监测网（LAQN）等。以上这几个大型数据库都可以保证统一的数据格式和高标准的数据质量。
 
-[openair]{.pkg} has a core function that provides users with
-extensive access to UK air quality data; `importUKAQ()`. Ricardo
-has provided `.RData` files (R workspaces) for several important air
-quality networks in the UK. These files are updated on a daily basis.
-This approach requires a link to the Internet to work. The work of
-Trevor Davies at Ricardo is greatly appreciated in
-making all the data available. The networks available through `importUKAQ()` include:
+[openair]{.pkg} 为用户获取英国空气质量监测数据提供了一个重要函数；`importUKAQ()`。里卡多能源与环境咨询公司还制作了包含英国几大空气质量监测网数据的.RData 文件（R工作区），并以日为单位持续更新。非常感谢里卡多能源与环境咨询公司的Trevor Davies为此所作的大量工作。这种数据访问方式需要互联网公网环境才能工作。通过 `importUKAQ()`可访问的监测网络数据包括： 
 
--   The UK national network, the [Automatic Urban and Rural Network](https://uk-air.defra.gov.uk/networks/network-info?view=aurn). This is the main UK network.
+-   英国国家网数据 [AURN 城乡自动监测网](https://uk-air.defra.gov.uk/networks/network-info?view=aurn)，这是英国最主要的监测网络。
 
--   The UK "devolved" networks:
+-   英国的“地区”监测网络：
 
-    -   [Air Quality Scotland](http://www.scottishairquality.scot/) network.
+    -   [苏格兰空气质量监测网络](http://www.scottishairquality.scot/) 数据。
 
-    -   [Air Quality Wales](https://airquality.gov.wales/) network.
+    -   [威尔士空气质量监测网络](https://airquality.gov.wales/) 数据。
 
-    -   [Air Quality England](https://www.airqualityengland.co.uk/) network of sites.
+    -   [英格兰空气质量监测网络](https://www.airqualityengland.co.uk/) 站点数据。
 
-    -   [Northern Ireland](https://www.airqualityni.co.uk) network of sites.
+    -   [北爱尔兰空气质量监测网络](https://www.airqualityni.co.uk) 站点数据。
 
--   Locally managed AQ networks in England. These are sites operated in most cases by Local Authorities but may also include monitoring from other programmes, industry and airports. The location and purpose of these sites differs from the national network which is governed by strict rules of the air quality directives. As a result there is a broad range of site types, equipment and data quality practices. For more information see [here](https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon). These data represent information from about 15 different local air quality networks.
+-   英国境内地方管理的空气质量监测网。地方监测站点大部分由当地政府运行，也包括对特定项目、工业和机场等的监测站点。这些站点的选址和监测目的可能和严格按照技术规定组织监测的国家网站点有所不同，所以会存在更广泛的站点类型、设备类型和数据质量要求。更多信息请访问[这里](https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon)。这个数据源的数据大概包含了15个不同的地方空气质量监测网。
 
-Also available is `importKCL()` for accessing data from the sites operated by Imperial College London[^uk-air-quality-data-1], primarily including the [The London Air Quality Network](https://www.londonair.org.uk/LondonAir/Default.aspx).
+还有一个`importKCL`函数，专门用于获取由伦敦帝国理工大学[^uk-air-quality-data-1]运行的站点的数据，主要包括的是[伦敦市空气质量监测网](https://www.londonair.org.uk/LondonAir/Default.aspx)。
 
 [^uk-air-quality-data-1]: The data were first accessible when the
     Environmental Research Group was based at King's College London.
 
-Many users download hourly data from [UK
-AIR](https://uk-air.defra.gov.uk/data/). Most commonly, the data are emailed to
-the user as .csv files and have a fixed format as shown below. This is a useful
-facility but does have some limitations and frustrations, many of which have
-been overcome using a new way of storing and downloading the data described
-below.
+多数用户会通过[英国空气质量](https://uk-air.defra.gov.uk/data/)来下载空气质量小时数据。一般情况下，数据会以固定的格式将 .csv 文件用过电子邮件发给用户。这种方法可行但是同时也有一些局限性，我们将在下文介绍一种新的数据下载和存储方式。
 
-There are several advantages over the web portal approach where .csv
-files are downloaded. First, it is quick to select a range of sites,
-pollutants and periods (see examples below). Second, storing the data as
-.RData objects is very efficient as they are about four times smaller
-than .csv files (which are already small) --- which means the data
-downloads quickly and saves bandwidth. Third, the function completely
-avoids any need for data manipulation or setting time formats, time
-zones etc. Finally, it is easy to import many years of data. The final
-point makes it possible to download several long time series in one go.
+相比于通过网站下载 .csv 文件的方式，新方法有以下几点优势。首先，选择一组站点、污染物和时间段（后面会详细介绍）更便捷。其次，将数据存储为 .Rdata 对象其文件大小只有 .csv文件（已经比较小了）的四分之一，这意味着节省网络带宽和本次存储空间。第三，获取函数会自动进行一系列数据处理操作，比如设置时间格式和时区等。最后，一次性下载和导入多年的数据更方便，这可以帮助我们比较轻松的获取多个站点的长时间序列数据。
 
-The site codes and pollutant names can be upper or lower case.
+站点的编码和污染物名称可以是大写或者小写字母。
 
-Some examples of usage are shown below. First load the packages we need.
+后面会通过案例介绍具体使用方法。现在先加载我们需要的软件包。
 
 ```{r}
 #| warning: false
@@ -74,16 +49,11 @@ library(openair)
 library(tidyverse)
 ```
 
-## Site Meta Data
+## 站点元数据
 
-### National networks
+### 国家监测网
 
-The first question is, what sites are available and what do they
-measure? Users can access the details of air pollution monitoring sites
-using the `importMeta()` function. The user only needs to provide the
-network name and (optionally) whether all data should be returned and
-whether certain periods should be considered. By default only site type,
-latitude and longitude are returned.
+下载数据前我们需要了解的首先是：有哪些站点？监测了哪些污染物？用户可以通过 `importMeta()` 函数获得空气质量监测站点的详细信息。用户是需要梯提供想要了解的监测网络的名称和（可选的）是否返回所有站点属性数据以及关注的时间段即可。缺省状态下，除站名外只返回站点类型和站点经纬度坐标。
 
 ```{r}
 #| label: importMeta
@@ -93,9 +63,7 @@ aurn_meta <- importMeta(source = "aurn")
 aurn_meta
 ```
 
-Or return much more detailed data that includes which pollutants are
-measured at each site and site start / end dates. The option
-`all = TRUE` should be added.
+添加 `all = TRUE` 选项可以得到完整详细的站点信息，包括每个站点都监测哪些污染物，监测的气质日期等等。
 
 ```{r}
 #| label: importMetaAll
@@ -106,25 +74,13 @@ aurn_meta <- importMeta(source = "aurn", all = TRUE)
 glimpse(aurn_meta)
 ```
 
-Note that `importMeta()` can import information for several networks at
-once e.g. `source = c("aurn", "saqn")`.
+`importMeta()`也可以同时获取几个监测网络的站点元数据，如：`source = c("aurn", "saqn")`
 
-Often it is useful to consider sites that were open in a particular year
-or were open for a duration of years. This can be done using the `year`
-argument. When `year` is a range such as `year = 2010:2020`, only sites
-that were open across that range of years will be returned. This option
-is especially useful for trend analysis when there might be an interest
-in extracting only sites that were measuring over the period of
-interest. Furthermore, if `all = TRUE` is used, supplying a year (or
-years) will select only specific pollutants that were measured during
-the period of interest.[^uk-air-quality-data-2]
+在进行长期趋势分析的时候，我们需要找到知道监测网络中哪些站点的连续监测能够完整的覆盖分析时段。这时需要用 `year` 参数来筛选出在特定年份或特定多年（如 `year = 2010:2020`）有完整监测的站点。此外，通过同时加入 `all = TRUE` 得到完整信息，可以进一步得到在那一年（或那几年）某项污染物有完整监测的站点。[^uk-air-quality-data-2]
 
-[^uk-air-quality-data-2]: Note that while a site may have been in
-    operation for a long time, it is not necessarily the case that all
-    pollutants were measured since the start of the site.
+[^uk-air-quality-data-2]: 一个站点可能已经运行了很多年，但是并不一定所有的污染物都是从建站那一天起就开始监测的。
 
-For example, to check the number of sites that were open from 2010 to
-2022 in the AURN and SAQN combined:
+下面的示例代码可在AURN和SAQN两个监测网络中查询在2010到2022年持续运行的站点的个数：
 
 ```{r}
 sites_2010_2022 <- importMeta(
@@ -135,11 +91,9 @@ sites_2010_2022 <- importMeta(
 nrow(sites_2010_2022)
 ```
 
-The example below uses sites on the AURN that measure NO~2~, but can
-easily be extended to the other data sources.
+下面的例子是用AURN网的站点清单中进一步筛选出有NO~2~监测项目的电脑，这种方法也适用于从其它渠道得到的站点清单。
 
-To see how many sites measure NO~2~ in the AURN that are 'urban
-traffic':
+AURN网中监测NO~2~的站点中属于交通环境监测点的有多少个：
 
 ```{r}
 #| warning: false
@@ -156,11 +110,9 @@ nrow(no2_sites)
 ```
 
 ::: callout-tip
-## Use `importMeta()` as a way to select sites to import
+## 使用 `importMeta()` 作为数据导入过程中选择站点的工具
 
-One of the most useful aspects of `importMeta()` is to use it as a basis
-to identify site codes to then import data. For example, to import data
-from the AURN for sites that have been in operation from 2005 to 2020:
+`importMeta()` 的一个重要用途是生成一个需要导入数据的站点编码的列表。例如：从AURN网导入在2005-2020年运行的站点是数据：
 
 ```{r}
 #| eval: false
@@ -176,8 +128,7 @@ all_aq_data <- importUKAQ(
 ```
 :::
 
-To import data, you can use the different versions of `importUKAQ()`. Some
-examples are below.
+接下来就可以用 `importUKAQ()` 函数来获取数据了。下面展示了几种不同形式的用法。
 
 ```{r}
 #| eval: false
@@ -203,7 +154,7 @@ yk13 <- importUKAQ(site = "yk13", year = 2018, source = "aqe")
 duo <- importUKAQ(site = c("my1", "yk13"), year = 2020, source = c("aurn", "aqe"))
 ```
 
-And to include basic meta data when importing air pollution data:
+也可以将站点的元数据和监测数据一起合并导出：
 
 ```{r}
 #| label: importWithMeta
@@ -212,10 +163,7 @@ kc1 <- importUKAQ(site = "kc1", year = 2018, meta = TRUE)
 glimpse(kc1)
 ```
 
-By default, the function returns data where each pollutant is in a
-separate column. However, it is possible to return the data in a *tidy*
-format (column for pollutant name, column for value) by using the option
-`to_narrow`:
+数据获取类的函数在缺省状态下会将每一项污染物的数据作为一个单独的列。也可以通过 `to_narrow` 选项范围符合 *tidy* 规范的长数据（一列为污染物名称，一列为污染物浓度）：
 
 ```{r}
 #| eval: false
@@ -226,10 +174,11 @@ It is also possible to return information on whether the data have been
 ratified or not using the option `ratified` (`FALSE` by default). So,
 add the option `ratified = TRUE` if you want this information.
 
-### Local networks
+`ratified` 的开关选项可以选择是否返回审核状态信息（缺省为 `FALSE` ）。所以可以通过打开该选项 `ratified = TRUE` 来同时获得审核状态信息。 
 
-In the case of **locally available data**, it is useful to know who the
-data providers are, which are shown below.
+### 地方监测网络
+
+当使用**本地监测网络数据**的时候，通常有必要先了解以下这些数据的提供者信息。
 
 ```{r}
 # access local meta data to get provider
@@ -237,23 +186,16 @@ meta_local <- importMeta("local", all = TRUE)
 unique(meta_local$provider)
 ```
 
-## Plot Sites on a Map
+## 在地图上展示监测站点
 
-To easily visualise entire monitoring networks, consider using the
-[openairmaps]{.pkg} R package. This package can be installed from CRAN,
-similar to [openair]{.pkg}.
+为了简单的绘制整个监测网的站点地图，请考虑使用[openairmaps]{.pkg} R 包。这个包可以像安装 [openair]{.pkg} 一样从CRAN安装。
 
 ```{r}
 #| eval: false
 install.packages("openairmaps")
 ```
 
-This package contains the `networkMap()` function which acts as a wrapper
-around `importMeta()` and returns a detailed map similar to the one
-produced below, with many options for customisation. For example, sites
-can be clustered together to avoid clutter, and an optional "control
-menu" can be added to filter for certain sites (e.g., different site
-types, shown below).
+[openairmaps]{.pkg} 包中的 `networkMap()` 函数可以把 `importMeta()` 的结果包装生成下面实例中的站点地图。站点地图还可以进行多项定制，如站点是否在相互遮挡的情况下聚簇显示；是否包含可以筛选站点的控制面板（如按照站点类型进行删选）。
 
 ```{r}
 #| label: fig-openairmapsNetworkMap
@@ -264,62 +206,34 @@ library(openairmaps)
 networkMap(source = "aurn", control = "site_type")
 ```
 
-For more information about using [openairmaps]{.pkg} to build maps of
-monitoring networks, please refer to the [Network Visualisation
-Page](../maps/maps-network.qmd).
+[Network Visualisation Page](../maps/maps-network.qmd) 将介绍关于使用[openairmaps]{.pkg} 绘制监测网地图的更多详细信息。 
 
-## Annual and other statistics
+## 年均值等统计选项
 
-By default, all the functions above return hourly data. However, often
-there is a need to return data such as annual means of a long period of
-time. `importUKAQ()` (but not `importKCL()`) can return data
-for averaging times: annual, monthly, daily and for SO~2~ 15-minute. The
-annual and monthly data also provide valuable information on data
-capture rates. The averaging statistic is selected with the `data_type`
-option. The values `data_type` can take include:
+所有监测数据获取类的函数默认返回小时数据，但是很多时候我们需要的可能只是年均值。为此`importUKAQ()`函数（除`importKCL`）添加了可以返回不同平均时间的数据，如年均、月均、日均以及 SO~2~ 的15分钟平均等。其中年均和月均的数据还包含了数据比较重要的数据捕获率的信息。这个平均时间由 `data_type` 选项，可以选择的值如下：
 
--   **"hourly"** This is the default and specific site(s) must be
-    provided.
--   **"daily"** Daily means returned and specific site(s) must be
-    provided. Note that in the case of PM~10~ and PM~2.5~ daily
-    measurements can be available from those derived from hourly
-    measurements (using instruments such as TEOM, BAM and FIDAS) and our
-    daily gravimetric measurements such as from a Partisol. In the
-    returned data the gravimetric daily measurements are shown as
-    `gr_pm10` and `gr_pm2.5`, respectively.
--   **"monthly"** Monthly means returned. No site code is needed because
-    all data for a particular year are returned. Data capture statistics
-    are also given.
--   **"annual"** Annual means returned. No site code is needed because
-    all data for a particular year are returned. Data capture statistics
-    are also given.
--   **"15_min"** 15-minute SO~2~ concentrations returned for a specific
-    site(s).
--   **"8_hour"** Rolling 8-hour concentrations returned for a specific
-    site(s) for O~3~ and CO.
--   **"24_hour"** Rolling 24-hour concentrations returned for a specific
-    site(s) for PM~10~ and PM~2.5~.
--   **"daily_max_8"** Maximum daily rolling 8-hour maximum for O~3~ and
-    CO.
--   **"daqi"** Daily Air Quality Index (DAQI). See [here](https://uk-air.defra.gov.uk/air-pollution/daqi?view=more-info&pollutant=ozone#pollutant) for more details of how the index is defined.
+-   **"hourly"** 小时数据是默认选项，这里必须提供站点清单。
+-   **"daily"** 返回一个或多个指定站点的日均值。注意 PM~10~ 和 PM~2.5~ 的日数据有可能来自小时分辨率的连续监测方法（使用TEOM、BAM和FIDAS等方法的监测仪器)，也有可能来自每日的称重法监测数据，如Partisol采样器。称重法的日数据会表示为 `gr_pm10` and `gr_pm2.5`。
+-   **"monthly"** 返回月均值，不需要提供站点编码。指定年份的所有站点结果连同数据数据捕获率会一起返回。
+-   **"annual"** 返回年均值，不需要提供站点编码。指定年份的所有站点结果连同数据数据捕获率会一起返回。
+-   **"15_min"** 返回指定站点的 SO~2~ 的15分钟平均浓度。
+-   **"8_hour"** 返回指定站点 O~3~ 和 CO 的8小时滑动平均浓度。
+-   **"24_hour"** 返回指定站点 PM~10~ 和 PM~2.5~ 的24小时滑动平均浓度。
+-   **"daily_max_8"** 范围 O~3~ 和 CO 的每日最大8小时滑动平均值。
+-   **"daqi"** 返回每日空气质量指数(DAQI)。关于空气质量指数的定义和更多信息请访问[这里](https://uk-air.defra.gov.uk/air-pollution/daqi?view=more-info&pollutant=ozone#pollutant)。
 
-Note that for annual and monthly statistics all network data is returned
-and the `site` option has no effect.
+请注意当指定返回年和月统计结果时会返回该监测网的全部数据， `site` 选择会被屏蔽。
 
-As an example, to import 5 years of annual mean data from the AURN:
+例如：要导入AURN监测获取5年期间的年均值：
 
 ```{r}
 #| eval: false
 uk_annual <- importUKAQ(year = 2016:2020, data_type = "annual", source = "AURN")
 ```
 
-By default, this will return data in "wide" format with a pollutant and
-its data capture rate in separate columns. Often it is more useful to
-have "narrow" format data, which is possible to select with the
-`to_narrow` option. Furthermore, it is also possible to return site meta
-data (site type, latitude and longitude) at the same time.
+上面的代码默认会得到“宽”数据，即每项污染物的数据独立占用一列。在更多情况下，使用 `to_narrow` 选项得到的“窄”数据更好用一些。另外如前文所述，站点的元数据（站点类型和经纬度等）也可以一并获取。
 
-Below is an example of obtaining annual mean data for 2020.
+下面的代码可得到2020年的年均值“窄”数据，含元数据。
 
 ```{r}
 #| label: importAnnual
@@ -334,14 +248,13 @@ uk_2020 <- importUKAQ(
 uk_2020
 ```
 
-The pollutants returned include:
+数据中涉及的污染物包括：
 
 ```{r}
 unique(uk_2020$species)
 ```
 
-Now it is easy for example, to select annual mean data from 2020 for
-NO~2~ with a data capture rate of at least 80%:
+得到2020年的年均值数据后，可以很方便的进一步增加污染物为 NO~2~ 和数据捕获率大于80%两个筛选条件：
 
 ```{r}
 #| label: filterNO2
@@ -349,8 +262,7 @@ uk_2020 %>%
   filter(species == "no2", data_capture >= 0.8)
 ```
 
-For the AURN, it is also possible to return the DAQI (Daily Air Quality
-Index) by pollutant to save deriving it.
+对于AURN国家网，还可以按照污染物得到每日的空气质量指数（DAQI）。
 
 ```{r}
 #| label: daqi
