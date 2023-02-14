@@ -1,17 +1,17 @@
 ---
 author: David Carslaw
-abstract: Meteorological data is key to understanding air quality measurements. This section describes a fast and convenient way of accessing meteorological data for sites worldwide.
+abstract: 气象要素是理解空气污染变化的重中之重。本章介绍如果快速获取全球范围内的地面气象站数据。
 ---
 
-# Access meteorological data {#sec-worldmet}
+# 获取气象数据 {#sec-worldmet}
 
-## The worldmet package
+## worldmet 软件包
 
-Most of the import functions described in @sec-importAURN return basic modelled hourly meteorological data (wind speed, wind direction and surface temperature). These data are derived from the WRF model that Ricardo runs to provide the data.
+@sec-importAURN 中介绍的数据获取函数会连带返回模式生成的小时气象数据（风速、风向和地面气温等）。这些数据是从Ricado公司运行的WRF模型提取出来的。
 
-Alternatively it may be advantageous to use surface measurements. [worldmet]{.pkg} provides an easy way in which to access surface meteorological data from \>30,000 sites across the world. The package accesses the NOAA webservers to download hourly data. See <https://github.com/davidcarslaw/worldmet> and <https://www.ncdc.noaa.gov/isd> for further information.
+如果希望使用地面气象监测站的实际监测数据，[worldmet]{.pkg} 包提供了访问全球超过30,000的地面气象站数据的工具。这个包所获取的小时气象数据来着NOAA的网站服务器。更多信息请访问<https://github.com/davidcarslaw/worldmet> 和 <https://www.ncdc.noaa.gov/isd>。
 
-Access to surface meteorological data is very useful in general but is especially useful when using [openair]{.pkg} and functions such as `polarPlot`. To install the package, type:
+加入地面气象数据可以很好的帮助我们进行分析，尤其是当使用 [openair]{.pkg} 中可以配合气象场分析的函数，比如 `polarPlot` 。首先安装软件包：
 
 ```{r}
 #| label: install_worldmet
@@ -19,9 +19,9 @@ Access to surface meteorological data is very useful in general but is especiall
 install.packages("worldmet")
 ```
 
-There are two main functions in the package: `getMeta` and `importNOAA`. The former helps the user find meteorological sites by name, country and proximity to a location based on the latitude and longitude. `getMeta` will also return a code that can be supplied to `importNOAA`, which then imports the data.
+这个软件包中包含两个主要的函数：`getMeta` 和 `importNOAA`。前者用于帮助用户通过站名、国家和大概的经纬度位置找到需要的气象站。`getMeta` 会范围气象站的编号，这个编号可以提供给后者 `importNOAA` 来下载数据。
 
-Probably the most common use of `getMeta` is to search around a location of interest based on its latitude and longitude. First we will load the [worldmet]{.pkg} (and other packages we use later):
+`getMeta` 最常规的用法就是寻找一个经纬度位置周边的气象站。首先加载 [worldmet]{.pkg} 包（和另外两个我们后面需要用到的包）：
 
 ```{r}
 #| label: pkg
@@ -30,9 +30,9 @@ library(openair)
 library(tidyverse)
 ```
 
-As an example, we will search for the 10 nearest sites to Dublin (latitude = 53.3, longitude = -6.3)[^access-met-data-1]:
+作为示例，我们会寻找距离都柏林（维度 = 53.3，经度 = -6.3）最近的10个气象站[^access-met-data-1]：
 
-[^access-met-data-1]: Note that `returnMap` was only used to display the map in this document and would not normally be needed.
+[^access-met-data-1]: 注意 `returnMap` 参数只是为了本文档需要，通常分析的时候不需要。
 
 ```{r}
 #| label: fig-worldmet
@@ -40,7 +40,7 @@ As an example, we will search for the 10 nearest sites to Dublin (latitude = 53.
 getMeta(lat = 53.3, lon = -6.3, returnMap = TRUE)
 ```
 
-Note that it is just as easy to access all the site information at once because it is quick to use the map to select the site and its code i.e.
+其实最简单的方法是用下面的简短命令直接一次性显示全部站点，然后在地图上定位到你需要的站点和他的编号。
 
 ```{r}
 #| label: getMeta-map
@@ -48,7 +48,7 @@ Note that it is just as easy to access all the site information at once because 
 getMeta()
 ```
 
-We can use the map that is produced to select a site of interest and import the data. For example, to import data for Dublin Airport and look at some of the data:
+假设我们已经在地图上选定了气象站并且得到了它的编号，下面就可以下载气象数据了。比如我们下载都柏林机场站点的数据：
 
 ```{r}
 #| label: dublin
@@ -58,7 +58,7 @@ dublin_met <- importNOAA(code = "039690-99999", year = 2019)
 dublin_met
 ```
 
-Plot a wind rose.
+绘制风玫瑰图。
 
 ```{r}
 #| out-width: 50%
@@ -69,9 +69,11 @@ Plot a wind rose.
 windRose(dublin_met)
 ```
 
-## Linking with air quality data {#sec-link-aq}
+## 与空气质量数据关联 {#sec-link-aq}
 
 Having imported some meteorological data it will often be necessary to combine it with air quality data. Quite how this is done depends on the air quality data. The important point is there should be a `date` column in each data set that make the connection between the two. It may also depend on whether the air quality data has existing fields that also exist in the meteorological data e.g. `ws`, `wd` and `air_temp`, as is the case with most data accessible as described in @sec-importAURN. In this case, the aim to to replace any existing meteorological variables in the air quality data with those in the meteorological data. An example is shown below.
+
+下载后气象数据通常需要和空气质量数据做关联。关联的依据是两个数据集中都有的日期时间信息，这时一般会以空气质量数据中的 `date` 作为合并操作的主键。合并前还要查看以下空气质量数据中是不是已经有气象数据了，如 `ws`, `wd` 和 `air_temp`等，使用 @sec-importAURN 中的数据获取函数一般会包含气象数据。在下面的例子中，我们会用气象站的数据取代空气质量数据集中的气象数据。
 
 ```{r}
 #| label: linkaqmet
