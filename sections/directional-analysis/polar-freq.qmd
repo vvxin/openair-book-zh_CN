@@ -2,17 +2,17 @@
 author: David Carslaw
 ---
 
-# Polar frequencies {#sec-polarFreq}
+# Polar frequencies 风频图{#sec-polarFreq}
 
 ## Background and examples {#sec-polarFreqBack}
 
-This compactly shows the distribution of wind speeds and directions from meteorological measurements. It is similar to the traditional wind rose, but includes a number of enhancements to also show how concentrations of pollutants and other variables vary. It can summarise all available data, or show it by different time periods e.g. by year, month, day of the week. It can also consider a wide range of statistics.
+我们将简要介绍另一种绘制气象数据中风向和风速分布的方式，和传统的风玫瑰图比较相似，但是在结合污染物浓度变化等方面进行了强化，风频图可以用到所有的数据，考虑到了更多的统计变化，也可以按照不同的时间周期分图展示，如逐年、逐月、一周为单位的逐日变化等等。
 
-This section shows an example output and use, using our data frame `mydata`. The function is very simply run as shown in @fig-polarFreqa.
+这一节用内置的 `mydata` 数据演示风频图使用方法。@fig-polarFreqa 是 `polarFreq` 默认状态下的显示结果。
 
 ```{r}
 #| label: fig-polarFreqa
-#| fig-cap: Use of `polarFreq` function to plot wind speed/directions. Each cell gives the total number of hours the wind was from that wind speed/direction in a particular year. The number of hours is coded as a colour scale shown to the right. The scale itself is non-linear to help show the overall distribution. The dashed circular grey lines show the wind speed scale. 
+#| fig-cap: 使用 `polarFreq` 函数绘制风速和风向。每一个小格子代表一个特定的风向和风速组合，格子的颜色代表出现这一个特定风向和风速的总小时数。颜色所  The number of hours is coded as a colour scale shown to the right. The scale itself is non-linear to help show the overall distribution. The dashed circular grey lines show the wind speed scale. 
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
@@ -22,6 +22,8 @@ polarFreq(mydata)
 ```
 
 By setting `type = "year"`, the frequencies are shown separately by year as shown in @fig-polarFreqYear, which shows that most of the time the wind is from a south-westerly direction with wind speeds most commonly between 2--6 m s^-1^. In 2000 there seemed to be a lot of conditions where the wind was from the south-west (leading to high pollutant concentrations at this location). The data for 2003 also stand out due to the relatively large number of occasions where the wind was from the east. Note the default colour scale, which has had a square-root transform applied, is used to provide a better visual distribution of the data.
+
+
 
 ```{r}
 #| label: fig-polarFreqYear
