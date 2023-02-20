@@ -12,7 +12,7 @@ author: David Carslaw
 
 ```{r}
 #| label: fig-polarFreqa
-#| fig-cap: 使用 `polarFreq` 函数绘制风速和风向。每一个小格子代表一个特定的风向和风速组合，格子的颜色代表出现这一个特定风向和风速的总小时数。颜色所  The number of hours is coded as a colour scale shown to the right. The scale itself is non-linear to help show the overall distribution. The dashed circular grey lines show the wind speed scale. 
+#| fig-cap: 使用 `polarFreq` 函数绘制风速和风向。每一个小格子代表一个特定的风向和风速组合，格子的颜色代表出现这一个特定风向和风速的总小时数。不同颜色所代表的小时数作为图例缺省放在右侧。小时候的分段并不是线性的，这样可以更好的看到总体的分布。 圆环状的灰色虚线代表不同的风速区间。 
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
@@ -21,25 +21,25 @@ library(openair)
 polarFreq(mydata)
 ```
 
-By setting `type = "year"`, the frequencies are shown separately by year as shown in @fig-polarFreqYear, which shows that most of the time the wind is from a south-westerly direction with wind speeds most commonly between 2--6 m s^-1^. In 2000 there seemed to be a lot of conditions where the wind was from the south-west (leading to high pollutant concentrations at this location). The data for 2003 also stand out due to the relatively large number of occasions where the wind was from the east. Note the default colour scale, which has had a square-root transform applied, is used to provide a better visual distribution of the data.
-
-
+通过 `type = "year"` 选项，风频图可以按照数据集所包含的不同年份分图展示，见 @fig-polarFreqYear。可以看到，这个站点的主导风向是西南风，大部分时间风速为 2-6 m s^-1^。2000年西南风占比进一步高于常年水平（导致了这个站点附近的高污染水平）。2003年偏东风显著增多，也成为气象条件相对异常的一年。频率数据进行了平方根转换以获得更好的可视化效果。
 
 ```{r}
 #| label: fig-polarFreqYear
-#| fig-cap: Use of `polarFreq` function to plot wind speed/directions by year. Each cell gives the total number of hours the wind was from that wind speed/direction in a particular year. The number of hours is coded as a colour scale shown to the right. The scale itself is non-linear to help show the overall distribution. The dashed circular grey lines show the wind speed scale. The date range covered by the data is shown in the strip.
+#| fig-cap: 使用 `polarFreq` 函数绘制逐年的风速和风向频率图。每一个小格子代表一个特定的风向和风速组合，格子的颜色代表在当年出现这一个特定风向和风速的总小时数。不同颜色所代表的小时数作为图例缺省放在右侧。小时候的分段并不是线性的，这样可以更好的看到总体的分布。圆环状的灰色虚线代表不同的风速区间。数据所覆盖的时间段显示了每一张图的上方。
 #| fig-width: 8
 #| fig-height: 8
 polarFreq(mydata, type = "year")
 ```
 
-The `polarFreq` function can also usefully consider pollutant concentrations. @fig-polarFreqMean shows the mean concentration of SO~2~ by wind speed and wind direction and clearly highlights that SO~2~ concentrations tend to be highest for easterly winds and for 1998 in particular.
+ `polarFreq` 同样可以关联不同污染物的污染浓度。@fig-polarFreqMean 显示了在每一个特定风向和风速条件下的 SO~2~ 平均浓度，可以看到998年高浓度的 SO~2~ 浓度主要出现在偏东风条件下。
 
-By weighting the concentrations by the frequency of occasions the wind is from a certain direction and has a certain speed, gives a better indication of the conditions that dominate the overall mean concentrations. @fig-polarFreqWeightedMean shows the weighted mean concentration of SO~2~ and highlights that annual mean concentrations are dominated by south-westerly winds i.e. contributions from the road itself --- and not by the fewer higher hours of concentrations when the wind is easterly. However, 2003 looks interesting because for that year, significant contributions to the overall mean were due to easterly wind conditions.
+用权重平均代值替默认使用的算术平均可以看到总体浓度在每一个特定风速风向条件下的分配情况，得到不同风场条件下的污染贡献。从 @fig-polarFreqWeightedMean 可以看出，SO~2~ 对各年年均值的贡献主要来自西南方向，即这个交通环境站所代表的临近交通污染源的影响，但是2003年偏东风条件下的贡献异常突出，明显值得进一步分析。
 
 These plots when applied to other locations can reveal some useful features about different sources. For example, it may be that the highest concentrations measured only occur infrequently, and the weighted mean plot can help show this.
 
-The code required to make @fig-polarFreqMean and @fig-polarFreqWeightedMean is shown below.
+观察上述两种污染频度图在临近的不同站点的情况，可以帮助我们更好的定位污染来源。比如偶发的高污染可能只有在某个方向上的污染贡献图上才能看到。
+
+@fig-polarFreqMean 和 @fig-polarFreqWeightedMean 所使用的代码如下。
 
 ```{r}
 #| label: fig-polarFreqMean
@@ -64,7 +64,7 @@ polarFreq(mydata, pollutant = "so2",
           min.bin = 2)
 ```
 
-Users are encouraged to try out other plot options. However, one potentially useful plot is to select a few specific years of user interest. For example, what if you just wanted to compare two years e.g. 2000 and 2003? This is easy to do by sending a subset of data to the function. Use here can be made of the [openair]{.pkg} `selectByDate` function (see @sec-selectByDate).
+我们鼓励用户尝试函数中所提供的各种参数及其组合。一个可能比较场景的使用场景是只对历史数据种某几个年份感兴趣，例如只希望对比2000和2004两个年份的情况。这种只需要将数据集的一个子集提供给绘图函数就可以了。在 [openair]{.pkg} 种通过对 `selectByDate` 函数的套用实现（见@sec-selectByDate ）。
 
 ```{r}
 #| eval: false
@@ -74,9 +74,9 @@ polarFreq(selectByDate(mydata, year = c(2000, 2003)),
           type = "year")
 ```
 
-The `polarFreq` function can also be used to gain an idea about the wind directions that contribute most to the overall mean concentrations. As already shown, use of the option `statistic =   "weighted.mean"` will show the percentage contribution by wind direction and wind speed bin. However, often it is unnecessary to consider different wind speed intervals. To make the plot more effective, a few options are set as shown in @fig-polarFreqAttr. First, the `statistic = "weighted.mean"` is chosen to ensure that the plot shows concentrations weighted by their frequency of occurrence of wind direction. For this plot, we are mostly interested in just the contribution by wind direction and not wind speed. Setting the `ws.int` to be above the maximum wind speed in the data set ensures that all data are shown in one interval. Rather than having a square-root transform applied to the colour scale, we choose to have a linear scale by setting `trans = FALSE`. Finally, to show a 'disk', the `offset` is set at 80. Increasing the value of the offset will narrow the disk.
+`polarFreq` 函数用于帮助我们了解不同风向对总体污染浓度的贡献。上面已经介绍到通过 `statistic =   "weighted.mean"` 选项可以显示出每一个特定风向风速组合的贡献百分比。但是我们有可能并不需要考虑风速的影响。通过以下几个设置选择可能得到 @fig-polarFreqAttr 这样更加简单明了的显示效果。首先， 需要 `statistic = "weighted.mean"` 来进行凤场条件的贡献比例计算；第二，由于在这个场景下我们只需要考虑风向，不需要考虑风速，因此通过将风速区间大小 `ws.int` 选择设置为一个比最大风速还大的数值，这样就可以保证最终的图中只有一个风速区间；第三，通过 `trans = FALSE` 选择关闭平方根转换，使用线性坐标；最后为了将结果显示成一个“圆环”状，我们将 `offset` 设置为80，这个数值越大，圆环越窄。
 
-While @fig-polarFreqAttr is useful --- e.g. it clearly shows that concentrations of NO~x~ at this site are totally dominated by south-westerly winds, the use of `pollutionRose` for this type of plot is more effective, as shown in @sec-windRose.
+@fig-polarFreqAttr 可以很清晰的看到这个站点的 NO~x~ 主要来袭西南方向的贡献，`pollutionRose` 也可以提供类似的信息，详见 @sec-windRose。
 
 ```{r}
 #| label: fig-polarFreqAttr
