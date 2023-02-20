@@ -10,7 +10,7 @@
 - [x] 4  Access meteorological data
 - [ ] **Directional Analysis**
 - [x] 5  Wind and Pollution Roses
-- [ ] 6  Polar frequencies
+- [x] 6  Polar frequencies
 - [ ] 7  Percentile roses
 - [ ] 8  Polar plots
 - [ ] 9  Polar annulus
