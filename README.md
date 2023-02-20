@@ -5,11 +5,11 @@
 - [x] **Preface**
 - [x] 1  Introduction
 - [x] 2  The openair package
-- [ ] **Data Access**
+- [x] **Data Access**
 - [x] 3  Accessing UK Air Quality Data
-- [ ] 4  Access meteorological data
+- [x] 4  Access meteorological data
 - [ ] **Directional Analysis**
-- [ ] 5  Wind and Pollution Roses
+- [x] 5  Wind and Pollution Roses
 - [ ] 6  Polar frequencies
 - [ ] 7  Percentile roses
 - [ ] 8  Polar plots
