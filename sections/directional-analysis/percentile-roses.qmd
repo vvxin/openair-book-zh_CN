@@ -2,25 +2,25 @@
 author: David Carslaw
 ---
 
-# Percentile roses {#sec-percentileRose}
+# Percentile roses 污染浓度百分位玫瑰图 {#sec-percentileRose}
 
-## Introduction
+## 简介
 
-`percentileRose` calculates percentile levels of a pollutant and plots them by wind direction. One or more percentile levels can be calculated and these are displayed as either filled areas or as lines.
+`percentileRose` 计算不同风向下污染物浓度的百分位水平并绘图。可以计算一个或多个百分位，显示方式可以是填充的面积图或曲线图。 
 
-By default, the function plots percentile concentrations in 10 degree segments. Alternatively, the levels by wind direction are calculated using a cyclic smooth cubic spline. The wind directions are rounded to the nearest 10 degrees, consistent with surface data from the UK Met Office before a smooth is fitted.
+默认情况下，浓度贡献以每10度的方向区间来汇总计算，也可以选择使用样条插值的方法得到在方向上平滑变化的曲线。在平滑计算之前，风向会舍入到临近的10度点，这也和英国气象局的地面监测数据是一致的。
 
-The `percentileRose` function complements other similar functions including `windRose`, `pollutionRose`, `polarFreq` or `polarPlot`. It is most useful for showing the distribution of concentrations by wind direction and often can reveal different sources e.g. those that only affect high percentile concentrations such as a chimney stack.
+`windRose`、 `pollutionRose`、 `polarFreq` 和 `polarPlot` 等都具有类似的功能，`percentileRose` 函数作为它们的另一个补充，更适合于展示不同风向上的污染水平分布情况，以便定位污染源，如工厂高架源等明显高污染贡献的污染源类。
 
-Similar to other functions, flexible conditioning is available through the `type` option. It is easy for example to consider multiple percentile values for a pollutant by season, year and so on. See examples below.
+与其它函数类似，可以用 `type` 选择灵活的增加条件，比如看不同季节、不同年份下的污染风向百分位。
 
-## Examples
+## 实例
 
-The first example is a basic plot of percentiles of O~3~ shown in @fig-percentileRose1.
+第一个例子是绘制基础的 O~3~ 风向污染百分位玫瑰图 @fig-percentileRose1。
 
 ```{r}
 #| label: fig-percentileRose1
-#| fig-cap: A `percentileRose` plot of O~3~ concentrations at Marylebone Road. The percentile intervals are shaded and are shown by wind direction. It shows for example that higher concentrations occur for northerly winds, as expected at this location. However, it also shows, for example the actual value of the 95th percentile O~3~ concentration.
+#| fig-cap: Marylebone路边交通点 O~3~ 的浓度百分位玫瑰图。`percentileRose` 图为每一个风向区间绘制污染浓度百分位阴影着色图。可以看到高浓度的臭氧主要来自偏北方向，图中也能读出某一百分位的具体 O~3~ 浓度值。
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
@@ -28,11 +28,11 @@ library(openair)
 percentileRose(mydata, pollutant = "o3")
 ```
 
-A slightly more interesting plot is shown in @fig-percentileRoseSO2 for SO~2~ concentrations. We also take the opportunity of changing some default options. In this case it can be clearly seen that the highest concentrations of SO~2~ are dominated by east and south-easterly winds; likely reflecting the influence of stack emissions in those directions.
+我们通过更改几个缺省设置来为 SO~2~ 绘制更有趣污染百分位玫瑰图 @fig-percentileRoseSO2 。可以看到SO~2~ 的高污染主要出现在偏东风和东南风条件下，这可能和那个方向上的高架点源有关。
 
 ```{r}
 #| label: fig-percentileRoseSO2
-#| fig-cap: A `percentileRose` plot of SO~2~ concentrations at Marylebone Road. The percentile intervals are shaded and are shown by wind direction. This plot sets some user-defined percentile levels to consider the higher SO~2~ concentrations, moves the key to the right and uses an alternative colour scheme.
+#| fig-cap: Marylebone路边交通点 SO~2~ 的浓度百分位玫瑰图。`percentileRose` 图为每一个风向区间绘制污染浓度百分位阴影着色图。图中使用了用户自定义的分位点和配色来更加突出显示  SO~2~ 的最高浓度，并将图例移到了右侧。
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
@@ -41,13 +41,13 @@ percentileRose(mydata, pollutant = "so2",
                col = "brewer1", key.position = "right", smooth = TRUE)
 ```
 
-Lots more insight can be gained by considering how percentile values vary by other factors i.e. conditioning. For example, what do O~3~ concentrations look like split by season and whether it is daylight or nighttime hours? We can set the type to consider season *and* whether it is daylight or nighttime.[^percentile-roses-1] This Figure reveals some interesting features. First, O~3~ concentrations are higher in the spring and summer and when the wind is from the north. O~3~ concentrations are higher on average at this site in spring due to the peak of northern hemispheric O~3~ and to some extent local production. This may also explain why O~3~ concentrations are somewhat higher at nighttime in spring compared with summer. Second, peak O~3~ concentrations are higher during daylight hours in summer when the wind is from the south-east. This will be due to more local (UK/European) production that is photochemically driven --- and hence more important during daylight hours.
+叠加不同条件的污染百分位玫瑰图可以得到更多深入分析的结果。比如不同季节下的臭氧风向浓度百分位有何不同？白天和夜间有什么不同？我们通过 `type` 选项可以 *同时* 将季节和白天夜间作为条件进行分析[^percentile-roses-1]。下图可以提供很多有意思的思考点。首先，O~3~ 在春季和夏季浓度水平更高，北风条件下尤其明显。这个站点春季 O~3~ 污染水平最高主要是受北半球 O~3~ 本底浓度的季节性峰值影响，同时也和本地污染转化有关。这也解释了为什么春季有些时候夜间的浓度比白天还要高。其次，在夏季，臭氧峰值出现在白天时段的东南方向，这主要是本地（英国/欧盟地区）污染物在白天时段发生光化学作用所贡献的。
 
-[^percentile-roses-1]: In choosing `type = "daylight"` the default is to consider a latitude of central London (or close to). Users can set the latitude in the function call if working in other parts of the world.
+[^percentile-roses-1]: 当选择 `type = "daylight"` 时默认以伦敦中心区的纬度来决定白天和夜间的分隔点。通过如果在其它的地方可以在跳调取函数时设置所在的纬度。 
 
 ```{r}
 #| label: fig-percentileRoseO3
-#| fig-cap: A `percentileRose` plot of O~3~ concentrations at Marylebone Road. The percentile intervals are shaded and are shown by wind direction.The plot shows the variation by season and whether  it is nighttime or daylight hours.
+#| fig-cap: Marylebone路边交通点 O~3~ 的浓度百分位玫瑰图。`percentileRose` 图为每一个风向区间绘制污染浓度百分位阴影着色图，并且按照不同季节和白天夜间分图展示。
 #| fig-width: 10
 #| fig-height: 6
 percentileRose(mydata, type = c("season", "daylight"), 
@@ -55,13 +55,13 @@ percentileRose(mydata, type = c("season", "daylight"),
                col = "Set3", mean.col = "black")
 ```
 
-## Condtional probability function {#sec-CPF}
+## Condtional probability function 条件概率 {#sec-CPF}
 
-The `percentileRose` function can also plot conditional probability functions (CPF) [@Ashbaugh1985]. The CPF is defined as CPF = $m_\theta/n_\theta$, where $m_\theta$ is the number of samples in the wind sector $\theta$ with mixing ratios greater than some *high* concentration, and $n_\theta$ is the total number of samples in the same wind sector. CPF analysis is very useful for showing which wind directions are dominated by high concentrations and give the probability of doing so. In [openair]{.pkg}, a CPF plot can be produced as shown in @fig-percentileRoseCPF. Note that in these plots only one percentile is provided and the method must be supplied. In @fig-percentileRoseCPF it is clear that the high concentrations (greater than the 95th percentile of *all* observations) is dominated by easterly wind directions. There are very low conditional probabilities of these concentrations being experienced for other wind directions.
+ `percentileRose` 还可以绘制条件概率函数(CPF)[@Ashbaugh1985]。条件概率函数即 CPF = $m_\theta/n_\theta$，其中 $m_\theta$ 是在风向 $\theta$ 下出现所定义的*高浓度*的样本数，$n_\theta$ 是这个风向上的总样本数。CPF方式用于展示不同风向上高污染浓度可能出现的概率。@fig-percentileRoseCPF 为 [openair]{.pkg} 的 CPF 图，此时需要同时提供一个且只一个百分位值和方法method。 @fig-percentileRoseCPF 可以清晰的看到高浓度（高于*全部*监测样本的95百分位）主要出现在偏东风条件下。在其它风向下出现重污染的可能性非常小。
 
 ```{r}
 #| label: fig-percentileRoseCPF
-#| fig-cap: A CPF plot of SO~2~ concentrations at Marylebone Road.
+#| fig-cap: Marylebone路边交通点 SO~2~ 的高污染概率玫瑰图。
 #| fig-height: 4.5
 #| fig-width: 4.5
 #| out-width: 60%
@@ -70,11 +70,12 @@ percentileRose(mydata, poll="so2", percentile = 95,
                col = "darkorange", smooth = TRUE)
 ```
 
-It is easy to plot several species on the same plot and this works well because they all have the same probability scale (i.e. 0 to 1). In the example below @fig-CPFExample it is easy to see for each pollutant the wind directions that dominate the contributions to the highest (95th percentile) concentrations. For example, the highest CO and NO~x~ concentrations are totally dominated by south/south-westerly winds and the probability of their being such high concentrations from other wind directions is effectively zero.
+由于概率的取值范围都是0到1，所以很容易将不同污染物的CPF图绘制在一起。下图 @fig-CPFExample 展示了各污染物的（95百分位）高浓度概率玫瑰图。可以看到南风和西南风条件下 CO 和 NO~x~ 的高污染出现概率最高，在其它风向下出现的概率几乎为零。 
+
 
 ```{r}
 #| label: fig-CPFExample
-#| fig-cap: A CPF plot of many pollutants  at Marylebone Road.
+#| fig-cap: Marylebone路边交通点多污染物的高值概率玫瑰图。
 #| fig-width: 7
 #| fig-height: 5
 percentileRose(mydata, 
