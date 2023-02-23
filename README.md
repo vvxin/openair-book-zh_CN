@@ -11,7 +11,7 @@
 - [ ] **Directional Analysis**
 - [x] 5  Wind and Pollution Roses
 - [x] 6  Polar frequencies
-- [ ] 7  Percentile roses
+- [x] 7  Percentile roses
 - [ ] 8  Polar plots
 - [ ] 9  Polar annulus
 - [ ] 10  Trajectory analysis
