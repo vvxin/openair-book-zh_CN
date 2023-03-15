@@ -16,7 +16,7 @@
 - [x] 9  Polar annulus
 - [ ] 10  Trajectory analysis
 - [ ] **Time Series and Trends**
-- [ ] 11  Time series plots
+- [x] 11  Time series plots
 - [ ] 12  Temporal variations
 - [ ] 13  Time proportion plots
 - [ ] 14  Trend heat maps
