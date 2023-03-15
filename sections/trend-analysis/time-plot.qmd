@@ -27,8 +27,6 @@ timePlot(mydata,
          y.relation = "free")
 ```
 
-Often it is necessary to only consider part of a time series and using the [openair]{.pkg} function `selectByDate` makes it easy to do this. Some examples are shown below.
-
 如果仅需要绘制数据集中的部分时间段，可以使用[openair]{.pkg} 中的 `selectByDate` 函数。示例如下。
 
 只绘制2003年的数据：
