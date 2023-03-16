@@ -86,7 +86,7 @@ timePlot(mydata, pollutant = c("o3", "no2"), avg.time = "2 week",
 ```{r}
 #| label: fig-timePlotNorm
 #| fig-cap: 以1998年起始点为基础绘制归一化的时间序列图
-#| fig-width: 7
+#| fig-width: 8
 #| fig-height: 5
 #| out-width: 70%
 timePlot(mydata, 
