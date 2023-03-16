@@ -2,15 +2,15 @@
 author: David Carslaw
 ---
 
-# Temporal variations {#sec-timeVariation}
+# Temporal variations 时间变化图 {#sec-timeVariation}
 
-## Purpose {#sec-purpose-time-var}
+## 目的 {#sec-purpose-time-var}
 
-In air pollution, the variation of a pollutant by time of day and day of week can reveal useful information concerning the likely sources. For example, road vehicle emissions tend to follow very regular patterns both on a daily and weekly basis. By contrast some industrial emissions or pollutants from natural sources (e.g. sea salt aerosol) may well have very different patterns.
+污染物浓度的时间变化规律在空气污染分析中至关重要，因为污染物浓度在一天当中的不同小时和一周中的不同天通常会表现出与污染源活动水平相关联的变化特征。比如交通污染源同时具有日变化和周变化的排放规律，而工业污染源和自然源（如海盐气溶胶）则表现为完全不同的时间变化特征。
 
-The `timeVariation` function produces four plots: day of the week variation, mean hour of day variation and a combined hour of day -- day of week plot and a monthly plot. Also shown on the plots is the 95% confidence interval in the mean. These uncertainty limits can be helpful when trying to determine whether one candidate source is different from another. The uncertainty intervals are calculated through bootstrap re-sampling, which will provide better estimates than the application of assumptions based on normality, particularly when there are few data available. The function can consider more than one input variables. In addition, there is the option of 'normalising' concentrations (or other quantities). Normalising is very useful for comparing the patterns of different pollutants, which often cover very different ranges in concentration. Normalising is achieved by dividing the concentration of a pollutant by its mean value. Note also that any other variables besides pollutant concentrations can be considered e.g. meteorological or traffic data.
+`timeVariation` 函数会同时产出四张图：日均值的周变化图、小时均值的日变化图、小时均值的周变化图和月均值变化图。图中同时显示了95%置信度区间。这里不确定性区间的计算采用自举重采样（bootstrap-resampling）的方法来尽可能的避免在样本数量比较少的情况下进行正态分布假设所带来的问题。在图中增加置信区度间可以帮助我们进一步区分不同污染源的影响。本函数可以绘制多个污染物参数，同时提供了对浓度（或者其它取值）进行“归一化”的选项。归一化是将污染物浓度值除以均值实现的，主要用于对比浓度区间差异很大的几种污染物的变化特征。注意除了污染物的浓度，气象参数、车流量数据也可以作为输入参数绘制时间变化图。
 
-There is also an option `difference` which is very useful for considering the difference in two time series and how they vary over different temporal resolutions. Again, bootstrap re-sampling methods are used to estimate the uncertainty of the difference in two means.
+`difference` 选项可以用来对比两条时间序列数据在不用时间尺度的差异。这里同样是使用自举重采样的方法来做置信度区间的估计。
 
 ::: callout-tip
 ## Note!
@@ -20,27 +20,27 @@ Care has been taken to ensure that wind direction (`wd`) is vector-averaged. Les
 There are also problems with simple averaging---for example, what is the average of 20 and 200$^\circ$. It can't be known. In some situations where the wind direction is bi-modal with differences around 180$^\circ$, the mean can be 'unstable'. For example, wind that is funnelled along a valley forcing it to be either easterly or westerly. Consider for example the mean of 0$^\circ$ and 179$^\circ$ (89.5$^\circ$), but a small change in wind direction to 181$^\circ$ gives a mean of 270.5$^\circ$. Some care should be exercised therefore when averaging wind direction. It is always a good idea to use the`windRose`function with type set to 'month' or 'hour'.
 :::
 
-The `timeVariation` function is probably one of the most useful functions that can be used for the analysis of air pollution. Here are a few uses/advantages:
+`timeVariation` 函数可能是空气质量分析种最有用的函数工具之一。以下列举了几条它的主要用途/优势：
 
--   Variations in time are one of the most useful ways of characterising air pollution for a very wide range of pollutants including local urban pollutants and tropospheric background concentrations of ozone and the like.
+- 时间变化分析广泛用于认识污染变化的特征，既可以用于城市的本地污染物浓度变化，也可以用于对流层臭氧背景浓度等。
 
--   The function works well in conjunction with other functions such as `polarPlot` (see @sec-polarPlot), where the latter may identify conditions of interest (say a wind speed/direction range). By sub-setting for those conditions in `timeVariation` the temporal characteristics of a particular source could be characterised and perhaps contrasted with another subset of conditions.
+- `timeVariation` 函数可以和 `polarPlot` (见 @sec-polarPlot)一起使用，先用 `polarPlot` 聚焦到一个特定的风场条件下（风速和风向区间），然后用 `timeVariation` 函数分析这个风场条件下数据子集的时间变化并于其它的数据集做对比，这样可以更高效的分析可能的污染源。
 
--   The function can be used to compare a wide range of variables, if available. Suggestions include meteorological e.g. boundary layer height and traffic flows.
+- `timeVariation` 函数可以应用于除污染物浓度外的很多参数上。比如气象方面的边界层高度以及交通车流量等。
 
--   The function can be used for comparing pollutants over different sites.
+- `timeVariation` 函数可以用于对比不同站点某项污染物的时间变化。
 
--   The function can be used to compare one part of a time series with another. This is often a very powerful thing to do, particularly if concentrations are normalised. For example, there is often interest in knowing how diurnal/weekday/seasonal patterns vary with time. If a pollutant showed signs of an increase in recent years, then splitting the data set and comparing each part together can provide information on what is driving the change. Is there, for example, evidence that morning rush hour concentrations have become more important, or Sundays have become relatively more important? An example is given below using the `splitByDate` function.
+- `timeVariation` 函数可以用于对比一个时间序列中不同部分的变化，这个方法在对数据进行归一化处理后尤其强大，可以让我知道日/周/季变化特征本身随时间的演变。如果一个污染物在近几年出现了明显的上升，那么不妨将数据分成上升前和上升后两个时间段进行时间变化规律的对比，这样可以帮助我们找到是什么原因导致了污染水平的上升。比如是不是早高峰的浓度贡献很大，或者是星期日的贡献出现的变化？下文提供了使用 `splitByDate` 函数实现这种分析方法的示例。
 
--   `timeVariation` can be used to consider the differences between two time series, which will have multiple benefits. For example, for model evaluation it can be very revealing to consider the difference between observations and modelled values over different time scales. Considering such differences can help reveal the character and some reasons for why a model departs from reality.
+-  `timeVariation` 函数可以分析两个时间序列的差值，这是一个非常有力的分析手段。比如可以对模型模拟结果与观测数据的时间变化，这可以帮助我们找到模拟结果发生偏离的原因。
 
-## Applications
+## 应用案例
 
-We apply the `timeVariation` function to PM~10~ concentrations and take the opportunity to filter the data to maximise the signal from the road. The `polarPlot` function described in Section (@sec-polarPlot) is very useful in this respect in highlighting the conditions under which different sources have their greatest impact. A subset of data is used filtering for wind speeds \> 3 m s^-1^ and wind directions from 100--270 degrees. The code used is:
+在(@sec-polarPlot)中，我们介绍到如何用 `polarPlot` 来定位哪个方向上的污染源对站点影响最大。这里用 `timeVariation` 函数来进一步分析该站点 PM~10~ 的时间变化。为了放大道路交通源的影响，我们根据此前的分析结果只选取风速 \> 3 m s^-1^ 且风向在100-270度之间的数据进行分析。代码如下：
 
 ```{r}
 #| label: fig-timeVar1
-#| fig-cap: Example plot using the `timeVariation` function to plot PM~10~ concentrations at Marylebone Road.
+#| fig-cap: Marylebone路边交通环境点 PM~10~ 浓度时间变化图。
 #| fig-width: 12
 #| fig-height: 7
 library(openair)
@@ -50,19 +50,19 @@ timeVariation(filter(mydata, ws > 3,  wd > 100, wd < 270),
               pollutant = "pm10", ylab = "pm10 (ug/m3)")
 ```
 
-The results are shown in @fig-timeVar1. The plot shown at the bottom-left shows the diurnal variation of concentrations for all days. It shows for example that PM~10~ concentrations tend to peak around 9 am. The shading shows the 95% confidence intervals of the mean. The plot at the bottom-right shows how PM~10~ concentrations vary by day of the week. Here there is strong evidence that PM~10~ is much lower at the weekends and that there is a significant difference compared with weekdays. It also shows that concentrations tend to increase during the weekdays. Finally, the plot at the top shows both sets of information together to provide an overview of how concentrations vary.
+@fig-timeVar1 为数据筛选后绘制的时间变化图。其中左下角的图为数据集内全部日期平均的日变化曲线，可以看出 PM~10~ 浓度在一天当中的峰值出现在上午9点，阴影部分为95%的置信度区间。右下角的图为 PM~10~ 浓度日均值的周变化曲线。这里可以看出周末的 PM~10~ 浓度显著低于工作日，而且在工作日中体现在逐日上升的总体特征。最后位于上方的图结合了前面两张图的信息，显示了小时平均浓度在一周中的变化情况。
 
-Note that the plot need not just consider pollutant concentrations. Other useful variables (if available) are meteorological and traffic flow or speed data. Often, the combination of several sets of data can be very revealing.
+需要再次提醒的是时间变化图不是只能画污染物浓度。如果有其它的参数，比如气象参数或者交通方面的车流量、平均车速等，与相关的污染物放在一起进行联合分析通常可以揭示更多有意义的信息。
 
-The `filter` function is extremely useful in this respect. For example, if it were believed that a source had an effect under specific conditions; they can be isolated with the `filter` function. It is also useful if it is suspected that two or more sources are important that they can be isolated to some degree and compared. This is where the uncertainty intervals help --- they provide an indication whether the behaviour of one source differs significantly from another.
+在这个例子中 `filter` 函数发挥了很大的作用。当我们觉得某个污染源可能只存在于某个风场条件下时，可以使用 `filter` 函数将这个风场条件下的数据筛选出来单独进行分析。如果怀疑特征中仍然存在多个污染源需要进一步区分的时候，可以参考图中提供的不确定度区间。
 
-@fig-timeVar2 shows the function applied to concentrations of NO~x~, CO, NO~2~ and O~3~ concentrations. In this case the concentrations have been normalised. The plot clearly shows the markedly different temporal trends in concentration. For CO, there is a very pronounced increase in concentrations during the peak pm rush hour. The other important difference is on Sundays when CO concentrations are relatively much higher than NO~x~. This is because flows of cars (mostly petrol) do not change that much by day of the week, but flows of vans and HGVs (diesel vehicles) are much less on Sundays. Note, however, that the monthly trend is very similar in each case --- which indicates very similar source origins. Taken together, the plots highlight that traffic emissions dominate this site for CO and NO~x~, but there are important difference in how these emissions vary by hour of day and day of week.
+@fig-timeVar2 展示了针对NO~x~、CO、NO~2~ 和 O~3~ 等多项污染物绘制时间变化图，在这种情况下我们开启了归一化的选项。在图中我们可以清晰的看到不同污染物特有的时间变化特征。比如CO在交通晚高峰时段的浓度尤其突出。此外，CO在周日的平均浓度大幅高于 NO~x~，这是由于小客车（大部分为汽油车）的车流量在一周中的变化不是很大，但是重型柴油车在周日的流量则会大幅减少。尽管如此，我们在月均值变化曲线上可以看到几种特征污染物的变化趋势还是非常接近的，说明这几种污染物来自用一种污染源。综合来看，这个站点的 CO 和 NO~x~ 主要受交通排放影响，但是在日变化和周变化的细节上仍存在明显的差异。
 
-Also shown in the very different behaviour of O~3~. Because O~3~ reacts with NO, concentrations of NO~x~ and O~3~ tend to be anti-correlated. Note also the clear peak in O~3~ in April/May, which is due to higher northern hemispheric background concentrations in the spring. Even at a busy roadside site in central London this influence is clear to see.
+O~3~ 具有自己独特的变化规律，是因为 O~3~ 会和 NO 产生化学反应，使得 NO~x~ 和 O~3~ 呈现负相关的特征。图中 O~3~ 在四五月出现的高值主要是受到北半球春季背景浓度峰值的影响，可以看到即使是地处伦敦市中心的交通站也同样会受到大尺度背景浓度的影响。
 
 ```{r}
 #| label: fig-timeVar2
-#| fig-cap: Example plot using the `timeVariation` function to plot NO~x~, CO, NO~2~ and O~3~ concentrations at Marylebone Road. In this plot, the concentrations are normalised.
+#| fig-cap: Marylebone路边交通环境点 NO~x~、CO、NO~2~ 和 O~3~ 的浓度时间变化图。各污染物浓度做归一化处理。
 #| fig-width: 12
 #| fig-height: 7
 timeVariation(mydata, 
@@ -70,11 +70,11 @@ timeVariation(mydata,
               normalise = TRUE)
 ```
 
-Another example is splitting the data set by time. We use the `splitByDate` function to divide up the data into dates before January 2003 and after January 2003. This time the option `difference` is used to highlight how NO~2~ concentrations have changed over these two periods. The results are shown in @fig-timeVar3. There is some indication in this plot that data after 2003 seem to show more of a double peak in the diurnal plots; particularly in the morning rush hour. Also, the difference line does more clearly highlight a more substantial change over weekdays and weekends. Given that cars are approximately constant at this site each day, the change may indicate a change in vehicle emissions from other vehicle types. Given that it is known that primary NO~2~ emissions are known to have increased sharply from the beginning of 2003 onwards, this perhaps provides clues as to the principal cause.
+在下面的例子中，我们用 `splitByDate` 函数将数据分割成2003年一月以前和2003年一月以后两个时段，然后使用`difference` 选项来对比 NO~2~ 浓度在在两个时段中时间变化特征的差异，结果见 @fig-timeVar3 。可以看到在2003年后 NO~2~ 的浓度更加明显的表现为双峰特征，变化主要体现在早高峰时段的贡献。从周变化图上可以看到工作日浓度增幅明显大于休息日。鉴于小客车的贡献基本上可以认为是一个常数，那么这个变化应该来自于交通源排放清单中的一个其它车型。由于我们知道从2003年初开始源清单中 NO~2~ 的排放量有大幅度的增加，这可能是两个时段周变化特征差异的最主要原因。
 
 ```{r}
 #| label: fig-timeVar3
-#| fig-cap: Example plot using the `timeVariation` function to plot NO~2~ concentrations at Marylebone Road. In this plot, the concentrations are shown before and after January 2003.
+#| fig-cap: Marylebone路边交通环境点 NO~2~ 浓度时间变化图。对比2003年一月之前和之后两个时段。
 #| fig-width: 12
 #| fig-height: 7
 ## split data into two periods (see Utlities section for more details)
@@ -88,13 +88,17 @@ timeVariation(mydata, pollutant = "no2",
 
 In the next example it is shown how to compare one subset of data of interest with another. Again, there can be many reasons for wanting to do this and perhaps the data set at Marylebone Road is not the most interesting to consider. Nevertheless, the code below shows how to approach such a problem. The scenario would be that one is interested in a specific set of conditions and it would be useful to compare that set, with another set. A good example would be from an analysis using the `polarPlot` function where a 'feature' of interest has been identified---maybe an indication of a different source. But does this potentially different source behave differently in terms of temporal variation? If it does, then maybe that provides evidence to support that it is a different source. In a wider context, this approach could be used in many different ways depending on available data. A good example is the analysis of model output where many diagnostic meteorological data are available. This is an area that will be developed.
 
-The approach here is to first make a new variable called 'feature' and fill it with the value 'other'. A subset of data is defined and the associated locations in the data frame identified. The subset of data is then used to update the 'feature' field with a new description. This approach could be extended to some quite complex situations.
+在下面的例子中我们介绍如何将数据集中的一部分与剩余部分做对比。这是一个典型的污染分析场景，也许我们无法用Marylebone路边交通环境点的数据营造出一个合适的案例，但是不管怎样接下来的代码展示了开展这类分析的步骤。我们还是用 `polarPlot` 函数已经识别出的特定风场下污染物贡献的特征，然后将这个特定风场条件下的数据与剩余数据做对比，绘制时间变化图。我们希望知道的是两组数据在时间变化上的特征能否印证风场条件分析中得到的结论。实际上这种对比分析的方式还可以用在更多的数据类型上，比如用在对模型结果中各种气象参数数据的诊断分析方面。这是一个我们正在开发的领域。
+
+基本的操作步骤是在数据集中新建一个新的参数项 'feature' 然后赋值为 'other'。然后根据风场条件筛选出部分数据，并且将这部分数据中的 'feature' 更新为一个新的描述。这种方式可以扩展为许多更复杂的分析场景。 
 
 There are a couple of things to note in @fig-timeVar4. There seems to be evidence that for easterly winds \> 4 m s^-1^ that concentrations of SO~2~ are lower at night. Also, there is some evidence that concentrations for these conditions are also lower at weekends. This *might* reflect that SO~2~ concentrations for these conditions tend to be dominated by tall stack emissions that have different activities to road transport sources. This technique will be returned to with different data sets in future.
 
+在结果 @fig-timeVar4 中我们看到，在偏东风大于4m/s的情况下，SO~2~的浓度在夜间时段和每周末偏低。这*有可能*说明在这个风场条件下 SO~2~ 浓度的贡献可能来自于与交通源特征不同的高架点源。这种方法可能在未来会应用到更多的分析场景中。
+
 ```{r}
 #| label: fig-timeVar4
-#| fig-cap: Example plot using the `timeVariation` function to plot SO~2~ concentrations at Marylebone Road. In this plot, the concentrations are shown for a subset of easterly winds \> 4 m s^-1^ and everything else. Note that the uncertainty in the mean values for easterly winds is greater than *other*. This is mostly because the sample size is much lower for *easterly* compared  with *other*.
+#| fig-cap: Marylebone路边交通环境点 SO~2~ 浓度时间变化图。对比偏东风大于4m/s条件下的数据与其余数据的差别。这里偏东风条件下的数据不确定度区间明显更大，这主要是由于大东风条件下的 *easterly* 样本数明显少于 *other*。
 #| fig-width: 12
 #| fig-height: 7
 ## make a field called "feature" and fill: make all values = "other"
@@ -107,9 +111,12 @@ timeVariation(mydata, pollutant ="so2", group = "feature",  ylab = "so2 (ppb)",
 
 By default `timeVariation` shows the mean variation in different temporal components and the 95% confidence interval in the mean. However, it is also possible to show how the data are distributed by using a different option for `statistic`. When `statistic = "median"` the median line is shown together with the 25/75th and 5/95th quantile values. Users can control the quantile values shown be setting the `conf.int`. For example, `conf.int =   c(0.25, 0.99)` will show the median, 25/75th and 1/99th quantile values. The `statistic = "median"` option is therefore very useful for showing how the data are distributed --- somewhat similar to a box and whisker plot. Note that it is expected that only one pollutant should be shown when `statistic = "median"` is used due to potential over-plotting; although the function will display several species of required. An example is shown in @fig-timeVarMedian for PM~10~ concentrations.
 
+缺省状况下，`timeVariation` 使用平均值及95%置信度区间绘制时间变化图，当设置 `statistic = "median"` 后 后则使用中位数以及第25/75和第5/95百分位绘制时间变化图。用户可以通过 `conf.int` 设置自定义分位点。如：`conf.int =   c(0.25, 0.99)` 将显示中位数，以及第25/75和第1/99百分位数。 `statistic = "median"` 选项的产出结果和箱线图近似，可以帮助我们分析污染物的分布随时间的变化情况。这里要注意的是当使用`statistic = "median"`时，最好只绘制一项污染物，尽管多污染物的分布也可以画，但是容易出现大量重叠的情况。@fig-timeVarMedian 是 PM~10~ 浓度的一个应用示例。
+
+
 ```{r}
 #| label: fig-timeVarMedian
-#| fig-cap: Example plot using the `timeVariation` function to show the variation in the median. The shading shows the extent to the 25/75th and 5/95th  quantiles.
+#| fig-cap: Marylebone路边交通环境点 PM~10~ 浓度时间变化图.采用中位数以及第25/75和第5/95百分位绘制。
 #| fig-width: 12
 #| fig-height: 7
 timeVariation(mydata, pollutant = "pm10", 
@@ -120,6 +127,8 @@ timeVariation(mydata, pollutant = "pm10",
 ## Output
 
 The `timeVariation` function produces several outputs that can be used for further analysis or plotting. It is necessary to read the output into a variable for further processing. The code below shows the different objects that are returned and the code shows how to access them.
+
+`timeVariation` 函数在绘图前计算生成了不同时间时段的中间数据，有必要通过下面的代码学习如何输出和读取这些数据对象以便开展进一步的分析。
 
 ```{r}
 #| label: timevarOutput
