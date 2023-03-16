@@ -17,7 +17,7 @@
 - [ ] 10  Trajectory analysis
 - [ ] **Time Series and Trends**
 - [x] 11  Time series plots
-- [ ] 12  Temporal variations
+- [x] 12  Temporal variations
 - [ ] 13  Time proportion plots
 - [ ] 14  Trend heat maps
 - [ ] 15  Calendar plots
