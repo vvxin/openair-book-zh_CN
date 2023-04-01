@@ -1,6 +1,8 @@
-这是一本我正在翻译的介绍R语言中openair包的书，原书发布在： https://bookdown.org/david_carslaw/openair/
+# The `{openair}` book 简体中文版
 
-**进度：**
+原书地址： <https://bookdown.org/david_carslaw/openair/>
+
+**翻译进度：**
 
 - [x] **Preface**
 - [x] 1  Introduction
@@ -20,7 +22,7 @@
 - [x] 12  Temporal variations
 - [ ] 13  Time proportion plots
 - [x] 14  Trend heat maps
-- [ ] 15  Calendar plots
+- [x] 15  Calendar plots
 - [ ] 16  Theil-Sen trends
 - [ ] 17  Smooth trends
 - [ ] **Model Evaluation**
