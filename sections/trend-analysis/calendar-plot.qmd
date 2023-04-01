@@ -2,38 +2,38 @@
 author: David Carslaw
 ---
 
-# Calendar plots {#sec-calendarPlot}
+# 污染日历图 {#sec-calendarPlot}
 
-## Purpose
+## 目的
 
-Sometimes it is useful to visualise data in a familiar way. Calendars are the obvious way to represent data for data on the time scale of days or months. The `calendarPlot` function provides an effective way to visualise data in this way by showing daily concentrations laid out in a calendar format. The concentration of a species is shown by its colour. The data can be shown in different ways. By default, `calendarPlot` overlays the day of the month. However, if wind speed and wind direction are available then an arrow can be shown for each day giving the vector-averaged wind direction. In addition, the arrow can be scaled according to the wind speed to highlight both the direction and strength of the wind on a particular day, which can help show the influence of meteorology on pollutant concentrations.
+有时候用大家已经熟悉的方式来进行可视化数据会更加高效，日历图就是这样一种展示日数据的非常好的方式。`calendarPlot` 函数将污染物的每日浓度以日历表的形式展示出来，具体的排版和数据呈现还可以进一步定制。默认情况下，`calendarPlot`日历图中每一天的小格子里显示的是这一天的日期，如果数据当中包含风速和风向数据，也可以在其中展示一个风向箭头，箭头的方向和长度对应这一天矢量平均后的平均风向和风速，这样可以清晰的看到风场影响因子的逐日变化情况。
 
-`calendarPlot` can also show the daily mean concentration as a number on each day and can be extended to highlight those conditions where daily mean (or maximum etc.) concentrations are above a particular threshold. This approach is useful for highlighting daily air quality limits e.g. when the daily mean concentration is greater than 50 μg m^-3^.
+`calendarPlot` 也可以将污染物日均浓度的数值显示在日历的每一天当中，并且在日均值（或最大值）超过某一浓度限制时高亮显示。这样可以更清晰的看到超标天的分布情况，如日均值超过50微克/立方米。
 
-The `calendarPlot` function can also be used to plot categorical scales. This is useful for plotting concentrations expressed as an air quality index i.e. intervals of concentrations that are expressed in ways like 'very good', 'good', 'poor' and so on.
+`calendarPlot` 能够按照类别进行着色渲染，这主要是为了用不同的颜色对于各空气质量指数级别，即将不同的浓度区间指定为“优”、“良”、“轻度污染”等。
 
-## Calendar examples
+## 日历图示例
 
-The function is called in the usual way. As a minimum, a data frame, pollutant and year is required. So to show O~3~ concentrations for each day in 2003 (@fig-calendarPlot). Note that if `year` is not supplied the full data set will be used.
+函数的调用与其它函数类似，最少需要指定一个数据框、一种污染物和一个年份，下图显示的是2003年 O~3~ 浓度的日历图。注意如果没有指定 `year` 会显示数据集中包含的所有时段。 
 
 ```{r}
 #| label: fig-calendarPlot
-#| fig-cap: '`calendarPlot` for O~3~ concentrations in 2003.'
+#| fig-cap: '2003年 O~3~ 污染日历图 `calendarPlot` for O~3~ concentrations in 2003.'
 #| fig-width: 6
 #| fig-height: 8
 library(openair)
 calendarPlot(mydata, pollutant = "o3", year = 2003)
 ```
 
-It is sometimes useful to annotate the plots with other information. It is possible to show the daily mean wind angle, which can also be scaled to wind speed. The idea here being to provide some information on meteorological conditions on each day. Another useful option is to set `annotate = "value"` in which case the daily concentration will be shown on each day. Furthermore, it is sometimes useful to highlight particular values more clearly. For example, to highlight daily mean PM~10~ concentrations above 50 μg m^-3^. This is where setting `lim` (a concentration limit) is useful. In setting `lim` the user can then differentiate the values below and above `lim` by colour of text, size of text and type of text e.g. plain and bold.
+在很多情况下，需要在日历图中显示日期以外的其它信息，比如代表主导风向的箭头，或者使用 `annotate = "value"` 选项显示每一天的日均浓度值。在显示浓度值的时候还可以通过`lim`指定一个阈值，来区分低于和高于这个阈值的数据的显示方式，如颜色、字号、是否加粗等。
 
-@fig-calendarPlotExceed highlights those days where PM~10~ concentrations exceed 50 μg m^-3^ by making the annotation for those days bigger, bold and orange. Plotting the data in this way clearly shows the days where PM~10~ \> 50 μg m^-3^.
+@fig-calendarPlotExceed 为了突出年内 PM~10~ \> 50 微克/立方米的天，将超过这个阈值的天的浓度值设置为字体加大、加粗并使用桔黄色。
 
-Other [openair]{.pkg} functions can be used to plot other statistics. For example, `rollingMean` could be used to calculate rolling 8-hour mean O~3~ concentrations. Then, `calendarPlot` could be used with `statistic = "max"` to show days where the maximum daily rolling 8-hour mean O~3~ concentration is greater than a certain threshold e.g. 100 or 120 μg m^-3^.
+[openair]{.pkg} 中提供了几个函数帮助监测数据的汇总统计，比如 `rollingMean` 用来计算 O~3~ 的8小时滑动平均值，接下来只需要使用 `statistic = "max"` 就可以得到 O~3~ 的每日最大8小时滑动平均值了。
 
 ```{r}
 #| label: fig-calendarPlotExceed
-#| fig-cap: '`calendarPlot` for PM10 concentrations in 2003 with annotations highlighting those days where the concentration of PM~10~ >50 μg m^-3^. The numbers show the PM~10~ concentration in μg m^-3^.'
+#| fig-cap: '2003年 PM~10~ 污染日历图，显示 PM~10~ 浓度值，并对大于50微克/立方米的天高亮显示。'
 #| fig-width: 8
 #| fig-height: 6
 calendarPlot(mydata,
@@ -46,11 +46,11 @@ calendarPlot(mydata,
 )
 ```
 
-To show wind angle, scaled to wind speed (@fig-calendarPlot2).
+下例 (@fig-calendarPlot2)展示了如何使用风向箭头作为日历注释。
 
 ```{r}
 #| label: fig-calendarPlot2
-#| fig-cap: '`calendarPlot` for O~3~ concentrations in 2003 with annotations showing wind angle scaled to wind speed i.e. the longer the arrow, the higher the wind speed. It shows for example high O~3~ concentrations on the 18 and 19th of April were associated with strong north-easterly winds.'
+#| fig-cap: '2003年 O~3~ 污染日历图。使用风向箭头作为每日的注释，箭头的长短代表风速的大小。可以看到图中四月18和19日臭氧的重污染都发生在比较强的东北风条件下。'
 #| fig-height: 8
 #| fig-width: 6
 #| out-width: 80%
@@ -60,7 +60,7 @@ calendarPlot(mydata,
 )
 ```
 
-Note again that `selectByDate` can be useful. For example, to plot select months:
+嵌套使用 `selectByDate` 可以进行数据的筛选，这里也不例外，下面例子仅绘制夏季几个月的O~3~情况： 
 
 ```{r}
 #| eval: false
@@ -72,11 +72,11 @@ pollutant = "o3", year = 2003
 )
 ```
 
-@fig-calendarPlotCategor shows an example of plotting data with a categorical scale. In this case the options `labels` and `breaks` have been used to define concentration intervals and their descriptions. Note that `breaks` needs to be one longer than `labels`. In the example in @fig-calendarPlotCategor the first interval ('Very low') is defined as concentrations from 0 to 50 (ppb), 'Low' is 50 to 100 and so on. Note that the upper value of `breaks` should be a number greater than the maximum value contained in the data to ensure that it is encompassed. In the example given in @fig-calendarPlotCategor the maximum daily concentration is plotted. These types of plots are very useful for considering national or international air quality indexes.
+@fig-calendarPlotCategor 是一个分级处理数据并进行颜色渲染的示例。这里我们使用 `labels` 和 `breaks` 选项分别定义污染物的浓度范围和对应的文字描述。注意 `breaks` 的个数要比 `labels` 多一个。@fig-calendarPlotCategor 使用当日最大浓度绘制日历图，浓度在0-50之间被定义为“优”（very low），50-100之间为“良”（low），以此类推。`breaks` 中的上限值需要设置为比数据中最大值还要大的数值以确保所有的数据都能被包含进来。日历图经常用于将每日浓度和国家或者国际的空气质量指数级别相关联。
 
 ```{r}
 #| label: fig-calendarPlotCategor
-#| fig-cap: '`calendarPlot` for NO~2~ concentrations in 2003 with a user-defined categorical scale.'
+#| fig-cap: '`2003年 NO~2~ 浓度日历图，使用用户自定义浓度段进行填色。'
 #| fig-width: 8
 #| fig-height: 6
 calendarPlot(mydata,
@@ -87,7 +87,7 @@ calendarPlot(mydata,
 )
 ```
 
-The user can explicitly set each colour interval:
+用户也可以为每一个浓度段设置指定的颜色：
 
 ```{r}
 #| label: calendarPlotCols
@@ -101,7 +101,7 @@ calendarPlot(mydata,
 )
 ```
 
-Note that in the case of categorical scales it is possible to define the breaks and labels first and then make the plot. For example:
+为了使代码更清晰和易于维护，可以先定义数据进行分段和分段标签，然后再引用定义好的分段设置进行绘图，例如：
 
 ```{r}
 #| label: CalendarBreaks
@@ -119,7 +119,7 @@ calendarPlot(mydata,
 )
 ```
 
-It is also possible to first use `rollingMean` to calculate statistics. For example, if one was interested in plotting the maximum daily rolling 8-hour mean concentration, the data could be prepared and plotted as follows.
+为了得到臭氧的每日最大滑动8小时平均值，可按照下面的示例先用 `rollingMean` 函数对数据进行预处理，然后再通过最大值统计选项绘图。
 
 ```{r}
 #| label: CalendarAvg
@@ -139,9 +139,9 @@ calendarPlot(dat,
 )
 ```
 
-The UK has an air quality index for O~3~, NO~2~, PM~10~ and PM~2.5~ described in detail at (http://uk-air.defra.gov.uk/air-pollution/daqi) and @COMEAP2011. The index is most relevant to air quality forecasting, but is used widely for public information. Most other countries have similar indexes. Note that the indexes are calculated for different averaging times dependent on the pollutant: rolling 8-hour mean for O~3~, hourly means for NO~2~ and a fixed 24-hour mean for PM~10~ and PM~2.5~.
+英国对O~3~、NO~2~、PM~10~ 和PM~2.5~等几项污染物的空气质量指数进行了规定，详细信息可以参考(http://uk-air.defra.gov.uk/air-pollution/daqi)和 @COMEAP2011 。在为公众提供空气质量相关信息的时候会更多的使用指数，尤其是预报信息。这里要注意的是在计算指数的时候，不同的污染物可能对应不用的评价时间，比如：O~3~使用8小时滑动平均值，NO~2~使用小时值，PM~10~和PM~2.5~则使用固24小时平均值。
 
-In the code below the labels and breaks are defined for each pollutant to make it easier to use the index in the `calendarPlot` function.
+下面的代码按照技术规范为每种污染物预设了浓度分段和对应的指数级别描述，这样在接下来使用 `calendarPlot` 画图的时候就方便多了。
 
 ```{r}
 #| label: AQIndex
@@ -156,7 +156,7 @@ pm10.breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
 pm25.breaks <- c(0, 12, 24, 35, 42, 47, 53, 59, 65, 70, 1000)
 ```
 
-Remember it is necessary to use the correct averaging time. Assuming data are imported using `importAURN` or similar, then the units will be in μg m^-3^ --- if not the user should ensure this is the case. Note that rather than showing the day of the month (the default), `annotate = "value"` can be used to show the actual numeric value on each day. In this way, the colours represent the categorical interval the concentration on a day corresponds to *and* the actual value itself is shown.
+下面的几个例子展示了如何针对不同污染物使用不同的平均时间。通过 `importAURN` 和类似的几个函数下载得到的数据中污染物浓度的单位应该是μg m^-3^，如果不是的话需要做相应的单位换算。默认情况下，日历图中显示的数字是这一天的日期，可以通过 `annotate = "value"`显示这一天的浓度。这样就可以将污染物浓度的具体数值和对应的级别填色*同时*展示出来了。
 
 ```{r}
 #| label: AQIndexPlots
