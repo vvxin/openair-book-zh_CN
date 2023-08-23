@@ -20,7 +20,7 @@
 - [ ] **Time Series and Trends**
 - [x] 11  Time series plots
 - [x] 12  Temporal variations
-- [ ] 13  Time proportion plots
+- [x] 13  Time proportion plots
 - [x] 14  Trend heat maps
 - [x] 15  Calendar plots
 - [ ] 16  Theil-Sen trends
