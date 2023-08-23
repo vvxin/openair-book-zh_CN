@@ -2,17 +2,17 @@
 author: David Carslaw
 ---
 
-# Time proportion plots {#sec-timeProp}
+# Time proportion plots 时序堆叠图 {#sec-timeProp}
 
-## Background {#sec-timePropBack}
+## 简介 {#sec-timePropBack}
 
-The `timeProp` ('time proportion') function shows time series plots as stacked bar charts. For a particular time, proportions of a chosen variable are shown as a stacked bar chart. The different categories in the bar chart are made up from a character or factor variable in a data frame. The function is primarily developed to support the plotting of cluster analysis output from `polarCluster` (see @sec-polarCluster) and `trajCluster` (see @sec-trajCluster-trajectory-analysis) that consider local and regional (back trajectory) cluster analysis respectively. However, the function has more general use for understanding time series data. In order to plot time series in this way, some sort of time aggregation is needed, which is controlled by the option `avg.time`.
+`timeProp` (time proportion)函数以堆叠柱图的形式来展示时间序列数据，图中每一个单柱表示的是当前时间段内特定变量不同取值的比例，该变量来自数据框中的一个字符型或因子型变量。`polarCluster` (见 @sec-trajCluster-trajectory-analysis) 和 `trajCluster` (见 @sec-trajCluster) 分别对本地影响和区域（后向轨迹）影响进行聚类分析，本功能函数则用于对上述两个函数的结果在时间尺度上做进一步的分析。时间序列的制图需要对数据进行不同时间尺度的聚合，在这里通过 `avg.time` 选项来实现。
 
-The plot shows the value of `pollutant` on the y-axis (averaged according to `avg.time`). The time intervals are made up of bars split according to `proportion`. The bars therefore show how the total value of `pollutant` is made up for any time interval.
+时序堆叠图在y轴展示 `pollutant` （通过 `avg.time` 设置进行数据聚合后的）的浓度值。每一个时间区间的浓度柱被分成不同的 `proportion`。所以时序堆叠图展示的在 `pollutant` 总浓度的构成随时间的变化情况。
 
-## Examples {#sec-timePropEx}
+## 示例 {#sec-timePropEx}
 
-An example of the `timeProp` function is shown in @fig-timeProp. In this example SO~2~ concentrations are considered for 2003 (using the `selectByDate` function). The averaging period is set to 3 days and the mean concentration is plotted and the proportion contribution by wind sector is given. Other options are chosen to place the key at the top and choose the number of columns used in the key. It is apparent from @fig-timeProp that the highest SO~2~ concentrations are dominated by winds from an easterly sector, but actually occur throughout the year.
+@fig-timeProp 是 `timeProp` 函数的一个应用示例。这个例子是对2003年（通过 `selectByDate` 函数截取）的 SO~2~ 进行不同风向条件下浓度贡献的时间序列分析。全年数据以3天为单位进行平均值处理，每一条数据在绘制柱图的时候使用风向进行分类。其它的参数包括将设置图例放在图的上方，以及设置图例排版的列数。从@fig-timeProp 中可以很明显的看出在几次 SO~2~ 的高污染过程中，东风的贡献都是主导性的，这个特征在全年都是存在的。
 
 ```{r}
 #| label: fig-timeProp
@@ -29,9 +29,9 @@ timeProp(selectByDate(mydata, year = 2003),
          key.columns = 8, ylab = "so2 (ug/m3)")
 ```
 
-Note that `proportion` can be an existing categorical (i.e. factor or character) variable in a data frame. If a numeric variable is supplied, then it is typically cut into four quantile levels. So, for example, the plot below would show intervals of wind speed, which would help show the wind speed conditions that control high SO~2~ concentration --- and importantly, when they occur.
+注意，本函数中最重要的 `proportion` 选项通常为数据框中的一列可分类的变量（因子型或字符型）。如果指定为数值型的变量，缺省状况下会按照4个分位数区间对这个变量因子化。下面的例子将使用风速作为分类的因子，这样可以看到不同风速条件对 SO~2~ 高浓度的影响情况，更重要的是，我们可以从时序堆叠图中看到影响所发生的具体时间点。
 
-An example of using `timeProp` with a continuous variable is shown in @fig-timePropws. In this case the wind speed values are split into 3 quantile levels. The number of quantiles used is determined by the option `n.levels`. This approach can be used for any numeric variables.
+@fig-timePropw 是用 `timeProp` 分类堆叠一个连续数值变量的示例。这里使用 `n.levels` 选项将风速划分为3个分位区间。通过这种方法，任何数值型的变量都可以作为分类的对象。
 
 ```{r}
 #| label: fig-timePropws
@@ -48,4 +48,4 @@ timeProp(selectByDate(mydata, year = 2003),
          key.position = "top", key.columns = 3)
 ```
 
-One of the key uses of `timeProp` is to post-process cluster analysis data. Users should consider the uses of `timeProp` for cluster analysis shown in @sec-polarCluster and @sec-trajCluster-trajectory-analysis. In both these cases the cluster analysis yields a categorical output directly i.e. cluster, which lends itself to analysis using `timeProp`.
+`timeProp` 的一个典型应用场景是作为聚类分析后的进一步分析手段。建议用户在进行 @sec-polarCluster 和 @sec-trajCluster-trajectory-analysis 中介绍的聚类分析后都尝试将产出的数据进一步使用 `timeProp` 绘制时序堆叠图。因为聚类分析结果已经为 `timeProp` 产出了现成的分类因子，如 cluster。
