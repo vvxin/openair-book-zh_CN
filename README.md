@@ -20,23 +20,24 @@
 - [ ] **Time Series and Trends**
 - [x] 11  Time series plots
 - [x] 12  Temporal variations
-- [x] 13  Time proportion plots
-- [x] 14  Trend heat maps
-- [x] 15  Calendar plots
-- [ ] 16  Theil-Sen trends
-- [ ] 17  Smooth trends
+- [x] 13  Calendar plots
+- [x] 14  Time proportion plots
+- [ ] 15  Theil-Sen trends
+- [ ] 16  Smooth trends
+- [ ] 17  Dilution lines and pollutant ratios
+- [x] 18  Trend heat maps
 - [ ] **Model Evaluation**
-- [ ] 18  Model evaluation
-- [ ] 19  Taylor Diagam
-- [ ] 20  Conditional quantiles
+- [ ] 19  Model evaluation
+- [ ] 20  Taylor Diagam
+- [ ] 21  Conditional quantiles
 - [ ] **Interactive Maps**
-- [ ] 21  openairmaps primer
-- [ ] 22  Network Visualisation
-- [ ] 23  Directional Analysis
-- [ ] 24  Trajectory Analysis
+- [ ] 22  openairmaps primer
+- [ ] 23  Network Visualisation
+- [ ] 24  Directional Analysis
+- [ ] 26  Trajectory Analysis
 - [ ] **Utility functions**
-- [ ] 25  Utility functions
-- [ ] 26  Scatter plots
+- [ ] 26  Utility functions
+- [ ] 27  Scatter plots
 - [ ] **References**
 - [ ] **Appendices**
 - [ ] A  Annotating openair plots
