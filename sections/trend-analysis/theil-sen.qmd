@@ -5,123 +5,37 @@ editor_options:
     wrap: 72
 ---
 
-# Theil-Sen trends {#sec-TheilSen}
+# 泰尔-森（Theil-Sen）趋势估计 {#sec-TheilSen}
 
-## Trend estimates
+## 趋势估计法
 
-Calculating trends for air pollutants is one of the most important and
-common tasks that can be undertaken. Trends are calculated for all sorts
-of reasons. Sometimes it is useful to have a general idea about how
-concentrations might have changed. On other occasions a more definitive
-analysis is required; for example, to establish statistically whether a
-trend is significant or not. The whole area of trend calculation is a
-complex one and frequently trends are calculated with little
-consideration as to their validity. Perhaps the most common approach is
-to apply linear regression and not think twice about it. However, there
-can be many pitfalls when using ordinary linear regression, such as the
-assumption of normality, autocorrelation etc.
+污染物的变化趋势计算是空气质量分析中最常见和最重要的任务之一。趋势计算在多数情况下是为了定性的认识污染物浓度的变化走势，但是在某些情况下则需要做更明确的定量计算，比如从统计学角度确定某种趋势是否显著。趋势计算整体上是一个比较复杂的领域。如果一味的应用简单线性回归则可能出现很多问题，比如正态性假设和自相关的陷阱。
 
-One commonly used approach for trend calculation in studies of air
-pollution is the non-parametric *Mann-Kendall* approach [@Hirsch1982].
-@Wilcox2010 provides an excellent case for using 'modern methods' for
-regression including the benefits of non-parametric approaches and
-bootstrap simulations. Note also that the all the regression parameters
-are estimated through bootstrap resampling.
+在空气污染趋势计算中通常会使用非参数的*Mann-Kendall*检验法 [@Hirsch1982]。@Wilcox2010 为使用“现代统计方法”进行回归计算提供了一个出色的案例，包括非参数统计和Boootstrap拟合。注意所有的回归计算都是通过Bootstrap重采样进行参数估计的。
 
-The Theil-Sen method dates back to 1950, but the basic idea pre-dates
-1950 [@theil50; @sen1968]. It is one of those methods that required the
-invention of fast computers to be practical. The basic idea is as
-follows. Given a set of $n$ $x$, $y$ pairs, the slopes between all pairs
-of points are calculated. Note, the number of slopes can increase by
-$\approx$ $n^2$ so that the number of slopes can increase rapidly as the
-length of the data set increases. The Theil-Sen estimate of the slope is
-the median of all these slopes. The advantage of the using the Theil-Sen
-estimator is that it tends to yield accurate confidence intervals even
-with non-normal data and heteroscedasticity (non-constant error
-variance). It is also resistant to outliers --- both characteristics can
-be important in air pollution. As previously mentioned, the estimates of
-these parameters can be made more robust through bootstrap-resampling,
-which further adds to the computational burden, but is not an issue for
-most time series which are expressed either as monthly or annual means.
-Bootstrap resampling also provides the estimate of $p$ for the slope.
+泰尔-森（Theil-Sen）趋势估计方法可以追溯到1950年，但其基本思想早在1950年之前[@theil50; @sen1968]就存在了。这基本上是一种需要快速计算机发明之后才可以实际应用的方法。其基本思路如下：给定一组 $n$ 对 $x$ 和 $y$，计算所有可能的对应点之间的斜率。请注意，需要计算的斜率的数量随着数据集的增长会以 $\approx$ $n^2$ 的速度快速增加。泰尔-森（Theil-Sen）斜率估计值是所有这些斜率结果的中位数。泰尔-森（Theil-Sen）估计的优势是即使在非正态分布数据和异方差（非常数误差方差）的情况下仍倾向于产生准确的置信区间，同时具有抗异常值干扰的特点。这两个优势对空气污染数据分析来说都非常重要。正如前面提到的，可以通过自举采样（bootstrap-resampling）的方法使参数估计更加稳健，尽管这会进一步增加计算量的负担，但是对于大多数时间序列来说并不是问题，因为我们在做趋势分析的时候常使用相对有限的月均值或年均值。自举重采样还同时提供斜率的 $p$ 值估计。
 
-An issue that can be very important for time series is dependence or
-*autocorrelation* in the data. Normal (in the statistical sense)
-statistics assume that data are independent, but in time series this is
-rarely the case. The issue is that neighbouring data points are similar
-to one another (correlated) and therefore not independent. Ignoring this
-dependence would tend to give an overly optimistic impression of
-uncertainties. However, taking account of it is far from simple. A
-discussion of these issues is beyond the aims of this report and readers
-are referred to standard statistical texts on the issue. In
-[openair]{.pkg} we follow the suggestion of @Kunsch1989 of setting the
-block length to $n^{1/3}$ where n is the length of the time series.
+时间序列中一个非常重要的问题是数据的依赖性和 *自相关性*。通常（在统计学中）的统计方法会假设数据是彼此独立的，单在时间序列中往往不是这种情况，时间上相邻的数据彼此相似（相关），因此并不是独立的。忽视这种相关性会导致对比确定性过于乐观，然而考虑到这一点并不简单。本书不深入讨论这一问题，建议感兴趣的读者参考标准的统计学教材和资料。在 [openair]{.pkg} 中，我们遵循 @Kunsch1989 的建议，将块长度设置为 $n^{1/3}$，其中 $n$ 是时间序列的长度。
 
-There is a temptation when considering trends to use all the available
-data. Why? Often it is useful to consider specific periods. For example,
-is there any evidence that concentrations of NO~x~ have decreased since
-2000? Clearly, the time period used depends on both the data and the
-questions, but it is good to be aware that considering subsets of data
-can be very insightful.
+在做趋势分析时常常有一种诱惑，就是尽可能的去用到所有的数据。但是在多数情况下，往往分析特定的时间段会更有意义。例如：有没有证据表明自2000年以来 NO~x~ 浓度呈下降的趋势？显然我们应该从数据的子集入手进行分析，那么如何选择2000年以来的一个具体时间段进行分析呢？这取决于我们的数据情况以及我们对问题本身的细化，
 
-Another aspect is that almost all trends are shown as mean concentration
-versus time; typically by year. Such analyses are very useful for
-understanding how concentrations have changed through time and for
-comparison with air quality limits and regulations. However, if one is
-interested in *understanding* why trends are as they are, it can be
-helpful to consider how concentrations vary in other ways. The trend
-functions in [openair]{.pkg} do just this. Trends can be plotted by day
-of the week, month, hour of the day, by wind direction sector and by
-different wind speed ranges. All these capabilities are easy to use and
-their effectiveness will depend on the situation in question. One of the
-reasons that trends are not considered in these many different ways is
-that there can be a considerable overhead in carrying out the analysis,
-which is avoided by using these functions. Few, for example, would
-consider a detailed trend analysis by hour of the day, ensuring that
-robust statistical methods were used and uncertainties calculated.
-However, it can be useful to consider how concentrations vary in this
-way. It may be, for example, that the hours around midday are dominated
-by heavy vehicle emissions rather than by cars --- so is the trend for a
-pollutant different for those hours compared with say, hours dominated
-by other vehicle types? Similarly, a much more focussed trend analysis
-can be done by considering different wind direction, as this can help
-isolate different source influences.
+另一个方面，几乎所有的趋势都是以平均浓度与时间的关系来进行展示的，通常以年为单位。这种分析非常有助于理解浓度如何随时间变化，以及用来与空气质量限值进行比较。然而，如果有人想要去“理解”为什么趋势会是如此，就需要将趋势展现为浓度和其它变量之间的关系，[openair]{.pkg} 中的趋势函数就可以做到这一点。趋势可以按照星期几、月份、一天中的小时、风向区间以及不同风速范围进行绘制。所有这些功能都很容易获得，其效果将取决于所讨论的具体情况。大家通常很少以那么多不同的方式进行趋势分析，原因之一是进行这种分析可能会产生相当大的额外工作量，而使用本章所介绍的函数则方便很多。例如，很少有人会考虑按照一天中的小时进行详细的趋势分析，同时确保使用了稳健的统计方法并计算了不确定性。然而，考虑浓度在这种方式下的变化可能真的会有所帮助。例如，可能在中午前后的几个小时内，重型车辆排放占主导地位，而不是小轿车。因此，与其他车辆类型主导的小时相比，污染物的趋势是否不同？同样，通过考虑不同的风向，可以进行更加精细化的趋势分析，因为这可以帮助分离不同的污染源影响。
 
-The `TheilSen` function is typically used to determine trends in
-pollutant concentrations over several years. However, it can be used to
-calculate the trend in any numeric variable. It calculates monthly mean
-values from daily, hourly or higher time resolution data, as well as
-working directly with monthly means. Whether it is meaningful to
-calculate trends over shorter periods of time (e.g. 2 years) depends
-very much on the data. It may well be that statistically significant
-trends can be detected over relatively short periods but it is another
-matter whether it matters. Because seasonal effects can be important for
-monthly data, there is the option to deseasonalise the data first. The
-`timeVariation` function are both useful to determine whether there is a
-seasonal cycle that should be removed.
+`TheilSen` 函数通常用于确定污染物浓度水平在多年间的变化趋势，但它也可以用于计算任何数值型变量的趋势。该函数将日均值、小时均值或者更高时间分辨率数据计算为月均值，然后直接基于月均值工作。至于在更短的时间内（比如2年）应用趋势分析是否意义则很大程度上取决于对数据本身的认识。短时间的数据很有可能会存在统计上非常显著的趋势，但是这个趋势是否有意义则另当别论。因为对于几个月的数据来说，季节特征的影响占据主导地位，这时候可以先通过函数内提供的选项剔除季节因素的影响。`timeVariation` 函数可以用来帮助判断数据中是否存在有规律的季节变化。
 
-Note also that the symbols shown next to each trend estimate relate to
-how statistically significant the trend estimate is: $p$ $<$ 0.001 =
-$\ast\ast\ast$, $p$ $<$ 0.01 = $\ast\ast$, $p$ $<$ 0.05 = $\ast$ and $p$
+请注意，在每个趋势估计结果边上会用不同的符号代表相应的显著性水平区间：$p$ $<$ 0.001 =
+$\ast\ast\ast$, $p$ $<$ 0.01 = $\ast\ast$, $p$ $<$ 0.05 = $\ast$ , $p$
 $<$ 0.1 = $+$.
 
-## Example trend analysis
+## 趋势分析示例
 
-We first show the use of the `TheilSen` function by applying it to
-concentrations of O~3~. The function is called as shown in
-@fig-TheilSen1.
+首先，我们展示通过 `TheilSen` 函数分析 O~3~ 浓度变化的案例。@fig-TheilSen1 即函数调用的过程以及生成的结果。
 
-The plot shows the deseasonalised monthly mean concentrations of O~3~.
-The solid red line shows the trend estimate and the dashed red lines
-show the 95% confidence intervals for the trend based on resampling
-methods. The overall trend is shown at the top-left as 0.38 (ppb) per
-year and the 95% confidence intervals in the slope from 0.21--0.51
-ppb/year. The $\ast\ast\ast$ show that the trend is significant to the
-0.001 level.
+图中显示的是 O~3~ 在剔除季节影响后的月均值变化趋势。红实线代表趋势估计，红虚线代表基于重采样方法的95% 置信区间。总体趋势显示在左上角，为每年0.37ppb，趋势斜率的95%置信区间为0.22——0.50ppb每年。符号 $\ast\ast\ast$ 代表趋势极其显著，即 $p$ 值小于0.001。
 
 ```{r}
 #| label: fig-TheilSen1
-#| fig-cap:  Trends in ozone at Marylebone Road. The plot shows the deseasonalised monthly mean concentrations of O3. The solid red line shows the trend estimate and the dashed red lines show the 95% confidence intervals for the trend based on resampling methods. The overall trend is shown at the top-left as 0.38 (ppb) per year and the 95% confidence intervals in the slope from 0.21–0.51 ppb/year. The '∗∗∗' show that the trend is significant to the 0.001 level.
+#| fig-cap:  Marylebone路交通站的臭氧变化趋势。图中显示的是 O~3~ 在剔除季节影响后的月均值变化趋势。红实线代表趋势估计，红虚线代表基于重采样方法的95% 置信区间。总体趋势显示在左上角，为每年0.37ppb，趋势斜率的95%置信区间为0.22——0.50ppb每年。符号“***”代表趋势极其显著，即p值小于0.001。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 70%
@@ -132,27 +46,14 @@ TheilSen(mydata, pollutant = "o3",
          date.format = "%Y")
 ```
 
-Because the function runs simulations to estimate the uncertainty in the
-slope, it can take a little time for all the calculations to finish.
-These printed results show that in this case the trend in O~3~ was +0.38
-units (i.e. ppb) per year as an average over the entire period. It also
-shows the 95% confidence intervals in the trend ranged between 0.21 to
-0.51 ppb/year. Finally, the significance level in this case is very
-high; providing very strong evidence that concentrations of O~3~
-increased over the period. The plot together with the summary results is
-shown in @fig-TheilSen1. Note that if one wanted to display the
-confidence intervals in the slope at the 99% confidence intervals, the
-code would be @fig-TheilSen2.
+由于该函数需要模拟斜率估计中的不确定性，所以完成所有计算可能需要一些时间。图中标识的结果显示在整个时间段内， O~3~ 的变化趋势是每年 +0.37个单位（即ppb），趋势的95%置信区间范围在每年 0.22 到 0.50 ppb 之间，显著性水平非常高。这是 O~3~ 浓度在研究时段内呈持续上升趋势的有力证据。趋势图连同趋势估计的结果摘要如 @fig-TheilSen1 所示。如果需要改变趋势斜率的置信区间，如 99%，代码如下：
 
 ```{r}
 #| eval: false
 TheilSen(mydata, pollutant = "o3", ylab = "ozone (ppb)", alpha = 0.01)
 ```
 
-Sometimes it is useful to consider a subset of data, perhaps by
-excluding some years. This is easy with the `filter` function. The
-following code calculates trends for years greater than 1999 i.e. from
-2000 onward.
+有时候可能需要去除一些年份，至研究部分时段的趋势，这可以套用 `filter` 轻松实现。下面的代码将计算1999年之后的趋势变化，即2000年起的趋势。
 
 ```{r}
 #| eval: false
@@ -161,30 +62,12 @@ TheilSen(filter(mydata, format(date, "%Y") > 1999),
          ylab = "ozone (ppb)")
 ```
 
-It is also possible to calculate trends in many other ways e.g. by wind
-direction. Considering how trends vary by wind direction can be
-extremely useful because the influence of different sources invariably
-depends on the direction of the wind. The `TheilSen` function splits the
-wind direction into 8 sectors i.e. N, NE, E etc. The Theil-Sen slopes
-are then calculated for each direction in turn. This function takes
-rather longer to run because the simulations need to be run eight times
-in total. Considering concentrations of O~3~ again, the output is shown
-in @fig-TheilSen2. Note that this plot is specifically laid out to
-assist interpretation, with each panel located at the correct point on
-the compass. This makes it easy to see immediately that there is
-essentially no trend in O~3~ for southerly winds i.e. where the road
-itself has the strongest influence. On the other hand the strongest
-evidence of increasing O~3~ are for northerly winds, where the influence
-of the road is much less. The reason that there is no trend in O~3~ for
-southerly winds is that there is always a great excess of NO, which
-reacts with O~3~ to form NO~2~. At this particular location it will
-probably take many more years before O~3~ concentrations start to
-increase when the wind direction is southerly. Nevertheless, there will
-always be *some* hours that do not have such high concentrations of NO.
+可以针对不同的对象和场景应用趋势分析，比如风向。不同风向条件下的趋势差异往往代表这不同方向上污染源的变化，这对于空气质量分析非常有意义。 `TheilSen` 函数将风向分位8个扇区，如北、东北、东等，然后依次计算每个风向上的Theil-Sen斜率。由于需要运行8次独立的计算，因为需要更长时间才能计算完成。我们还以 O~3~ 为研究对象，输出结果如 @fig-TheilSen2 所示。为了更容易理解，图中每一个风向区间的子图都是按照这个风向在指南针上的位置安排构图的。可以很明显的看出，在南风也就是交通影响最大的方向上，O~3~ 多年几乎没有变化的趋势。而在交通污染影响较小的北风条件下则显示出明显的上升趋势。O~3~在南风条件下没有明显变化趋势的原因是交通源产生的足量的 NO 会和 O~3~ 反应生成 NO~2~。所以在这个位置的这个风向下，可能需要很多年才能开始显现出 O~3~ 浓度的上升趋势，也许在未来 NO 没有那么高浓度的时候。 
+
 
 ```{r}
 #| label: fig-TheilSen2
-#| fig-cap: Trends in ozone at Marylebone Road split by eight wind sectors. The `TheilSen` function will automatically organise the separate panels by the different compass directions.
+#| fig-cap: Marylebone路交通站的以8个不同风向条件分别计算的臭氧变化趋势。 `TheilSen` 函数会按照习惯的指南针位置自动排版8个子图。
 #| fig-width: 10
 #| fig-height: 10
 TheilSen(mydata, pollutant = "o3", type = "wd", 
@@ -193,22 +76,16 @@ TheilSen(mydata, pollutant = "o3", type = "wd",
          ylab = "ozone (ppb)")
 ```
 
-The option `slope.percent` can be set to express slope estimates as a
-percentage change per year. This is useful for comparing slopes for
-sites with very different concentration levels and for comparison with
-emission inventories. The percentage change uses the concentration at
-the beginning and end months to express the mean slope.
+`slope.percent` 选项可以设置为以每年的百分比变化来表示斜率的估计值。这对于比较污染水平差异很大的不同站点，或者与排放清单的比较的场景下非常有用。百分比变化通过首月和末月浓度来计算平均斜率。
 
-The trend, $T$ is defined as:
+这个趋势变化百分比 $T$ 定义如下:
 
 $$
 T [\%.yr^{-1}] = 100.\left(\frac{C_{End}}{C_{Start}}
   - 1\right)\Bigg /N_{years} (\#eq:MannK)
 $$
 
-where $C_{End}$ and $C_{Start}$ are the mean concentrations for the end
-and start date, respectfully. $N_{years}$ is the number of years (or
-fractions of) the time series spans.
+其中 $C_{End}$ 和 $C_{Start}$ 分别代表末月和首月的平均浓度。 $N_{years}$ 代表时间序列跨度的年数（或其它分量）。
 
 ```{r}
 #| label: MannKen
@@ -218,12 +95,9 @@ TheilSen(mydata, pollutant = "o3", deseason = TRUE,
 ```
 
 ::: callout-important
-## Careful with percentages!
+## 小心使用百分比！
 
-Sometimes considering percentages can be misleading. A specific case to
-look out for is when the uncertainties in the slope are wide and go from
-a negative concentration to a positive, which is problematic. In this
-case it is best to stick with changes in absolute concentrations.
+使用百分比的变化在某些情况下会引起误导。其中一个会出问题的需要特别注意的情况就是斜率的不确定性范围很广，从负值浓度到正值浓度。在这种情况下最好还是坚持使用绝对浓度变化。
 :::
 
 The `TheilSen` function was written to work with hourly data, which is
@@ -240,6 +114,8 @@ pre-formatted as YYYY-mm-dd, then it is sufficient to use `as.Date`
 without providing any format information because it is already in the
 correct format.
 
+`TheilSen` 函数是为处理小时数据而编写的，它会将小时数据计算为月均值或年均值。然而，我们也意识到用户可能已经拥有了现成的月度或年度数据，所以该函数也可以直接将月度或年度数据作为输入，但是必须确保日期字段的格式是正确的。假设数据存储在 Excel 文件中，日期格式为 dd/mm/YYYY（例如 23/11/2008），则需要将其转换为 R 可识别的日期格式，如下所示。同样，如果有现成的年度数据，需要将日期格式调整为 '2005-01-01'、'2006-01-01'…… 然后确保再次使用 as.Date 进行日期的转换。请注意，如果日期已经预先格式化为 YYYY-mm-dd，则只需使用 as.Date 而无需提供任何格式信息，因为它已经是正确的格式。
+
 ```{r}
 #| eval: false
 mydata$date = as.Date(mydata$date, format = "%d/%m/%Y")
@@ -250,16 +126,16 @@ provided the input data are correctly formatted. For input, a data frame
 with three columns is required: date, pollutant and *site*. The call
 would then be, for example:
 
+最后，`TheilSen` 函数也可以用来分析多个站点的趋势，只需要确保输入数据框同时包含日期、污染物和 *点位名* 三列数据。调用示例代码如下：
+
 ```{r}
 #| eval: false
 TheilSen(mydata, pollutant = "no2", type = "site")
 ```
 
-### Output
+### 数据输出
 
-The `TheilSen` function provides lots of output data for further
-analysis or adding to a report. To obtain it, it is necessary to read it
-into a variable:
+`TheilSen` 函数提供大量的输出数据，以供进一步分析或者用于文字报告。要获取这些数据首先需要将其写入一个变量：
 
 ```{r}
 #| label: MKout
@@ -270,21 +146,16 @@ MKresults <-  TheilSen(mydata,
                        type = "wd")
 ```
 
-This returns a list of two data frames containing all the monthly mean
-values and trend statistics and an aggregated summary. The first 6 lines
-are shown next:
+这会以列表输出两个数据框，其中一个包含所有月均数据的趋势统计结果，另一个是汇总后的摘要数据。第一个的前6行数据显示如下：
 
 ```{r }
 head(MKresults$data[[1]])
 ```
 
-Often only the trend statistics are required and not all the monthly
-values. These can be obtained by:
+通常我们只需要汇总后的趋势数据，而不是所有月度的结果，可以通过下面的代码获得：
 
 ```{r }
 MKresults$data[[2]]
 ```
 
-In the results above the `lower` and `upper` fields provide the 95% (or
-chosen confidence interval using the `alpha` option) of the trend and
-`slope` is the trend estimate expressed in units/year.
+在这个结果中， `lower` 和 `upper` 字段提供 95% (或者通过 `alpha` 选项设置的) 置信区间，`slope` 是以“单位/年”表示的趋势估计值。
