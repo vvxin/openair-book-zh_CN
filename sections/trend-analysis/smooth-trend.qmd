@@ -2,19 +2,21 @@
 author: David Carslaw
 ---
 
-# Smooth trends {#sec-smoothTrend}
+# 平滑趋势 Smooth trends {#sec-smoothTrend}
 
-## Background {#sec-SmoothTrendInfo}
+## 背景 {#sec-SmoothTrendInfo}
 
-The `smoothTrend` function calculates smooth trends in the monthly mean concentrations of pollutants. In its basic use it will generate a plot of monthly concentrations and fit a smooth line to the data and show the 95% confidence intervals of the fit. The smooth line is essentially determined using Generalized Additive Modelling using the [mgcv]{.pkg} package. This package provides a comprehensive and powerful set of methods for modelling data. In this case, however, the *model* is a relationship between time and pollutant concentration i.e. a trend. One of the principal advantages of this approach is that the amount of smoothness in the trend is optimised in the sense that it is neither too smooth (therefore missing important features) nor too variable (perhaps fitting 'noise' rather than real effects). Some background information on the use of this approach in an air quality setting can be found in @Carslaw2007a.
+`smoothTrend` 函数用于计算污染物月均浓度的平滑趋势。缺省状态下，函数将生成月均浓度的变化曲线，同时在曲线上附加一条趋势线以及95%的置信度区间。平滑趋势线使用 [mgcv]{.pkg} 软件包中提供的广义可加模型（Generalized Additive Modelling）计算得到，该软件包提供了一整套全面和强大的建模方法，但是在这里我们需要的*建模*就是建立时间和污染物浓度之间的关系，即趋势。本函数所使用的方法优势在于优化平滑的程度，既不会因过于平滑而错过重要特征，也不会过于善变而放大“噪音”。关于在空气质量分析中使用这一方法的更多背景信息可以在 @Carslaw2007a 中找到。
 
 @sec-trends-gam considers smooth trends in more detail and considers how different models can be developed that can be quite sophisticated. Readers should consider this section if they are considering trend analysis in more depth.
 
-The user can select to deseasonalise the data first to provide a clearer indication of the overall trend on a monthly basis. The data are deseasonalised using the `stl` function. The user may also select to use bootstrap simulations to provide an alternative method of estimating the uncertainties in the trend. In addition, the simulated estimates of uncertainty can account for autocorrelation in the residuals using a block bootstrap approach.
+@sec-trends-gam 更详细的介绍了平滑趋势以及如何建立不同模型的过程。这些内容可能会逐渐变得非常复杂，如果读者有兴趣深入研究趋势分析的方方面面，建议参考本节。
 
-## Examples of trend analysis
+用户将首先使用stl函数对数据进行季节特征的剔除，以更清晰地显示整体趋势。用户还可以选择使用自举模拟来建立趋势不确定性的另一种估计方法。此外，模拟的不确定性估计可以考虑使用块自举方法来处理残差中的自相关性。
 
-We apply the function to concentrations of O~3~ and NO~2~ using the code below. The first plot shows the smooth trend in raw O~3~ concentrations, which shows a very clear seasonal cycle. By removing the seasonal cycle of O~3~, a better indication of the trend is given, shown in the second plot. Removing the seasonal cycle is more effective for pollutants (or locations) where the seasonal cycle is stronger e.g. for ozone and background sites. @fig-smoothTrendComp shows the results of the simulations for NO~2~ without the seasonal cycle removed. It is clear from this plot that there is little evidence of a seasonal cycle. The principal advantage of the smoothing approach compared with the Theil-Sen method is also clearly shown in this plot. Concentrations of NO~2~ first decrease, then increase strongly. The trend is therefore not monotonic, violating the Theil-Sen assumptions. Finally, the last plot shows the effects of first deseasonalising the data: in this case with little effect.
+## 趋势分析示例
+
+我们使用以下的代码对 O~3~ 和 NO~2~ 进行了不同的趋势分析应用。@fig-smoothTrendComp 中的第一张图是原始 O~3~ 浓度的平滑趋势，显示出非常明显的季节周期特征。如第二张图表所示，通过剔除 O~3~ 的季节特征可以更好地解释整体趋势，去除季节特征对于季节特征较强的污染物（或站点）效果更好，例如臭氧和背景点位。第三张图是原始的NO~2~的平滑趋势，使用自举不确定性的情况。从这张图可以看到几乎没有季节周期特征。与Theil-Sen方法相比，平滑趋势方法的主要优势在这张图中也清楚可见。NO~2~浓度首先下降，然后急剧上升。因此，趋势不是单调的，这违反了Theil-Sen的假设。最后一张图显示了去季节特征后的效果：在这种情况下改进比较小。
 
 ```{r}
 #| label: fig-smoothTrendComp
@@ -44,22 +46,22 @@ smoothTrend(mydata, pollutant = "no2", deseason = TRUE, simulate =TRUE,
             main = "monthly mean deseasonalised no2 (bootstrap uncertainties)")
 ```
 
-The `smoothTrend` function share many of the functionalities of the `TheilSen` function. @fig-smoothwd shows the result of applying this function to O~3~ concentrations. The code that produced @fig-smoothwd was:
+`TheilSen` 函数的很多用法在 `smoothTrend` 函数中同样适用。@fig-smoothwd 是根据不同风向区间应用平滑趋势的结果，代码如下：
 
 ```{r}
 #| label: fig-smoothwd
-#| fig-cap: Trends in O~3~ using the `smoothTrend` function applied to Marylebone Road. The shading shows the estimated 95% confidence intervals.
+#| fig-cap: Marylebone路交通环境点 O~3~ 的 `smoothTrend` 函数应用结果。阴影为 95% 置信区间。
 #| fig-width: 10
 #| fig-height: 12
 smoothTrend(mydata, pollutant = "o3", deseason = TRUE,
              type = "wd")
 ```
 
-The `smoothTrend` function can easily be used to gain a large amount of information on trends easily. For example, how do trends in NO~2~, O~3~ and PM~10~ vary by season and wind sector. There are 8 wind sectors and four seasons i.e. 32 plots. In @fig-smoothwdSeason all three pollutants are chosen and two types (season and wind direction). We also reduce the number of axis labels and the line to improve clarity. There are numerous combinations of analyses that could be produced here and it is very easy to explore the data in a wide number of ways.
+`smoothTrend` 函数可以轻松的获得大量不同条件下的趋势信息。例如：NO~2~, O~3~ 和 PM~10~ 三种污染物在不同季节和不用风向条件下的趋势。有8个风向区间对应4个不同季节的32张趋势图会被一起绘制出来。在@fig-smoothwdSeason 中，我们同时选择了三种污染物和两个附加类型（季节和风向），同时我们还增加了时间标签的显示间隔来让这个图表看起来更清晰。我们可以类似的组合不同的污染物和类型条件来探索不同条件下的趋势变化。
 
 ```{r}
 #| label: fig-smoothwdSeason
-#| fig-cap: The `smoothTrend` function applied to three pollutants,  split by wind sector and season.
+#| fig-cap: 三种污染物在不同风向和不同季节下的变化趋势。
 #| fig-width: 14
 #| fig-height: 12
 smoothTrend(mydata, pollutant = c("no2", "pm10", "o3"), 
@@ -67,9 +69,9 @@ smoothTrend(mydata, pollutant = c("no2", "pm10", "o3"),
             date.breaks = 3, lty = 0)
 ```
 
-## Seasonal averages
+## 按季节聚合数据
 
-If the interest is in considering seasonal trends, it makes sense to set the averaging time to 'season' and also show each season in a separate panel. In @fig-smoothTrendSeason some data is imported for O~3~ from Lullington Heath on the south coast of England. This plot shows there is strongest evidence for an increase in O~3~ concentrations during springtime from about 2012 onwards. A probable reason for this increase is a general reduction in NO~x~ concentrations.
+如果要重点关注不同季节下的变化趋势，可将平均时间设置为“season”，并在每一个单独的面板中显示每个季节的趋势特征是很好的表现形式。@fig-smoothTrendSeason 中，首先导入了位于英格兰南海岸的 Lullington Heath站点的数据，然后按照季节绘制平滑趋势。可以看到在2012年后春季 O~3~ 浓度升高趋势最为明显，这主要是由于 NO~x~ 浓度的普遍下降。
 
 ```{r}
 #| label: importLul
@@ -78,7 +80,7 @@ lh <- importUKAQ(site = "lh", year = 2000:2019)
 
 ```{r}
 #| label: fig-smoothTrendSeason
-#| fig-cap: Trends in O~3~ by season at the Lullington Heath site with a seasonal averaging time and panel for each season.
+#| fig-cap: Lullington Heath点位各季节的 O~3~ 变化趋势，每个季节单独展示。
 #| fig-width: 6
 #| fig-height: 5
 smoothTrend(lh, pollutant = "o3",
