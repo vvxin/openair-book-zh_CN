@@ -4,17 +4,17 @@ author: David Carslaw
 
 # Dilution lines and pollutant ratios {#sec-runRegression}
 
-## Background {#run-regression-sec-timePropBack}
+## 背景 {#run-regression-sec-timePropBack}
 
-The behaviour of pollutants in the atmosphere is highly complex, which can make it difficult to understand the influence that different sources have on concentrations. Across all time scales dispersion processes have a strong influence on how emissions dilute in the atmosphere. However, when considering two pollutants, some of these complexities can be reduced. In a dispersion plume from a single source, the ratio between two pollutant concentrations will remain constant in the absence of loss e.g. through deposition or through chemical reaction. This characteristic of constant ratios in dispersing plumes can be exploited through different analysis approaches.
+理解不同污染源对某项污染物浓度的影响非常困难，因为大气中污染物的变化规律极其复杂。但是，由于扩散稀释过程在任何时间尺度上都会占据主导作用，而一个污染源所形成的烟羽在扩散稀释过程中内部多种污染物之间的比例在没有损失（如沉降和化学反应消耗）的情况下应该是相对恒定的。因此如果我们利用这一特征，同时考虑两种污染物的浓度变化，则有可能突破原本的复杂性，建立一个新的分析方法。
 
-@bentley2004 considered the relationship between two pollutants in a range of interesting ways, which have not been widely adopted but are nevertheless useful. @bentley2004 considered the relationship between two pollutants with the aim of understanding the ratio, which can then be compared with emission inventories. The approach is to consider the issue from the perspective of a local source being mixed into background air. Both the background air and source contributions in terms of concentrations will vary, which can make it difficult to establish a pollutant ratio for a dominant source. This approach has also been used to consider vehicle emission quantification using high time resolution data (at 1-Hz) by @farren2023a.
+@bentley2004 以一系列有趣的方式研究了两种污染污染之间的关系，尽管这些方法后来并没有被广泛应用，但仍有借鉴意义。@bentley2004 着重研究两种污染物之间的比例关系并和污染源清单进行比较，这个方法旨在将本地源排放的特征和背景特征结合起来进行分析，但是由于两方面都是动态变化的，所以要得到与主要污染源关联的环境中污染物的比例关系也是比较困难的。@farren2023a 尝试把这种方法应用于高时间分辨率数据（1赫兹）来量化机动车排放的影响。
 
-The idea is to exploit the fact that for a local dispersing plume, the ratio between two pollutants would be expected to be invariant. The main approach is to look in time series data over short periods of time where, in a dispersing plume, the ratio between two pollutants is constant. For hourly data for example, considering the relationship between two pollutants over three consecutive hours using a linear regression can be used to identify short periods where the ratio (the slope from a regression) is constant (or close to constant). By considering high R^2^ values (typically \> 0.9 to 0.95), these conditions correspond to constant ratios between two pollutants, which would be indicative of the behaviour of a diluting plume. The regression itself is a rolling regression e.g. first consider hours 1 to 3, then 2 to 4 and so on. The approach becomes clearer by considering an example.
+利用局地污染源羽流在扩散过程中两种污染物的比值保持不变这一基本认识，我们的具体方法是在时间序列数据中观察和寻找两种污染物比值保持恒定的时间片段。以小时数据为例，以线性回归来滚动分析连续3小时内两种污染物之间的关系，确定其比例（即回归计算得到的斜率）是否保持恒定（或接近很定）。一般情况下，如果 R^2^ 很高（\> 0.9 到 0.95），则认为存在两项污染物比值恒定的情况，这通常是由本地污染排放带来的。注意回归计算是滚动进行的，如1-3点，然后2-4点，以此类推。下面我们通过示例进一步阐述。
 
-## Examples {#run-regression-sec-timePropEx}
+## 示例 {#run-regression-sec-timePropEx}
 
-As an example we will import some roadside monitoring data for 2022 and combine it with measured meteorological data rather than modelled (hence `meteo = FALSE`).
+在这里例子中，我们导入一个路边站2022年的监测数据，不含模型产出的气象参数（因此 `meteo = FALSE`）。然后合并单独下载的同时段的地面气象站数据。
 
 ```{r}
 #| label: importRunRegres
@@ -41,7 +41,7 @@ library(worldmet)
 aq <- readRDS(here::here("assets/data/my1_2022.rds"))
 ```
 
-Next we will consider the relationship between PM~2.5~ and NO~x~ with a 3-hour rolling regression window. The data frame returned (`out`) has the rolling 3-hour regression fit information and other variables that can be used for plotting and post-processing.
+接下来，我们针对 PM~2.5~ 和 NO~x~ 两项污染物进行每3小时的滚动回归计算。返回的数据框（`out`）包含滚动的3小时回归拟合结果以及其可用于制图和后续处理的数据。
 
 ```{r}
 #| label: runRegnoxpm25
@@ -53,7 +53,7 @@ out <- runRegression(aq, x = x, y = y, run.len = 3)
 out
 ```
 
-The output contains all regression fits, but it is useful to filter the data to extract the good fits (R^2^ \> 0.95), as well as some other filtering. For this example, we also filter for quite large changes in NO~x~ over 3 hours (\> 100 μg m^-3^), which will be dominated by changes in concentrations due to local sources (the main interest) --- and also to make the plots below a bit clearer. The filtering of the slopes trims some extreme values and again make the plots easier to interpret.
+返回文件中是回归拟合的全部结果，我们先筛选得到拟合结果较好的那一部分（R^2^ \> 0.95），然后进一步删选 NO~x~ 在3小时内出现浓度跳变的记录，这些跳变主要是由本地污染源引起的，也是我们最关注的。最后我们去除斜率的异常值，这可以使生成的图表看起来更清晰、更易于理解。
 
 ```{r}
 #| label: selectFits
@@ -67,7 +67,8 @@ out_filter <- filter(
 )
 ```
 
-Another step that is useful is to identify the filtered data (`out_filter`) in the original data set so that can be processed in different ways. The code below identified all the 3-hour periods and combines them into a single data frame.
+接下来要做的是在原始的数据集中把筛选后的数据（`out_filter`）标记出来以便做更多有用的分析。下面代码演示如果进行标记然后合并为单一数据集。
+
 
 ```{r}
 #| label: selectaq
@@ -83,7 +84,7 @@ aq_select <-
   list_rbind()
 ```
 
-The next few plots should make the purpose of this analysis clearer. @fig-nox-pm25 shows the relationship between NO~x~ and PM~2.5~ for the filtered data, illustrating that there is quite a lot of variation in the concentration of PM~2.5~ for a particular concentration of NO~x~.
+下面的几张图将更清晰的展示这个分析的目的。@fig-nox-pm25 显示了筛选后数据中 NO~x~ 和 PM~2.5~ 的浓度关系，可以看出针对给定浓度的 NO~x~ ，PM~2.5~ 浓度有很大的变化空间。
 
 ```{r}
 #| label: fig-nox-pm25
@@ -100,9 +101,9 @@ ggplot(aq_select, aes(.data[[x]], .data[[y]])) +
   xlab(quickText("nox (ug/m3)"))
 ```
 
-Next, we will plot the 'dilution lines' --- the result of the rolling regressions for the filtered data. The plot is shown in @fig-dilution-lines, which uses the **same** data as @fig-nox-pm25. What is striking about @fig-dilution-lines is that over 3-hour periods there are so many lines that have a similar slope, which changes the impression of the data shown in @fig-nox-pm25. Remember that the data were filtered for quite large changes in NO~x~, so @fig-dilution-lines shows the corresponding change in PM~2.5~ , which highlights consistent behaviour.
+下面我们将绘制“稀释线”————即筛选后的滚动回归分析结果。@fig-dilution-lines 使用和 @fig-nox-pm25 相同的数据集绘制，与 @fig-nox-pm25 中看似杂乱无章的散点相比，@fig-dilution-lines 最突出的特征就是让我们发现在这些3小时的浓度变化片段中有那么多的斜率如此相近。注意这里使用的是经过筛选的 NO~x~ 浓度有跳变的数据，所以 @fig-dilution-lines 显示的是与之相对应的 PM~2.5~ 的浓度变化，结论是两种污染物的变化高度相关。
 
-The dilution lines shown in @fig-dilution-lines have also been coloured by the minimum value of PM~2.5~ in each case, which can be thought of as the prevailing background concentration of PM~2.5~ (the y-intercept of the individual regressions). An interpretation of @fig-dilution-lines is that the background PM~2.5~ can vary a lot but there is a local source in addition to the background air that has a rather consistent behaviour with similar ratios of PM~2.5~ to NO~x~.
+@fig-dilution-lines 中的稀释线以每个时间片段中的 PM~2.5~ 最小浓度值着色，这可以视为 PM~2.5~ 背景浓度（每个时间片段上的y轴截距）。对 @fig-dilution-lines 的最终解释是在不同时间片段中 PM~2.5~ 的背景浓度可能差异很大，但是仍在存在一个本地叠加的污染源，使得 PM~2.5~ 和 NO~x~ 的比值保持基本恒定。
 
 ```{r}
 #| label: fig-dilution-lines
@@ -130,11 +131,11 @@ ggplot(out_filter, aes(
   xlab(quickText("nox (ug/m3)"))
 ```
 
-To get more quantitative information from @fig-dilution-lines, the slope can be extracted and plotted as a density plot distribution. Furthermore, the mode of the distribution can also be estimated, as shown in @fig-mode-plot. These results show that the mode is about 0.04 for the mass ratio of PM~2.5~/NO~x~. Given that this estimate is based on 'dilution events' when the change in NO~x~ concentrations is quite large, the value of 0.04 is an estimate of the traffic emissions ratio of PM~2.5~/NO~x~, which could consist of both direct exhaust emissions and non-exhaust emissions. Note that if a NO~x~ change of 50 μg m^-3^ had been used, the mode estimate is very similar (0.039) to the case where the change was 100 μg m^-3^. This result seems reasonable in that a change of 50 or 100μg m^-3^ are both quite large and would both be indicative of a change in concentration due to a proximate source.[^run-regression-1]
+为了从 @fig-dilution-lines 中获得更多的定量信息，可以提取所有的斜率值并绘制为密度分布图。此外，还可以进一步研究其分布特征，如图 @fig-mode-plot 所示。结果显示，PM~2.5~/NO~x~ 浓度比值的众数落在0.04左右。考虑到分析的对象是“扩散稀释过程”，NO~x~ 浓度的变化如此之大，应当是体现交通污染源特征的 PM~2.5~/NO~x~ 比值，其中既包含了直接的尾气排放也包括非尾气的排放。注意，如果我们把 NO~x~ 的跳变阈值更改为 50 μg m^-3^，得到的比值众数和阈值为 100 μg m^-3^ 是非常接近（0.039）。这个结果是合理的，因为不论是50还是100μg m^-3^ 的跳变都是比较剧烈的，都应该能够体现出近距离污染源所造成的影响。[^run-regression-1]
 
-[^run-regression-1]: A value of 100 μg m^-3^ was used to make the plots clearer.
+[^run-regression-1]: 取 100 μg m^-3^ 作为阈值主要是为了让图表看起来不至于过于密集。
 
-It should be noted in @fig-dilution-lines and @fig-mode-plot there is still a distribution of slopes, even if they look reasonably consistent. This is expected for a few reasons. First, even if the extracted dilution lines were 100% associated with a road traffic source, the emission rate and relationship between NO~x~ and PM~2.5~ would not be expected to be constant. Second, it is still possible that dilution lines can be affected by changing background concentrations to some extent, and third, there could still be an influence from other sources. However, it is clear there is a remarkable consistency in the dilution line slopes shown in @fig-dilution-lines.
+在 @fig-dilution-lines 和 @fig-mode-plot 中可以注意到，尽管他们看起来相对一致，但是斜率仍然在一定范围内存在分布。这是可以预期的，分析原因如下。首先，即使提取的稀释线与交通污染源百分之百相关，NO~x~ 与PM~2.5~的排放速率也不会是恒定的。其次，稀释线仍然可能在某种程度上受到背景污染变化的影响。第三，仍然可能受到其它污染源的影响。然而无论怎样，@fig-dilution-lines 中显示的稀释线斜率都是具有显著一致性的。
 
 ```{r}
 #| label: fig-mode-plot
