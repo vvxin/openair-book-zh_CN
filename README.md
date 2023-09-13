@@ -24,7 +24,7 @@
 - [x] 14  Time proportion plots
 - [x] 15  Theil-Sen trends
 - [x] 16  Smooth trends
-- [ ] 17  Dilution lines and pollutant ratios
+- [x] 17  Dilution lines and pollutant ratios
 - [x] 18  Trend heat maps
 - [ ] **Model Evaluation**
 - [ ] 19  Model evaluation
