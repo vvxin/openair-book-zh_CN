@@ -14,7 +14,7 @@
 - [x] 5  Wind and Pollution Roses
 - [x] 6  Polar frequencies
 - [x] 7  Percentile roses
-- [ ] 8  Polar plots
+- [x] 8  Polar plots
 - [x] 9  Polar annulus
 - [ ] 10  Trajectory analysis
 - [ ] **Time Series and Trends**
