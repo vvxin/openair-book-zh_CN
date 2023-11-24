@@ -197,9 +197,7 @@ selectByDate(traj,
 
 可以看到去除本地影响后，在那两天经过冰岛的轨迹 PM~10~ 浓度仍然明显偏高，PM~2.5~也一样。但是如前所述，仍然建议通过本地郊区站点的监测数据做进一步的印证。
 
-## Trajectory gridded frequencies 轨迹网格化频率 {#trajectory-analysis-trajLevel}
-
-The Hysplit model itself contains various analysis options for gridding trajectory data. Similar capabilities are also available in [openair]{.pkg} where the analyses can be extended using other [openair]{.pkg} capabilities. It is useful to gain an idea of where trajectories come from. Over the course of a year representing trajectories as lines or points results in a lot of over-plotting. Therefore it is useful to grid the trajectory data and calculate various statistics by considering latitude-longitude intervals. The first analysis considers the number of unique trajectories in a particular grid square. This is achieved by using the `trajLevel` function and setting the `statistic` option to "frequency". @fig-trajFreq shows the frequency of back trajectory crossings for the London data. In this case it highlights that most trajectory origins are from the west and north for 2010 at this site. Note that in this case, `pollutant` can just be the trajectory height (or another numeric field) rather than an actual pollutant because only the frequencies are considered.
+## 轨迹网格化频率 {#trajectory-analysis-trajLevel}
 
 HYSPLIT模型本身包含对网格化后的轨迹数据进行分析的选项，[openair]{.pkg}也提供类似的功能。我们希望知道各条轨迹的源头和路径，但是如果对一整年的轨迹数据进行制图，不论是用点还是线表征，都会导致图中出现大量的重叠和覆盖。因此我们将轨迹网格化到一定的经纬度区间中。网格化后的第一个分析手段就是统计每一条独立的轨迹在每一个网格中出现的次数。@fig-trajFreq 显示了抵达北肯辛顿（伦敦市代表点位）的所有后向轨迹在网格中所出现的频率，这使用 `trajLevel` 函数同时将 `statistic` 选项设置为 "frequency" 来实现。可以看到这个地点2010年的轨迹主要来自西北方向。在这个用法当中，`pollutant`选项不一定要设置为真的污染物浓度，其缺省设置为轨迹点的高度（也可以是任何数值型的字段），因为函数只会考虑网格的频率。
 
@@ -547,14 +545,14 @@ knitr::include_graphics("../../assets/media/sqtba3.png")
 
 多受体分析时不同站点的浓度会通过除以平均值的方式进行归一化。这样可以确保几个站点以相同的力度来识别污染来源地区，不会发生一个站点主导的情况。
 
-## 轨迹聚类 {#sec-trajCluster-trajectory-analysis}
+## 轨迹聚类 {#trajectory-analysis-sec-trajCluster}
 
 通过后向轨迹的聚类分析将相似的气团移动路径进行归类非常有用，这主要是为了对归类后的路径开展后分析。地理上来源相似的气团很有可能也具有相似的化学特性。聚类的方法有多种，评价聚类结果相似性的方法也有多种。对于后向轨迹的聚类来说，核心的问题是*距离矩阵*如果计算，它决定了不同轨迹之间的相似性（或相异性）。最简单的方法是使用欧几里得距离，基于角度的距离也经常使用。下面会介绍两种距离的计算方法。在[openair]{.pkg}中距离矩阵这一密集型的计算是由 C$++$ 代码完成的。注意聚类的计算也可以直接在HTSPLIT模型本身中执行。
 
-两条轨迹的欧几里得距离由公式 @eq-Euclid 得出。其中，$X_1$, $Y_1$ 和 $X_2$, $Y_2$ 分别为后向轨迹 $1$ 和 $2$ 的经纬度坐标，$n$ 为后向轨迹的时序数（本例中为96小时）。注意，这个简化后的公式尽管不如Haversine公式精确，但是用在这里已经足够了。
+两条轨迹的欧几里得距离由公式 @eq-Euclid 得出。其中，$X_1$, $Y_1$ 和 $X_2$, $Y_2$ 分别为后向轨迹 $1$ 和 $2$ 的经纬度坐标，$n$ 为后向轨迹的时序数（本例中为96小时）。和更加精确的半正矢（Haversine）公式相比，这里使用的简化计算方法已经足够用了。
 
 $$
-d_{1, 2} = \left({\sum_{i=1}^{n} 111((X_{1i} - X_{2i}) ^ 2 + ((Y_{1i} - Y_{2i})cos(X_{1i})) ^ 2}\right)^{1/2} 
+d_{1, 2} = \left({\sum_{i=1}^{n} 111((X_{1i} - X_{2i}) ^ 2 + ((Y_{1i} - Y_{2i})cos(X_{1i})) ^ 2}\right)^{1/2}
 $$ {#eq-Euclid}
 
 *角度*距离矩阵是比较两个后向轨迹点相对于起始点的角度的相似性。基于角度的聚类可以更好的识别重要的大气环流特征，如高气压位于英国东部的轨迹。选择哪个方法取决于所有进行的后分析的具体应用场景，取决于在后分析中想要区分中的气团特征是什么。角度距离的计算方式为：
