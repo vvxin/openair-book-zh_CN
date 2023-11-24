@@ -16,7 +16,7 @@
 - [x] 7  Percentile roses
 - [x] 8  Polar plots
 - [x] 9  Polar annulus
-- [ ] 10  Trajectory analysis
+- [x] 10  Trajectory analysis
 - [ ] **Time Series and Trends**
 - [x] 11  Time series plots
 - [x] 12  Temporal variations
