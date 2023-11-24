@@ -2,31 +2,31 @@
 author: David Carslaw
 ---
 
-# Trajectory analysis {#sec-trajPlot}
+# 轨迹分析 {#sec-trajPlot}
 
-## Introduction
+## 引言
 
-Back trajectories are extremely useful in air pollution and can provide important information on air mass origins. Despite the clear usefulness of back trajectories, their use tends to be restricted to the research community. Back trajectories are used for many purposes from understanding the origins of air masses over a few days to undertaking longer term analyses. They are often used to filter air mass origins to allow for more refined analyses of air pollution --- for example trends in concentration by air mass origin. They are often also combined with more sophisticated analyses such as cluster analysis to help group similar type of air mass by origin.
+后向轨迹可以用来追溯污染气团的来源，是大气污染分析的重要手段之一，目前主要应用在科研领域当中。后向轨迹既可以用于短期几天内的污染溯源，也可以进行长期分析，筛选出来的特征轨迹可以用来做进一步的精细分析，————如定量化分析来自特定来源的浓度变化趋势。后向轨迹还可以和聚类分析相结合得到特征相似的几条污染传输路径。
 
-Perhaps one of the reasons why back trajectory analysis is not carried out more often is that it can be time consuming to do. This is particularly so if one wants to consider several years at several sites. It can also be difficult to access back trajectory data. In an attempt to overcome some of these issues and expand the possibilities for data analysis, [openair]{.pkg} makes several functions available to access and analyse pre-calculated back trajectories.
+后向轨迹本身技术门槛较高，数据获取比较困难，处理长时间比如几年的轨迹时非常耗时，导致其应用并不是很广泛。为了解决以上问题，[openair]{.pkg} 开发了几个专门的函数用来直接获取经过预处理的后向轨迹数据，并提供一系列分析功能。
 
-Currently these functions allow for the import of pre-calculated back trajectories are several pre-define locations and some trajectory plotting functions. In time all of these functions will be developed to allow more sophisticated analyses to be undertaken. .
+轨迹分析功能目前包括后向轨迹预处理后数据的导入函数以及几个后向轨迹图绘制函数，未来还计划开发一些更复杂的功能。
 
-The `importTraj` function imports pre-calculated back trajectories using the Hysplit trajectory model [Hybrid Single Particle Lagrangian Integrated Trajectory Model](https://ready.arl.noaa.gov/HYSPLIT.php) [@stein2015]. Trajectories are run at 3-hour intervals and stored in yearly files (see below). The trajectories are started at ground-level (10m) and propagated backwards in time. The data are stored on web-servers at Ricardo Energy & Environment similar to that for [importAURN](#sec-importAURN), which makes it very easy to import pre-processed trajectory data for a range of locations and years. [^trajectory-analysis-1]
+`importTraj`函数用于读取HYSPLIT模型，即[拉格朗日混合单颗粒轨迹模型](https://ready.arl.noaa.gov/HYSPLIT.php) [@stein2015]的预处理后数据。模型每3小时运行一次并将结果更新存储在一个年度文件中（见下文）。轨迹的起点从地表层（10米）开始，然后按时次向回追溯。数据文件存储在Ricardo能源环境公司的服务器上，其读取方式和[importAURN](#sec-importAURN)类似，这使得导入多个地点的数据或导入一整年的数据变得很容易。
 
-[^trajectory-analysis-1]: Note --- the back trajectories have been pre-calculated for specific locations and stored as .RData objects. Users should contact David Carslaw to request the addition of other locations.
+[^trajectory-analysis-1]: 注：这里的后向轨迹数据是针对有限的地点轻度预处理后的，并存储为 .RData 对象。用户如果需要其它位置的信息，需要联系David Carslaw。
 
 ::: callout-tip
-## Generate your own back trajectories
+## 生成定制的后向轨迹数据
 
-Users may for various reasons wish to run Hysplit themselves e.g. for different starting heights, longer periods or more locations. Code and instructions have been provided in @sec-prod-hyspl-traj for users wishing to do this. Users can also use different means of calculating back trajectories e.g. ECMWF and plot them in openair provided a few basic fields are present: `date` (POSIXct), `lat` (decimal latitude), `lon` (decimal longitude) and `hour.inc` the hour offset from the arrival date (i.e. from zero decreasing to the length of the back trajectories). See ?importTraj for more details.
+用户可能会希望自己运行HYSPLIT模型，这样可以定制初始高度，或者得到更长时间和更多地点的数据。@sec-prod-hyspl-traj 为这样的用户提供了相应的代码和说明。通过自己运行模型还可以使用不同的气象产品驱动，如ECMWF，进而在openair中进行可视化。绘制后向轨迹图需要的基本字段包括：`date`（POSIXct）、 `lat`（十进制纬度）, `lon`（十进制经度） 以及 `hour.inc` 到达时刻的小时偏移值（从0递减至后向轨迹的时间长度）。有关更详细信息，请参阅?importTraj。
 :::
 
-These trajectories have been calculated using the Global NOAA-NCEP/NCAR reanalysis data archives. The global data are on a latitude-longitude grid (2.5°). Note that there are many meteorological data sets that can be used to run Hysplit e.g. including ECMWF data. However, in order to make it practicable to run and store trajectories for many years and sites, the NOAA-NCEP/NCAR reanalysis data is most useful. In addition, these archives are available for use widely, which is not the case for many other data sets e.g. ECMWF. Hysplit calculated trajectories based on archive data may be distributed without permission (see <https://ready.arl.noaa.gov/HYSPLIT_agreement.php>). For those wanting, for example, to consider higher resolution meteorological data sets it may be better to run the trajectories separately.
+以上的后向轨迹是基于NOAA-NCEP/NCAR的全球再分析数据计算得来的，该数据的分辨率为2.5°经纬度网格。包括ECMWF在内的其它气象数据产品也可以用来运行HYSPLIT模型，但不论是从历史数据的时长还是覆盖地区的广度，NOAA-NCEP/NCAR 再分析数据都是最好的，而且发表HYSPLIT模型生成的轨迹不需要特别的许可（见 <https://ready.arl.noaa.gov/HYSPLIT_agreement.php>），这都使得NOAA-NCEP/NCAR再分析数据比ECMWF等其它气象数据得到更广泛的应用。如果想使用更高分辨率气象数据的人来说则需要单独运行轨迹模型。
 
-[openair]{.pkg} uses the [mapproj]{.pkg} package to allow users to user different map projections. By default, the projection used is Lambert conformal, which is a conic projection best used for mid-latitude areas. The Hysplit model itself will use any one of three different projections depending on the latitude of the origin. If the latitude greater than 55.0 (or less than -55.0) then a polar stereographic projection is used, if the latitude greater than -25.0 and less than 25.0 the mercator projection is used and elsewhere (the mid-latitudes) the Lambert projection. All these projections (and many others) are available in the [mapproj]{.pkg} package.
+[openair]{.pkg} 所使用的 [mapproj]{.pkg} 包允许用户应用不同的地图投影。默认情况下，地图采用适合用中纬度地区的兰勃特等角圆锥投影。HYSPLIT模型根据起始点的纬度不同会用到三种不同的投影。如果纬度大雨55.0（或小鱼-55.0）使用极地球面投影；如果纬度在-25.0到25.0之间使用墨卡托投影；在其他地方（中纬度）使用兰勃特投影。这几个投影方式（以及其它许多投影方式）都可以在 [mapproj]{.pkg} 包中找到。
 
-Users should see the help file for `importTraj` to get an up to date list of receptors where back trajectories have been calculated. First, the packages are loaded that are needed.
+用户可以通过 `importTraj` 的帮助文档查看经过后向轨迹模型预处理计算后受体城市列表。首先，加载所需要的包。
 
 ```{r}
 #| warning: false
@@ -36,7 +36,7 @@ library(tidyverse)
 library(lubridate)
 ```
 
-As an example, we will import trajectories for London in 2010. Importing them is easy:
+例如，我们可以方便的下载并导入2010年伦敦的后向轨迹：
 
 ```{r}
 #| label: loadTraj
@@ -50,26 +50,28 @@ load("../../book_data/londonTraj.RData")
 traj <- importTraj(site = "london", year = 2010)
 ```
 
-The file itself contains lots of information that is of use for plotting back trajectories:
+得到的文件包含大量用于绘制后向轨迹图的数据信息：
 
 ```{r}
 #| label: headTraj
 head(traj)
 ```
 
-The `traj` data frame contains among other things the latitude and longitude of the back trajectory, the height (m) and pressure (Pa) of the trajectory. The `date` field is the *arrival* time of the air-mass and is useful for linking with ambient measurement data.
+`traj`数据框包含了后向轨迹点的经纬度坐标、高度(m)、气压(Pa)等信息。 `date`字段是气团的*抵达*时刻，可以和环境监测数据相关联。
 
 The `trajPlot` function is used for plotting back trajectory lines and density plots and has the following options:
 
-## Plotting trajectories
+下一节将介绍的`trajPlot`函数用于绘制后向轨迹线。
 
-Next, we consider how to plot back trajectories with a few simple examples. The first example will consider a potentially interesting period when the Icelandic volcano, Eyjafjallajokull erupted in April 2010. The eruption of Eyjafjallajokull resulted in a flight-ban that lasted six days across many European airports. In @fig-traj1 `selectByDate` is used to consider the 7 days of interest and we choose to plot the back trajectories as lines rather than points (the default). @fig-traj1 does indeed show that many of the back trajectories originated from Iceland over this period. Note also the plot automatically includes a world base map. The base map itself is not at very high resolution by default but is useful for the sorts of spatial scales that back trajectories exist over. The base map is also global, so provided that there are pre-calculated back trajectories, these maps can be generated anywhere in the world. By default the function uses the 'world' map from the [maps]{.pkg} package. If `map.res = "hires"` then the (much) more detailed base map `worldHires` from the [mapdata]{.pkg} package is used.[^trajectory-analysis-2]
+## 绘制后向轨迹
 
-[^trajectory-analysis-2]: You will need to load the [mapdata]{.pkg} package i.e. `library(mapdata)`.
+接下来，我们提供绘制后向轨迹的几个简单示例。首先我们选取2010年4月冰岛埃亚菲亚德拉火山喷发后的几天作为研究时段，这次喷发导致欧洲大面积领空紧急关闭了6天，大量飞机停航。@fig-traj1 中先通过`selectByDate`函数截取了7天的数据，然后使用缺省配置绘制成为轨迹线，而不是点。从 @fig-traj1 可以看出，这期间确实有大量轨迹源于冰岛。后向轨迹图自动加入了来自[maps]{.pkg} 包的'world'地图作为底图，虽然分辨率并不是很高，但是它覆盖全球，也适用用各种分辨率。使用 `map.res = "hires"`选项切换为[mapdata]{.pkg}包中更高分辨率的`worldHires`底图。[^trajectory-analysis-2]
+
+[^trajectory-analysis-2]: 需要预先加载[mapdata]{.pkg}包，如 `library(mapdata)`.
 
 ```{r}
 #| label: fig-traj1
-#| fig-cap: 96-hour Hysplit back trajectories centred on London for 7 days in April 2010. Note the additional option to vary the country colours using `map.cols`. By default the map colours for all countries are grey.
+#| fig-cap: 2010年四月7天内伦敦市96小时HYSPLIT后向轨迹。底图中各国家的填色默认全部为灰色，这里使用单独的配置加以区分。
 #| fig-width: 6
 #| fig-height: 6
 selectByDate(traj,
@@ -82,13 +84,13 @@ selectByDate(traj,
   )
 ```
 
-Note that `trajPlot` will only plot *full length* trajectories. This can be important when plotting something like a single month e.g. by using `selectByDate` when on partial sections of some trajectories may be selected.
+需要特别指出的是 `trajPlot`只绘制完整的*全长*轨迹，所以在使用 `selectByDate` 选取比如一个月数据的时候要考虑到所关注的轨迹是否能够被完整的包含进来。 
 
-There are a few other ways of representing the data shown in @fig-traj1. For example, it might be useful to plot the trajectories for each day. To do this we need to make a new column `day` which can be used in the plotting. The first example considers plotting the back trajectories in separate panels (@fig-traj2).
+下面介绍其它几种绘制 @fig-traj1 中轨迹的表现形式。一个经常会用到的是按“日”区分不同的轨迹。这需要我们先在数据中增加一个`day`参数，然后将每一天的后向轨迹绘制为单独的面板（@fig-traj2）。
 
 ```{r}
 #| label: fig-traj2
-#| fig-cap: 96-hour Hysplit back trajectories centred on London for 7 days in April 2010, shown separately for each day.
+#| fig-cap: 2010年四月7天内伦敦市96小时HYSPLIT后向轨迹，按“日”单列。
 #| fig-width: 15
 #| fig-height: 4
 ## make a day column
@@ -105,11 +107,11 @@ selectByDate(traj,
   )
 ```
 
-Another way of plotting the data is to group the trajectories by day and colour them. This time we also set a few other options to get the layout we want --- shown in @fig-traj3.
+另一种按“日”区分不同的轨迹的方法是在一个大图中将每一天的轨迹分组并用不用的颜色标记。我们在这个例子中还加入了几个排版方面的定制选项，如@fig-traj3 所示。
 
 ```{r}
 #| label: fig-traj3
-#| fig-cap: 96-hour Hysplit back trajectories centred on London for 7 days in April 2010, shown grouped for each day and coloured accordingly.
+#| fig-cap: 2010年四月7天内伦敦市96小时HYSPLIT后向轨迹，按“日”分组并着色。
 #| fig-height: 7
 #| fig-width: 6
 selectByDate(traj,
@@ -124,7 +126,7 @@ selectByDate(traj,
   )
 ```
 
-So far the plots have provided information on where the back trajectories come from, grouped or split by day. It is also possible, in common with most other [openair]{.pkg} functions to split the trajectories by many other variables e.g. month, season and so on. However, perhaps one of the most useful approaches is to link the back trajectories with the concentrations of a pollutant. As mentioned previously, the back trajectory data has a column `date` representing the arrival time of the air mass that can be used to link with concentration measurements. A couple of steps are required to do this using the `left_join` function.
+上面的图中包含了后向轨迹的信息，也就是气团的来源，我们也能够将其分组逐日展示。像[openair]{.pkg} 中的其它函数一样，后向轨迹图也可以按照另一个参数维度来分组，比如前面用到的“日”，以及月、季等。但是最重要的维度恐怕就是将后向轨迹与污染物的浓度像关联了。前文提到后向轨迹数据中有一个 `date` 列是气团到达的时间，我们可以在轨迹数据中加入这个时间点的各项污染物监测浓度数据，这可以用 `left_join` 函数实现。
 
 ```{r}
 #| label: mergeTraj
@@ -136,11 +138,12 @@ traj <- left_join(traj, kc1, by = "date")
 head(traj)
 ```
 
-This time we can use the option `pollutant` in the function `trajPlot`, which will plot the back trajectories coloured by the concentration of a pollutant. @fig-traj4 does seem to show elevated PM~10~ concentrations originating from Iceland over the period of interest. In fact, these elevated concentrations occur on two days as shown in @fig-traj2. However, care is needed when interpreting such data because other analysis would need to rule out other reasons why PM~10~ could be elevated; in particular due to local sources of PM~10~. There are lots of [openair]{.pkg} functions that can help here e.g. `timeVariation` or `timePlot` to see if NO~x~ concentrations were also elevated (which they seem to be). It would also be worth considering other sites for back trajectories that could be less influenced by local emissions.
+使用包含了污染物的数据，我们可以用`trajPlot`函数的`pollutant`选项来绘制后向轨迹并根据污染物的浓度值来着色。从得到的@fig-traj4 中我们确实发现在这段时间内来自冰岛的气团 PM~10~ 浓度明显偏高，但是还需要排除其它可能的原因才能下结论，比如本地 PM~10~ 的排放。[openair]{.pkg} 的很多功能可以帮助做这类分析，比如使用 `timeVariation` 和 `timePlot` 函数看NO~x~浓度是否也有同步的升高（实际上是的）。当然也可以尝试用明确没有局地污染源影响的其它点位进行分析。
+
 
 ```{r}
 #| label: fig-traj4
-#| fig-cap: 96-hour Hysplit back trajectories centred on London for 7 days in April 2010, coloured by the concentration of PM~10~ in μg m^-3^.
+#| fig-cap: 2010年四月7天内伦敦市96小时HYSPLIT后向轨迹，按 PM~10~ 的浓度（μg m^-3^）着色。
 #| fig-height: 6
 #| fig-width: 6
 selectByDate(traj,
@@ -153,7 +156,7 @@ selectByDate(traj,
   )
 ```
 
-However, it is possible to account for the PM that is local to some extent by considering the relationship between NO~x~ and PM~10~ (or PM~2.5~). For example, using `scatterPlot` (not shown):
+通过 NO~x~ 和 PM~10~ （或 PM~2.5~）的比值关系可以一定程度上定量判断 PM 受到局地污染源的影响程度。这里可以使用`scatterPlot`函数（未显示）
 
 ```{r}
 #| eval: false
@@ -163,14 +166,14 @@ scatterPlot(kc1, x = "nox",
             linear = TRUE)
 ```
 
-which suggests a gradient of 0.084. Therefore, we can remove the PM~10~ that is associated NO~x~ in `kc1` data, making a new column `pm.new`:
+图中可以看到斜率为0.084，我们可以据此剔除 PM~10~ 中受 NO~x~ 影响的部分，作为`kc1` 数据中的一个新的列 `pm.new` ：
 
 ```{r}
 #| eval: false
 kc1 <- mutate(kc1, pm.new = pm10 - 0.084 * nox)
 ```
 
-We have already merged `kc1` with `traj`, so to keep things simple we import `traj` again and merge it with `kc1`. Note that if we had thought of this initially, `pm.new` would have been calculated first before merging with `traj`.
+我们刚才已经将 `kc1` 合并到 `traj` 数据中了。这里为简单起见，我们从新下载导入 `traj` ，然后将带有 `pm.new`列的 `kc1` 合并进来。
 
 ```{r}
 #| eval: false
@@ -178,7 +181,7 @@ traj <- importTraj(site = "london", year = 2010)
 traj <- left_join(traj, kc1, by = "date")
 ```
 
-Now it is possible to plot the trajectories:
+现在再次绘制后向轨迹：
 
 ```{r}
 #| eval: false
@@ -192,25 +195,27 @@ selectByDate(traj,
   )
 ```
 
-Which, interestingly still clearly shows elevated PM~10~ concentrations for those two days that cross Iceland. The same is also true for PM~2.5~. However, as mentioned previously, checking other sites in more rural areas would be a good idea.
+可以看到去除本地影响后，在那两天经过冰岛的轨迹 PM~10~ 浓度仍然明显偏高，PM~2.5~也一样。但是如前所述，仍然建议通过本地郊区站点的监测数据做进一步的印证。
 
-## Trajectory gridded frequencies {#trajLevel}
+## Trajectory gridded frequencies 轨迹网格化频率 {#trajLevel}
 
 The Hysplit model itself contains various analysis options for gridding trajectory data. Similar capabilities are also available in [openair]{.pkg} where the analyses can be extended using other [openair]{.pkg} capabilities. It is useful to gain an idea of where trajectories come from. Over the course of a year representing trajectories as lines or points results in a lot of over-plotting. Therefore it is useful to grid the trajectory data and calculate various statistics by considering latitude-longitude intervals. sec- The first analysis considers the number of unique trajectories in a particular grid square. This is achieved by using the `trajLevel` function and setting the `statistic` option to "frequency". @fig-trajFreq shows the frequency of back trajectory crossings for the North Kensington data. In this case it highlights that most trajectory origins are from the west and north for 2010 at this site. Note that in this case, `pollutant` can just be the trajectory height (or another numeric field) rather than an actual pollutant because only the frequencies are considered.
 
+HYSPLIT模型本身包含对网格化后的轨迹数据进行分析的选项，[openair]{.pkg}也提供类似的功能。我们希望知道各条轨迹的源头和路径，但是如果对一整年的轨迹数据进行制图，不论是用点还是线表征，都会导致图中出现大量的重叠和覆盖。因此我们将轨迹网格化到一定的经纬度区间中。网格化后的第一个分析手段就是统计每一条独立的轨迹在每一个网格中出现的次数。@fig-trajFreq 显示了抵达北肯辛顿（伦敦市代表点位）的所有后向轨迹在网格中所出现的频率，这使用 `trajLevel` 函数同时将 `statistic` 选项设置为 "frequency" 来实现。可以看到这个地点2010年的轨迹主要来自西北方向。在这个用法当中，`pollutant`选项不一定要设置为真的污染物浓度，其缺省设置为轨迹点的高度（也可以是任何数值型的字段），因为函数只会考虑网格的频率。
+
 ```{r}
 #| label: fig-trajFreq
-#| fig-cap: Gridded back trajectory frequencies. The `border = NA` option removes the border around each grid cell.
+#| fig-cap: 后向轨迹网格化频率。`border = NA` 指定不显示网格边框。
 #| fig-width: 8
 #| fig-height: 5
 trajLevel(traj, statistic = "frequency")
 ```
 
-It is also possible to use hexagonal binning to gain an idea about trajectory frequencies. In this case each 3-hour point along each trajectory is used in the counting. The code below focuses more on Europe and uses the hexagonal binning method. Note that the effect of the very few high number of points at the origin has been diminished by plotting the data on a log scale --- see @sec-hexbin for details.
+我们也可以用六边形的网格观察轨迹的频率。在下面的例子中，每条轨迹的3小时间隔点会加入六边形网格的统计，同时选取了欧洲大陆为主的地图区域。由于在制图时频率缺省使用了对数刻度，所以在原点附近的高值计数的影响已经被减弱了，请参见 @sec-hexbin 。
 
 ```{r}
 #| label: fig-trajHex
-#| fig-cap: Gridded back trajectory frequencies with hexagonal binning.
+#| fig-cap: 后向轨迹六边形网格频率统计。
 #| fig-width: 8
 #| fig-height: 5
 filter(traj, lat > 30, lat < 70, lon > -30, lon < 20) %>%
@@ -220,19 +225,19 @@ filter(traj, lat > 30, lat < 70, lon > -30, lon < 20) %>%
   )
 ```
 
-## Trajectory source contribution functions
+## 污染源贡献轨迹
 
-Back trajectories offer the possibility to undertake receptor modelling to identify the location of major emission sources. When many back trajectories (over months to years) are analysed in specific ways they begin to show the geographic origin most associated with elevated concentrations. With enough (dissimilar) trajectories those locations leading to the highest concentrations begin to be revealed. When a whole year of back trajectory data is plotted the individual back trajectories can extend 1000s of km. There are many approaches using back trajectories in this way and [@Fleming2012] provide a good overview of the methods available. [openair]{.pkg} has implemented a few of these techniques and over time these will be refined and extended.
+后向轨迹让我们有机会从受体的角度识别主要污染源的位置。把长时间段（数月至数年）大量的后向轨迹放到一起进行分析基本上可以在空间上勾勒出高污染浓度的来源。越多（差异化的）轨迹被汇总到一起，污染来源就会越明确的的揭示出来。如果绘制一整年的后向轨迹，我们会发现某条单独的轨迹可能延伸到1000公里外。这种利用气团移动轨迹分析空气污染问题的具体方法很多，[@Fleming2012] 提供了很好的综述。[openair]{.pkg} 实现了其中的部分应用，这个技术未来还会继续完善和扩展。
 
-### Identifying the contribution of high concentration back trajectories
+### 识别高污染贡献后向轨迹
 
-A useful analysis to undertake is to consider the pattern of frequencies for two different conditions. In particular, there is often interest in the origin of high concentrations for different pollutants. For example, compared with data over a whole year, how do the frequencies of occurrence differ? @fig-trajDiff shows an example of such an analysis for PM~10~ concentrations. By default the function will compare concentrations \>90th percentile with the full year. The percentile level is controlled by the option `percentile`. Note also there is an option `min.bin` that will exclude grid cells where there are fewer than `min.bin` data points. The analysis compares the percentage of time the air masses are in particular grid squares for all data and a subset of data where the concentrations are greater than the given percentile. The graph shows the absolute percentage difference between the two cases i.e. high minus base.
+有用的污染特征识别经常来自于两个不同场景的横向对比，比如对比高污染浓度的场景和一般场景。对于一整年的后向轨迹，带来高污染次数较多的轨迹分布在什么地方？@fig-trajDiff 展示了对 PM~10~ 的分析结果。默认状况下，高污染贡献网格图会比较大于90百分位数浓度情况下的网格频率和全年的网格频率并对其差异进行可视化。百分位水平通过`percentile`参数设置，另一个参数`min.bin`用于忽略显示频率小于`min.bin`数值的网格。这个分析手段将全部数据和全部数据中的一个子集作对比，子集通过百分位确定，对比的内容是两个场景中气团经过每一个网格的频率百分比的绝对插值，即，高值情景 - 基准情景。
 
-@fig-trajDiff shows that compared with the whole year, high PM~10~ concentrations (90th percentile) are more prevalent when the trajectories originate from the east, which is seen by the positive values in the plot. Similarly there are relatively fewer occurrences of these high concentration back trajectories when they originate from the west. This analysis is in keeping with the highest PM~10~ concentrations being largely controlled by secondary aerosol formation from air-masses originating during anticyclonic conditions from mainland Europe.
+@fig-trajDiff 显示，与全年整体相比，高PM~10~浓度（90百分位）的后向轨迹主要来自偏东方向，在图中显示为正值，相比而言由来自偏西方向后向轨迹所带来的高浓度少之又少。这个分析结果和 PM~10~ 高污染主要来自反气旋条件下欧洲大陆二次气溶胶的观点一致。
 
 ```{r}
 #| label: fig-trajDiff
-#| fig-cap: Gridded back trajectory frequencies showing the percentage difference in occurrence for high PM~10~ concentrations (90th percentile) compared with conditions over the full year.
+#| fig-cap: 高污染贡献网格图展示了高PM~10~浓度（90百分位）和全年状况下后向轨迹在每个网格出现频率的百分比差异。
 #| fig-width: 10
 #| fig-height: 6
 trajLevel(traj, pollutant = "pm10", 
@@ -244,7 +249,7 @@ trajLevel(traj, pollutant = "pm10",
           ylim = c(40, 70))
 ```
 
-Note that it is also possible to use conditioning with these plots. For example to split the frequency results by season:
+网格频率图同样可以用其它条件来分列，比如按照不同级别分别绘制。
 
 ```{r}
 #| label: trajFreq2
@@ -256,9 +261,9 @@ trajLevel(traj,
           type = "season")
 ```
 
-### Allocating trajectories to different wind sectors
+### 按照风向区间进行轨迹归类
 
-One of the key aspects of trajectory analysis is knowing something about where air masses have come from. Cluster analysis can be used to group trajectories based on their origins and this is discussed in @sec-trajCluster. A simple approach is to consider different wind sectors e.g. N, NE, E and calculate the proportion of time a particular back trajectory resides in a specific sector. It is then possible to allocate a particular trajectory to a sector based on some assumption about the proportion of time it is in that sector --- for example, assume a trajectory is from the west sector if it spends at least 50% of its time in that sector or otherwise record the allocation as 'unallocated'. The code below can be used as the basis of such an approach.
+后向轨迹分析的意义在于了解气团的来源，我们可以像 @sec-trajCluster 中讨论过的一样将聚类的方法用于后向轨迹的分析。一个简化的做法是把风向分为几个区间，如北、东北、东等，然后计算后向轨迹在每一个区间出现的时间占比。这样我们就可以设置一个时间占比的阈值然后将每一条轨迹进行归类了———比如我们定义如果一条轨迹出现在西风（或其它某一个风向）区间的时间占比达到其总时长的50%，那么这条轨迹就归类为这个风向区间，否则记为“未归类”。以下的代码展示如何实现上述的归类。
 
 ```{r}
 #| echo: false
@@ -266,7 +271,7 @@ One of the key aspects of trajectory analysis is knowing something about where a
 load("../../book_data/londonTraj.RData")
 ```
 
-First we import the trajectories, which in this case are for London in 2010:
+首先我们导入后向轨迹，这里使用伦敦市2020年的数据：
 
 ```{r}
 #| eval: false
@@ -307,21 +312,21 @@ alloc <- group_by(alloc, date, sector) %>%
 traj <- left_join(traj, alloc, by = "date")
 ```
 
-Now it is possible to post-process the data. `traj` now has the angle, sector and allocation (`sector`).
+经过角度和风向的计算，现在 `traj` 中已经包含了风向分区归类结果 (`sector`) 的信息可以进行下面的分析了。
 
 ```{r}
 #| label: headTraj2
 head(traj)
 ```
 
-First, merge the air quality data from North Kensington:
+首先合并伦敦北肯辛顿点位的空气质量数据：
 
 ```{r}
 #| label: mergeNK
 traj <- left_join(traj, kc1, by = "date")
 ```
 
-We can work out the mean concentration by allocation, which shows the clear importance for the east and south-east sectors.
+我们按照不同的后向轨迹分类来计算污染物的浓度，可以明显发现来自偏东和偏东南方向轨迹的高污染情况。
 
 ```{r}
 #| label: meanAlloc
@@ -329,7 +334,7 @@ group_by(traj, sector) %>%
   summarise(PM2.5 = mean(pm2.5, na.rm = TRUE))
 ```
 
-Finally, the percentage of the year in each sector can be calculated as follows:
+最后，每一个轨迹聚类区间在这一年当中的时长占比情况如下：
 
 ```{r}
 #| label: percentAlloc
@@ -338,21 +343,21 @@ group_by(traj, sector) %>%
   mutate(percent = 100 * n / nrow(traj))
 ```
 
-## Potential Source Contribution Function (PSCF)
+## 潜在污染源贡献函数 (Potential Source Contribution Function,PSCF)
 
-If `statistic = "pscf"` then the Potential Source Contribution Function (PSCF) is plotted. The PSCF calculates the probability that a source is located at latitude $i$ and longitude $j$ [@Fleming2012; @Pekney2006]. The PSCF is somewhat analogous to the CPF function described on @sec-CPF that considers local wind direction probabilities. In fact, the two approaches have been shown to work well together [@Pekney2006]. The PSCF approach has been widely used in the analysis of air mass back trajectories. [@AraBegum2005] for example assessed the method against the known locations of wildfires and found it performed well for PM~2.5~, EC (elemental carbon) and OC (organic carbon) and that other (non-fire related) species such as sulphate had different source origins. The basis of PSCF is that if a source is located at ($i$, $j$), an air parcel back trajectory passing through that location indicates that material from the source can be collected and transported along the trajectory to the receptor site. PSCF solves
+潜在污染源贡献函数 (PSCF) 通过 `statistic = "pscf"` 选项绘制生成。PSCF 计算污染源位于纬度 $i$ 和经度 $j$ 的概率[@Fleming2012; @Pekney2006]。@sec-CPF 中曾经介绍过计算风向概率的 CPF 函数，PSCF 函数有相似之处，同时也可以与之一起使用 [@Pekney2006]。PSCF方法广泛用于气团后向轨迹的研究，[@AraBegum2005] 通过已知位置出现山火的场景对本方法进行了评估，发现可以很好将PM~2.5~、EC(元素碳)、OC(有机碳)和其它（非火灾原因导致的）颗粒物组分，如硫酸盐。PSCF的基本假设是如果污染源位于 ($i$, $j$)，那么经过这一点的气团会将其产生的污染物按照后向轨迹的路径传输到受体点。PSCF计算如下方程：
 
 $$
 PSCF = \frac{m_{ij}}{n_{ij}} 
 $$ {#eq-PSCF}
 
-where $n_{ij}$ is the number of times that the trajectories passed through the cell ($i$, $j$) and $m_{ij}$ is the number of times that a source concentration was high when the trajectories passed through the cell ($i$, $j$). The criterion for determining $m_{ij}$ is controlled by `percentile`, which by default is 90. Note also that cells with few data have a weighting factor applied to reduce their effect.
+其中 $n_{ij}$ 为后向轨迹通过格点($i$, $j$)的次数，$m_{ij}$ 为轨迹经过格点($i$, $j$)时污染物浓度偏高的次数。$m_{ij}$ 的计数标准由 `percentile` 参数控制，缺省值为90。对数据量过少的格点会进行降权处理来减少其影响。
 
-An example of a PSCF plot is shown in @fig-PSCF for PM~2.5~ for concentrations 90th percentile. This Figure gives a very clear indication that the principal (high) sources are dominated by source origins in mainland Europe --- particularly around the Benelux countries.
+@fig-PSCF 为 PM~2.5~ 90百分位条件下的 PSCF 图。可以明显的看出重要的污染源来自欧洲大陆————尤其是比荷卢三国。
 
 ```{r}
 #| label: fig-PSCF
-#| fig-cap: PSCF probabilities for PM~2.5~ concentrations (90th percentile).
+#| fig-cap: PM~2.5~ PSCF 概率图（90百分位）。
 #| fig-height: 6
 #| fig-width: 10
 filter(traj, lon > -20, lon < 20, lat > 45, lat < 60) %>%
@@ -363,21 +368,21 @@ filter(traj, lon > -20, lon < 20, lat > 45, lat < 60) %>%
   )
 ```
 
-## Concentration Weighted Trajectory (CWT)
+## 污染权重轨迹 (Concentration Weighted Trajectory, CWT)
 
-A limitation of the PSCF method is that grid cells can have the same PSCF value when sample concentrations are either only slightly higher or much higher than the criterion [@Hsu2003]. As a result, it can be difficult to distinguish moderate sources from strong ones. [@seibert1994] computed concentration fields to identify source areas of pollutants. This approach is sometimes referred to as the CWT or CF (concentration field). A grid domain was used as in the PSCF method. For each grid cell, the mean (CWT) or logarithmic mean (used in the Residence Time Weighted Concentration (RTWC) method) concentration of a pollutant species was calculated as follows:
+PSCF的局限性是不管污染浓度是小幅偏高还是严重偏高，其PSCF值是相同的[@Hsu2003]，导致它无法区分污染源的强度。[@seibert1994]通过计算一个浓度场来定位不同污染物的来源，这种方法称通常称为CWT或CF (concentration field)。在与PSCF相同的格点区域内，每一个格点的平均值(CWT)或对数平均值（用于驻留时间权重浓度方法Residence Time Weighted Concentration (RTWC)）的计算方法如下： 
 
 $$
   ln(\overline{C}_{ij}) = \frac{1}{\sum_{k=1}^{N}\tau_{ijk}}\sum_{k=1}^{N}ln(c_k)\tau_{ijk} 
 $$ {#eq-RTWC}
 
-where $i$ and $j$ are the indices of grid, $k$ the index of trajectory, $N$ the total number of trajectories used in analysis, $c_k$ the pollutant concentration measured upon arrival of trajectory $k$, and $\tau_{ijk}$ the residence time of trajectory $k$ in grid cell ($i$, $j$). A high value of $\overline{C}_{ij}$ means that, air parcels passing over cell ($i$, $j$) would, on average, cause high concentrations at the receptor site.
+其中 $i$ 和 $j$ 为指定的格点，$k$ 为指定的轨迹，$N$ 为待分析的总轨迹数，$c_k$ 为 $k$ 轨迹到达时的污染物浓度，$\tau_{ijk}$ 为轨迹 $k$ 在格点($i$, $j$)的驻留时长。高 $\overline{C}_{ij}$ 值代表经过格点($i$, $j$)的气团会导致受体点更高的污染浓度。
 
-@fig-traj5 shows the situation for PM~2.5~ concentrations. It was calculated by recording the associated PM~2.5~ concentration for each point on the back trajectory based on the arrival time concentration using 2010 data. The plot shows the geographic areas most strongly associated with high PM~2.5~ concentrations i.e. to the east in continental Europe. Both the CWT and PSCF methods have been shown to give similar results and each have their advantages and disadvantages [@Lupu2002; @Hsu2003]. @fig-traj5 can be compared with @fig-PSCF to compare the overall identification of source regions using the CWT and PSCF techniques. Overall the agreement is good in that similar geographic locations are identified as being important for PM~2.5~.
+@fig-traj5 展示CWT方法下 PM~2.5~ 浓度的情况。每一个格点的值为2010年轨迹经过这个格点时该轨迹达到终点时浓度的平均值。该图展示了高 PM~2.5~ 浓度来源的地理分布————欧洲大陆，包括东部。CWT和PSCF方法已被证明可以给出相似的结果，并且每种方法各有其优点和缺点[@Lupu2002; @Hsu2003]。可以通过比较 @fig-traj5 和 @fig-PSCF 在观察CWT和PSCF两种技术在污染来源识别方面的差异，但是可以说两种方法都可以给出接近且重要的PM~2.5~来源空间分布信息。
 
 ```{r}
 #| label: fig-traj5
-#| fig-cap: Gridded back trajectory concentrations showing mean PM~2.5~ concentrations using the CWT approach.
+#| fig-cap: 后向轨迹加权的 PM~2.5~ 格点浓度（CWT）。
 #| fig-width: 10
 #| fig-height: 6
 filter(traj, lon > -20, lon < 20, lat > 45, lat < 60) %>%
@@ -389,11 +394,11 @@ filter(traj, lon > -20, lon < 20, lat > 45, lat < 60) %>%
   )
 ```
 
-@fig-traj5 is useful, but it can be clearer if the trajectory surface is smoothed, which has been done for PM~2.5~ concentrations shown in @fig-traj6.
+@fig-traj6 展示了平滑处理后的 PM~2.5~ 浓度分布，比@fig-traj5 看起来更加清晰。
 
 ```{r}
 #| label: fig-traj6
-#| fig-cap: Gridded and smoothed back trajectory concentrations showing mean PM~2.5~ concentrations using the CWT approach.
+#| fig-cap: 后向轨迹加权的 PM~2.5~ 格点浓度（CWT），进行平滑处理。
 #| fig-width: 10
 #| fig-height: 6
 filter(traj, lat > 45 & lat < 60 & lon > -20 & lon < 20) %>%
@@ -405,7 +410,7 @@ filter(traj, lat > 45 & lat < 60 & lon > -20 & lon < 20) %>%
   )
 ```
 
-In common with most other [openair]{.pkg} functions, the flexible `type` option can be used to split the data in different ways. For example, to plot the smoothed back trajectories for PM~2.5~ concentrations by season.
+与[openair]{.pkg}中的其它函数一样，可以使用 `type` 选项灵活的拆分数据。例如可以通过下面的代码按照不同季节分别绘制。 
 
 ```{r}
 #| label: traj7
@@ -419,59 +424,59 @@ filter(traj, lat > 40 & lat < 70 & lon > -20 & lon < 20) %>%
   )
 ```
 
-It should be noted that it makes sense to analyse back trajectories for pollutants that have a large regional component --- such as particles or O~3~. It makes little sense to analyse pollutants that are known to have local impacts e.g. NO~x~ However, a species such as NO~x~ can be helpful to exclude 'fresh' emissions from the analysis.
+应该指出的是后向轨迹分析适用于研究颗粒物或者O~3~这种可以远距离传输的污染物，对于已经知道是由于本地排放导致的污染物，如NO~x~，开展后向轨迹分析则没有什么意义，但是可以作为分离数据中“新鲜”排放的一个重要特征。
 
-## Simplified Quantitative Transport Bias Analysis (SQTBA)
+## 简化的传输偏差定量分析（Simplified Quantitative Transport Bias Analysis, SQTBA）
 
-Both CWT and PSCF techniques is essence assume that the trajectory paths represent a good estimate of the centreline of the air mass origin. However, trajectory analysis is implicitly uncertain, not least because of the difficulty of accurately describing the dispersion of pollutants in the atmosphere. Hysplit has many approaches to deal with these uncertainties such as running an ensemble of trajectories with different starting locations. However, for longer term analysis it can be very time consuming to run the model to explore the influence of meteorological variation.
+CWT和PSCF两种技术本质上都假设后向轨迹完美代表气团轨迹移动的中心线，然后轨迹分析隐含了大量的不确定性，尤其是因为其难以准确的描述污染物在大气中的扩散行为。HYSPLIT通过多初始点的轨迹集合等方法来解决这一问题，但是在进行长期分析时用这种方法来探索气象条件的变化将非常耗时。
 
-SQTBA is an approach that recognises the natural processes of plume dispersion and uses this understanding as part of back trajectory analysis. The approach has been used in many studies that aim to better understand sources regions for PM~2.5~ (or components of PM~2.5~) e.g. @brook2004 considering PM~2.5~ in North America, @zhao2007 modelling particulate nitrate and sulphate, @zhou2004 comparing different source attribution techniques including SQTBA and the consideration of sources of ammonia in New York State [@zhou2019].
+SQTBA 是一种将烟羽扩散的自然过程作为后向轨迹分析一部分的方法。这种方法已经用于PM~2.5~ （或 PM~2.5~ 组分）的溯源研究方式。如：@brook2004 将其应用于北美地区 PM~2.5~ 的研究，@zhao2007 用于研究颗粒物中的硝酸盐和硫酸盐，@zhou2004 对比了报过SQTBA在内的多种来源解析方法，还应用于纽约州的氨来源研究[@zhou2019]。
 
-The basic idea, only described briefly here, is that there is a natural transport behaviour of dispersing air masses that can be described by the Gaussian plume equation. Rather than a single back trajectory being considered, it is assumed that concentrations are represented according to Gaussian plume dilution along each trajectory --- giving a probability of a certain concentration at a particular point on a grid. In effect, the further from a receptor (measurement site), the wider the plume (σ value), which has the effect of spreading-out the likely origin of the source. This approach is an effective, pragmatic solution to better account for the uncertainties in the location of upwind sources.
+对这个方法的简要阐述是，气团扩散以及传输的真实过程并不是一条简单的轨迹，而是沿着这条轨迹不断扩散和稀释的过程，这个过程可以用高斯烟羽方程来描述————进而可以得出每一个特定点上出现某具体浓度的概率。实际上，离受体（监测站点）越远，烟羽宽度(σ 值)就越大，也就是污染来源可能的方向就越广。这是一种解决上风向污染来源不确定性的有效方案。
 
-Q(x,t\| x', t'), is the probability for the air parcel at position x' at time t' to arrive at position x at time t is given by:
+Q(x,t\| x', t'),代表t'时刻位于x'位置的气团在t时刻到达x位置的概率，由下式给出：
 
 $$
   Q(x, t, x', t') = \frac{1}{2 \pi \sigma_x(t') \sigma_y(t')}e^{-\frac{1}{2}\Bigg[\bigg(\frac{X - x'(t')}{\sigma_x(t')}\bigg)^2 + \bigg(\frac{Y - y'(t')}{\sigma_y(t')}\bigg)^2\Bigg]}
 $$
 
-X, Y: Coordinate of the grid centre
+X, Y: 格点中心坐标
 
-x' y': Centreline of trajectory
+x' y': 轨迹中心线
 
-σ: Standard deviation of trajectories at two directions which are assumed to grow with time
+σ: 后向轨迹随时间向两侧扩散的标准偏差
 
-σ~x~(t') = σ~y~(t') = at', a is a dispersion speed, equals to 1.5 km h^-1^. Note that the default σ is assumed to be 1.5 km h^-1^ rather than 5.4 km h^-1^ that is commonly used in other studies because testing shows that a lower value reveals more information about source origins without introducing noise. In practice, the value of σ will vary depending on meteorological conditions and be influenced by both turbulence and wind shear. Users can set their own value of σ in the function options.
+σ~x~(t') = σ~y~(t') = at', 其中a为扩散速度，等于1.5公里每小时。这里 σ 的默认值设置为1.5公里每小时而不是在很多研究中常用的5.4公里每小时，是因为测试表明较低的 σ 值可以在不引入噪声的前提下揭示足够的污染物来源信息。实际情况中σ值在不同的气象条件下是有差异的，会受到湍流和风切变等因素的影响，用户可以在选项中设置自己的σ值。
 
-This means at each trajectory point, the probability is calculated across a pre-defined grid. These calculations can take some time to run. For example, with 96 hour back trajectories calculated every 3 hours in a year, there are 840,960 trajectory end points. Each one of these points is used to estimate the probability on a grid, which itself can be large (a one degree grid from 35 to 80°N and -55 to 25°W is 3600 grid points).
+上述方法意味着针对每一条轨迹的每一个轨迹点都需要计算周边预设区域里每一个格点的概率，这个计算量是很大的。例如：对于一年内3小时步长的96小时后向轨迹，需要计算840,960个轨迹点的情况，针对每一个轨迹点的计算又包括在整个网格区域内的概率（在北纬25-80度，西经-55-25度的区域内的1度网格也需要计算3600个格点的情况）。
 
-A *potential mass transfer potential field* is calculated for a given trajectory l, arriving at time t, is integrated over back trajectory time 𝜏:
+对于到达时间为t的轨迹l，*潜在传输影响场*是对后向轨迹时间 𝜏 的积分：
 
 $$
 \overline{T_l}(x | x') = \frac{\int_{t-\tau}^{t} Q(x,t| x', t')dt'}{\int_{t-\tau}^{t}dt'} 
 $$
 
-and the concentration-weighted field calculated as:
+浓度加权场的计算公式为：
 
 $$
 \widetilde{T}(x|x') = \sum_{l=1}^{l=L}\overline{T_l}(x|x')c_l 
 $$
 
-c~l~: Receptor concentration of back trajectory I
+c~l~: 后向轨迹l的受体浓度
 
-L: Total number of back trajectories
+L: 总的后向轨迹数
 
-And the final SQTBA is calculated as:
+最终的 SQTBA 计算公式为：
 
 $$
 SQTBA(x|x') = \frac{\widetilde{T}(x|x')}{\sum_{l=1}^{l=L}\overline{T_l}(x|x')}
 $$
 
-As an example, consideration is given to PM~2.5~ concentrations in a similar way as shown for CWT and the PSCF techniques. This plot indicates several potential sources of PM~2.5~ precursors with the Benelux countries and around the Po Valley in Italy (known high NO~x~ emission regions and potential sources of ammonium nitrate), and also a higher source region in eastern Europe across south Poland.
+作为示例，采用与CWT和PSCF方法类似的方式观察PM~2.5~的浓度。从图中可以看出PM~2.5~的几个潜在污染来源为比荷卢经济联盟国家、意大利波河河谷地区（已知的高NO~x~和硝酸铵污染排放地区）和东欧的波兰南部地区。
 
 ```{r}
 #| label: fig-SQTBA
-#| fig-cap: SQTBA approach applied to PM~2.5~ concentrations at the North Kensington site in London for 2010.
+#| fig-cap: 应用SQTBA方法的PM~2.5~潜在污染贡献图,2010年伦敦市北肯辛顿站点。.
 #| fig-height: 6
 #| fig-width: 10
 trajLevel(traj,
@@ -484,11 +489,11 @@ trajLevel(traj,
           )
 ```
 
-Some further analysis can be carried out on the TEOM FDMS measurements, which separately reports the volatile and non-volatile components of PM. @fig-SQTBA-PMv shows the plot for the volatile PM~2.5~ component, which highlights the source regions of the Benelux counties and (likely) northern Italy.
+由于TEOM FDMS监测方法可以区分挥发性和非挥发性的颗粒物，因此 @fig-SQTBA-PMv 进一步分析了 PM~2.5~ 的挥发性组分，再一次显示出比荷卢地区和意大利北部可能的污染来源。
 
 ```{r}
 #| label: fig-SQTBA-PMv
-#| fig-cap: SQTBA approach applied to volatile PM~2.5~ concentrations at the North Kensington site in London for 2010.
+#| fig-cap: 应用SQTBA方法的挥发性PM~2.5~潜在污染贡献图,2010年伦敦市北肯辛顿站点。
 #| fig-height: 6
 #| fig-width: 10
 trajLevel(traj,
@@ -501,11 +506,11 @@ trajLevel(traj,
           )
 ```
 
-On the other hand, @fig-SQTBA-PMnv shows the non-volatile PM~2.5~ component, which more clearly shows eastern Europe as the principal source. This plot differs from @fig-SQTBA-PMv and likely highlights the higher sulphur emissions from power generation in this part of Europe. More detailed analysis can be carried out if the components of PM are available at an hourly or daily resolution e.g. particulate nitrate, sulphate.
+@fig-SQTBA-PMnv 绘制了非挥发性PM~2.5~组分的潜在污染来源，可以看出东欧是最重要的污染来源。这是和@fig-SQTBA-PMv 不同的特征，凸显了这一地区电厂的含硫污染物的排放。如果硫酸盐、硝酸盐这些颗粒物组分的监测数据可以达到小时或者日的粒度，我们还可以做更详细的分析。
 
 ```{r}
 #| label: fig-SQTBA-PMnv
-#| fig-cap: SQTBA approach applied to the non-volatile PM~2.5~ concentrations at the North Kensington site in London for 2010.
+#| fig-cap: 应用SQTBA方法的非挥发性PM~2.5~潜在污染贡献图,2010年伦敦市北肯辛顿站点。
 #| fig-height: 6
 #| fig-width: 10
 trajLevel(traj,
@@ -518,27 +523,27 @@ trajLevel(traj,
           )
 ```
 
-The analysis above was demonstrated for a single site. However, to exploit the full potential of the SQTBA approach, multiple receptors should be considered. The reason why multiple sites should be considered is that there will be better geographic coverage of the trajectories and potential for source regions to be sampled multiple times. To conduct an analysis of multiple sites, trajectories linked to pollutant concentrations should be combined into a single data frame in the format similar to `traj` above but with an additional variable that identifies the different sites. When running `trajLevel` the option `.combine` should be used to identify the relevant column e.g. `.combine = "site"`.
+以上都是针对单一站点作为受体开展的分析，也可以同时考虑多个受体以便充分发挥SQTBA方法的潜力。多受体可以获得更大范围的空间覆盖，同时潜在的污染源地区也能够得到重复采样。要进行多受体分析，需要把几个站点的轨迹合并为一个和`traj`类似的数据框，然后增加一列代表站点的参数。在运行 `trajLevel` 的时候使用 `.combine` 选项声明代表站点的参数，如`.combine = "site"`。
 
-The results returned from multiple site analysis are normalised by each site individually by dividing the output by the mean of the pollutant concentration. This approach ensures that sites with potentially very different mean concentrations can be used in a consistent way to identify source regions, without single sites dominating the output.
+多受体分析时不同站点的浓度会通过除以平均值的方式进行归一化。这样可以确保几个站点以相同的力度来识别污染来源地区，不会发生一个站点主导的情况。
 
-## Trajectory clustering {#sec-trajCluster}
+## 轨迹聚类 {#sec-trajCluster}
 
-Often it is useful to use cluster analysis on back trajectories to group similar air mass origins together. The principal purpose of clustering back trajectories is to post-process data according to cluster origin. By grouping data with similar geographic origins it is possible to gain information on pollutant species with similar chemical histories. There are several ways in which clustering can be carried out and several measures of the similarity of different clusters. A key issue is how the *distance matrix* is calculated, which determines the similarity (or dissimilarity) of different back trajectories. The simplest measure is the Euclidean distance. However, an angle-based measure is also often used. The two distance measures are defined below. In [openair]{.pkg} the distance matrices are calculated using C$++$ code because their calculation is computationally intensive. Note that these calculations can also be performed directly in the Hysplit model itself.
+通过后向轨迹的聚类分析将相似的气团移动路径进行归类非常有用，这主要是为了对归类后的路径开展后分析。地理上来源相似的气团很有可能也具有相似的化学特性。聚类的方法有多种，评价聚类结果相似性的方法也有多种。对于后向轨迹的聚类来说，核心的问题是*距离矩阵*如果计算，它决定了不同轨迹之间的相似性（或相异性）。最简单的方法是使用欧几里得距离，基于角度的距离也经常使用。下面会介绍两种距离的计算方法。在[openair]{.pkg}中距离矩阵这一密集型的计算是由 C$++$ 代码完成的。注意聚类的计算也可以直接在HTSPLIT模型本身中执行。
 
-The Euclidean distance between two trajectories is given by Equation \@eq-Euclid. Where $X_1$, $Y_1$ and $X_2$, $Y_2$ are the latitude and longitude coordinates of back trajectories $1$ and $2$, respectively. $n$ is the number of back trajectory points (96 hours in this case).
+两条轨迹的欧几里得距离由公式 @eq-Euclid 得出。其中，$X_1$, $Y_1$ 和 $X_2$, $Y_2$ 分别为后向轨迹 $1$ 和 $2$ 的经纬度坐标，$n$ 为后向轨迹的时序数（本例中为96小时）。
 
 $$
 d_{1, 2} = \left({\sum_{i=1}^{n} ((X_{1i} - X_{2i}) ^ 2 + (Y_{1i} - Y_{2i})) ^ 2}\right)^{1/2} 
 $$ {#eq-Euclid}
 
-The *angle* distance matrix is a measure of how similar two back trajectory points are in terms of their angle from the origin i.e. the starting location of the back trajectories. The angle-based measure will often capture some of the important circulatory features in the atmosphere e.g. situations where there is a high pressure located to the east of the UK. However, the most appropriate distance measure will be application dependent and is probably best tested by the extent to which they are able to differentiate different air-mass characteristics, which can be tested through post-processing. The angle-based distance measure is defined as:
+*角度*距离矩阵是比较两个后向轨迹点相对于起始点的角度的相似性。基于角度的聚类可以更好的识别重要的大气环流特征，如高气压位于英国东部的轨迹。选择哪个方法取决于所有进行的后分析的具体应用场景，取决于在后分析中想要区分中的气团特征是什么。角度距离的计算方式为：
 
 $$
 d_{1, 2} = \frac{1}{n}\sum_{i=1}^{n}cos^{-1} \left(0.5\frac{A_i + B_i - C_i}{\sqrt{A_iB_i}}\right)  
 $$ {#eq-Angle}
 
-where
+其中
 
 $$
   A_i = (X_1(i) - X_0)^2 + (Y_1(i) - Y_0)^2
@@ -552,9 +557,10 @@ $$
   C_i = (X_2(i) - X_1(i))^2 + (Y_2(i) - Y_1(i))^2
 $$ {#eq-C}
 
-where $X_0$ and $Y_0$ are the coordinates of the location being studied i.e. the starting location of the trajectories.
 
-As an example we will consider back trajectories for London in 2011.
+其中 $X_0$ 和 $Y_0$ 为轨迹的起始坐标
+
+作为示例，我们将2011年伦敦市的后向轨迹进行聚类。
 
 ```{r}
 #| echo: false
@@ -563,7 +569,7 @@ As an example we will consider back trajectories for London in 2011.
 load("../../book_data/clusterData.RData")
 ```
 
-First, the back trajectory data for London is imported together with the air pollution data for the North Kensington site (KC1).
+首先我们导入伦敦市的后向轨迹数据以及空气质量数据（北肯辛顿站点，KC1）。
 
 ```{r}
 #| label: importTrajKC1
@@ -571,11 +577,11 @@ traj <- importTraj(site = "london", year = 2011)
 kc1 <- importAURN(site = "kc1", year = 2011)
 ```
 
-The clusters are straightforward to calculate. In this case the back trajectory data (`traj`) is supplied and the angle-based distance matrix is used. Furthermore, we choose to calculate 6 clusters and choose a specific colour scheme. In this case we read the output from `trajCluster` into a variable `clust` so that the results can be post-processed.
+实现聚类计算很简单，本例使用后向轨迹数据`traj`并且采用角度距离矩阵。此外我们的设置聚类簇的个数为6以及一个指定的配色方案。最后我们把 `trajCluster` 的结果赋值给变量 `clust`，以便进行下一步的处理分析。
 
 ```{r}
 #| label: fig-calcClusterTraj
-#| fig-cap: The 6-cluster solution to back trajectories calculated for the London North Kensington site for 2011 showing the mean trajectory for each cluster.
+#| fig-cap: 2011年伦敦市后向轨迹聚类后的6簇轨迹均值。
 #| fig-width: 6
 #| fig-height: 5
 clust <- trajCluster(traj, method = "Angle", 
@@ -584,14 +590,14 @@ clust <- trajCluster(traj, method = "Angle",
                      map.cols = openColours("Paired", 10))
 ```
 
-`clust` returns all the back trajectory information together with the cluster (as a character). This data can now be used together with other data to analyse results further. However, first it is possible to show all trajectories coloured by cluster, although for a year of data there is significant overlap and it is difficult to tell them apart.
+`clust` 中包含了已经带有聚类信息的所有后向轨迹数据。这个数据集可以配合其它数据做进一步的分析。首先我们先查看一下所有的轨迹并用不同的颜色来显示聚类结果，尽管一整年的轨迹画在一起会密密麻麻的难以区分。
 
 ```{r}
 #| eval: false
 trajPlot(clust$data, group = "cluster")
 ```
 
-A useful way in which to see where these air masses come from by trajectory is to produce a frequency plot by cluster. Such a plot (not shown, but code below) provides a good indication of the spread of the different trajectory clusters as well as providing an indication of where air masses spend most of their time. For the London 2011 data it can be seen cluster 1 is dominated by air from the European mainland to the south.
+这时可以为每一个簇类绘制单独的轨迹频率图，一般更好的区分每一个簇类轨迹覆盖的范围以及气团在各地停留时间的占比。比如从2011年伦敦的数据结果来看，簇1的轨迹集中代表了来自伦敦以南欧洲大陆的气团。
 
 ```{r}
 #| eval: false
@@ -600,7 +606,7 @@ trajLevel(clust$data, type = "cluster",
           border = NA)
 ```
 
-Perhaps more useful is to merge the cluster data with measurement data. In this case the data at North Kensington site are used. Note that in merging these two data frames it is not necessary to retain all 96 back trajectory hours and for this reason we extract only the first hour.
+下面将聚类后的轨迹数据再一次与空气质量监测数据相结合，这里仍然使用北肯辛顿站点。注意我们在合并这两个数据集的时候，不需要再保留所有96个的轨迹点，只用每条轨迹的第一个小时数据就已经有全部的聚类信息了。
 
 ```{r}
 #| label: mergeClustTraj
@@ -610,18 +616,18 @@ kc1 <- inner_join(kc1,
                   by = "date")
 ```
 
-Now `kc1` contains air pollution data identified by cluster. The size of this data frame is about a third of the original size because back trajectories are only run every 3 hours.
+现在`kc1`中的空气质量数据已经匹配了聚类信息。合并后的数据行数只是原来的三分之一，因为后向轨迹点每3个小时才计算一个。
 
-The numbers of each cluster are given by:
+每一个聚类簇的样本数量如下：
 
 ```{r}
 #| label: numClust
 table(kc1[["cluster"]])
 ```
 
-i.e. is dominated by clusters 3 and 2 from west and south-west (Atlantic).
+可以看到，来自西部和西南方向（大西洋）方向簇类3和2战区主导地位。
 
-Now it is possible to analyse the concentration data according to the cluster. There are numerous types of analysis that can be carried out with these results, which will depend on what the aims of the analysis are in the first place. However, perhaps one of the first things to consider is how the concentrations vary by cluster. As the summary results below show, there are distinctly different mean concentrations of most pollutants by cluster. For example, clusters 1 and 6 are associated with much higher concentrations of PM~10~ --- approximately double that of other clusters. Both of these clusters originate from continental Europe. Cluster 5 is also relatively high, which tends to come from the rest of the UK. Other clues concerning the types of air-mass can be gained from the mean pressure. For example, cluster 5 is associated with the highest pressure (1014 kPa), and as is seen in @fig-calcClusterTraj the shape of the line for cluster 5 is consistent with air-masses associated with a high pressure system (a clockwise-type sweep).
+污染浓度和后向轨迹的聚类分析可以有不用的方向，这取决于最初的分析目标。我们至少可以先看一下不同簇类污染浓度的差异。从下面的汇总表可以看到，不同簇类下大部分污染物的平均浓度显示出很大的差异。比如，第1和第6簇的PM~10~明显偏高，甚至比其它情况高出一倍，而这两个簇类都是来自欧洲大陆地区的气团。第5簇也比较高，这是来自英国本土其它地区的气团。另一个区分不同气团的方式是看其平均气压水平。簇5的气压水平最高（1014 kPa），从 @fig-calcClusterTraj 也可以看出来簇5轨迹呈明显的顺时针方向，即高气压控制。
 
 ```{r}
 #| label: clustMeans
@@ -629,11 +635,11 @@ group_by(kc1, cluster) %>%
   summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 ```
 
-Simple plots can be generated from these results too. For example, it is easy to consider the temporal nature of the volatile component of PM~2.5~ concentrations (`v2.5` in the `kc1` data frame). @fig-calcClusterLevel for example shows how the concentration of the volatile component of PM~2.5~ concentrations varies by cluster by plotting the hour of day-month variation. It is clear from @fig-calcClusterLevel that the clusters associated with the highest volatile PM~2.5~ concentrations are clusters 1 and 6 (European origin) and that these concentrations peak during spring. There is less data to see clearly what is going on with cluster 5. Nevertheless, the cluster analysis has clearly separated different air mass characteristics which allows for more refined analysis of different air-mass types.
+上面的数据结果也可以用其它简单直观的方式展现出来。比如查看不同轨迹簇类下挥发性PM~2.5~ 浓度随时间的变化情况。 @fig-calcClusterLevel 中横坐标为月、纵坐标为小时，以6个聚类簇分栏绘制。可以明显发现挥发性PM~2.5~高值出现在簇1和簇6（源自欧洲大陆），并且主要发生在春季。簇5的数据量较少导致我们无法得到更多有用的信息。但是不管怎么样，轨迹的聚类都可以较好的区分出具有不同特征的气团，让我们得以开展进一步的分析。
 
 ```{r}
 #| label: fig-calcClusterLevel
-#| fig-cap: Some of the temporal characteristics of the volatile PM~2.5~ component plotted by month and hour of the day and by cluster for the London North Kensington site for 2011.
+#| fig-cap: 2011年伦敦北肯辛顿站点挥发性PM~2.5~浓度逐月的日变化图，按照后向轨迹的聚类结果区分为6个不同场景。
 #| fig-width: 13
 #| fig-height: 3
 #| column: screen-inset-right
@@ -642,13 +648,13 @@ trendLevel(kc1, pollutant = "v2.5", type = "cluster",
                cols = "increment")
 ```
 
-Similarly, as considered in @sec-polarCluster, the `timeVariation` function can also be used to consider the temporal components.
+@sec-polarCluster 中介绍的 `timeVariation` 函数也可以用于展示污染物随时间变化的情况。
 
-Another useful plot to consider is `timeProp` (see @sec-timeProp), which can show how the concentration of a pollutant is comprised. In this case it is useful to plot the time series of PM~2.5~ *and* show how much of the concentration is contributed to by each cluster. Such a plot is shown in @fig-timePropTraj. It is now easy to see for example that during the spring months many of the high concentration events were due to clusters 1 and 6, which correspond to European origin air-masses as shown in @fig-calcClusterTraj.
+还有 `timeProp` 函数（见 @sec-timeProp ）可以在时间序列中展示污染物的构成。这里我们绘制 PM~2.5~ 浓度的时间序列*并且*同时看其浓度由不同簇类的贡献情况，如 @fig-timePropTraj 所示。我们可以观察得到与 @fig-calcClusterTraj 类似的信息，即春季的高浓度颗粒物主要由来自欧洲大陆的簇1和簇6贡献。
 
 ```{r}
 #| label: fig-timePropTraj
-#| fig-cap: Temporal variation in daily PM~2.5~ concentrations at the North Kensington site show by contribution of each cluster.
+#| fig-cap: 2011年伦敦北肯辛顿站点PM~2.5~浓度时间序列，显示各后向轨迹簇类的贡献情况。
 #| fig-width: 15
 #| fig-height: 5
 #| column: screen-inset-right
@@ -658,35 +664,35 @@ timeProp(kc1, pollutant = "pm2.5",
          key.position = "top", key.columns = 6)
 ```
 
-## Trajectories on an interactive map
+## 交互是地图上的后向轨迹
 
-An R package called [openairmaps]{.pkg} has been developed to plot trajectories on interactive [leaflet]{.pkg} maps. This package can be installed from CRAN, similar to [openair]{.pkg}.
+[openairmaps]{.pkg} R语言包可用于在 [leaflet]{.pkg} 交互式地图上展示后向轨迹。这个包和[openair]{.pkg}一样可以从CRAN上下载安装。
 
 ```{r}
 #| eval: false
 install.packages("openairmaps")
 ```
 
-The function `trajMap` is the [openairmaps]{.pkg} equivalent of the `trajPlot` function. The package comes with some example data (`traj_data`) that can be used as a template for using other `importTraj` outputs.
+[openairmaps]{.pkg} 中的 `trajMap` 函数与 `trajPlot` 函数对应，同时包里包含了一些样例数据（`traj_data`）可以用于测试和其它 `importTraj` 导出文件的模版。
 
-First, load the package.
+第一步，加载软件包。
 
 ```{r}
 #| cache: false
 library(openairmaps)
 ```
 
-Plot an interactive map. Try clicking on the individual
+绘制交互式地图。可以尝试点击一个轨迹点。
 
 ```{r}
 #| label: fig-trajInterMap
 #| cache: false
-#| fig-cap: Interactive map of trajectories with the default map.
+#| fig-cap: 在交互式地图上绘制后向轨迹，默认底图。
 #| results: asis
 trajMap(traj_data, colour = "pm10")
 ```
 
-The `trajMap` function allows for control of many parts of the [leaflet]{.pkg} map. For example, you can provide one (or more) different base map(s) --- there are many! You can also specify a "control" column, which will allow you to show and hide certain trajectory paths. This is nicely showcased using output from the `trajCluster` function.
+`trajMap` 可以定制[leaflet]{.pkg} 地图的方方面面。比如可以指定一个（或多个）地图————真的有很多选择！还可以指定一个"control"参数，这样在地图上就可以通过复选框打开或者隐藏某一个轨迹簇类。多数情况下，使用 `trajCluster` 函数的输出来绘图可以得到更好的效果。
 
 ```{r}
 #| fig-show: hide
@@ -696,7 +702,7 @@ clustdata <- trajCluster(traj_data)
 ```{r}
 #| label: fig-trajInterMap2
 #| cache: false
-#| fig-cap: Interactive map of clustered trajectories on a new basemap.
+#| fig-cap: 在交互式地图上绘制聚类后的后向轨迹，使用指定的底图。
 #| results: asis
 trajMap(
   data = clustdata$data$traj,
@@ -706,14 +712,14 @@ trajMap(
 )
 ```
 
-[openairmaps]{.pkg} also contains an equivalent to `trajLevel`. `trajlevelMap` takes many of the same arguments as `trajLevel` and works with all `statistic` types, but returns an interactive map. Try hovering over and clicking on the tiles.
+[openairmaps]{.pkg} 同样提供了 `trajLevel` 的对应函数。`trajlevelMap` 使用和 `trajLevel` 一样的参数变量，支持所有的 `statistic` 类型，只是以交互式地图展示。尝试将鼠标悬停在下图中的轨迹格点上然后点击。
 
 ```{r}
 #| label: fig-trajInterMap3
 #| cache: false
-#| fig-cap: An interactive 'frequency' map plotted by `trajLevelMap`.
+#| fig-cap: 在交互式地图上绘制轨迹频率图。
 #| results: asis
 trajLevelMap(traj_data, statistic = "frequency")
 ```
 
-For more information about using [openairmaps]{.pkg} to visualise trajectories, please refer to the [Interactive Trajectory Analysis Page](../maps/maps-traj.qmd).
+使用 [openairmaps]{.pkg} 包可视化后向轨迹的更多信息详见 [交互式后向轨迹分析](../maps/maps-traj.qmd).
