@@ -2,17 +2,19 @@
 author: David Carslaw
 ---
 
-# Annotating openair plots {#sec-annotating-openair}
+# 为Openair图表添加注释 {#sec-annotating-openair}
 
-A frequently asked question about [openair]{.pkg} and requested feature is how to annotate plots. While all [openair]{.pkg} functions could have options to allow annotations to be made, this would make the functions cumbersome and reduce flexibility. Nevertheless, it is useful to be able to annotate plots in lots of different ways. Fortunately there are existing functions in packages such as [lattice]{.pkg} and [latticeExtra]{.pkg} that allow for plots to be updated. An example of the sorts of annotation that are possible is shown in @fig-timePlotAnnotate, which is an enhanced version of a `timePlot` Figure. These annotations have been subsequently added to a basic plot and built up in layers. This section considers how to annotate [openair]{.pkg} plots more generally and uses @fig-timePlotAnnotate as an example of the types of annotation possible. Also considered specifically is the annotation of plots that are in polar coordinates, as these can sometimes benefit from different types of annotation.
+[openair]{.pkg} 一个经常被问到的问题就是能否为图表添加注释。我们当然可以为[openair]{.pkg}的每一个绘图函数开发用于注释的功能选项，但是那样会非常繁琐而且也很难做到足够灵活。幸运的是[lattice]{.pkg} 和 [latticeExtra]{.pkg} 包中现成的函数可以满足我们各种各样的注释需求。@fig-timePlotAnnotate 通过增加各种可能的注释展示了一个增强版的`timePlot`。这些注释是在基础图上一层一层逐个添加出来的。这一节以 @fig-timePlotAnnotate 为例介绍为 [openair]{.pkg} 图表添加注释的通用方法。后面也会特别介绍极坐标图下的注释，因为会用到不同形式的注释方法。
 
-There are several types of objects that can be useful to add to plots including text, shapes, lines and other shading. Given that many [openair]{.pkg} plots can consist of multiple panels, it is also useful to think about how to annotate specific panels. The examples given in this section will apply to all [openair]{.pkg} plot, the only difference being the coordinate system used in each case.
+用作注释的对象包括文字、图形、线段、阴影区等。鉴于大部分 [openair]{.pkg} 图支持多面板同列的功能，我们还需要考虑到如何注释特定的子图。本节下面的示例都适用于 [openair]{.pkg} 中的所有图表，唯一需要考虑的是不同坐标系构图下的区别。
 
 The basis of [openair]{.pkg} annotations is through the use of the [latticeExtra]{.pkg} package, which should already be installed as part of [openair]{.pkg}. In that package there is a function called `layer` that effectively allows annotations to be built up 'layer by layer'.
 
+[openair]{.pkg} 图表注释的基础是 [latticeExtra]{.pkg} 包中的 `layer` 函数，它使我们“一层一层”的叠加注释成为可能。该软件包已经随 [openair]{.pkg} 一起安装。
+
 ```{r}
 #| label: fig-timePlotAnnotate
-#| fig-cap: Annotations added to the `timePlot`.
+#| fig-cap: 添加注释后的 `timePlot`。
 #| fig-keep: last
 #| echo: false
 #| fig-height: 8
@@ -31,7 +33,7 @@ poly.na <- function(x1, y1, x2, y2, col = "black", alpha= 0.2) {
 library(latticeExtra)
 
 ## multi-panel time plot
-plt <- timePlot(selectByDate(mydata, year = 2003, month = "aug"),
+plt <- timePlot(selectByDate(mydata, year = 2003, month = 8),
          pollutant = c("nox", "o3", "pm25", "pm10", "ws"), y.relation = "free")$plot
 
 ## [1]
@@ -54,7 +56,7 @@ plt <- plt + layer(lpolygon(x = c(ymd("2003-08-21", tz = "GMT"), ymd("2003-08-21
                                        alpha = 0.2), rows = 5)
 ## [4]
 ## arrows and text
-plt <- plt + layer(larrows(ymd("2003-08-01"), 100, ymd_hm("2003-08-08 14:00"), 100,
+plt <- plt + layer(larrows(ymd_hm("2003-08-01 00:00"), 100, ymd_hm("2003-08-08 14:00"), 100,
                                      code = 3), rows = 1)
 
 plt <- plt + layer(ltext(x = ymd("2003-08-04", tz = "GMT"), y = 200, labels = "some missing data"),
@@ -94,13 +96,13 @@ plt <- plt + layer(poly.na(x, ifelse(y <40, NA, y), x, rep(40, length(x)), col =
 plt
 ```
 
-## Adding text
+## 添加文本注释
 
-To add text (or other annotations) it is necessary to know the coordinates on a plot for where the text will go, which will depend on the data plotted. In this extended example using the `timePlot` function, the y-axis will be in ordinary numerical units, whereas the x-axis will be in a date-time format (`POSIXct`).
+添加文本注释（或者其它图形注释）的时候需要知道这个文本需要放到图表上的坐标是什么，在不同的图表中这个坐标可能涉及到不同的数据类型。在这个 `timePlot` 示例中，Y轴坐标为数值类型，而X轴坐标需要为日期时间类型（`POSIXct`）。
 
-There are various ways that annotations can be added, but the method used here is to add to the previous plot using a function called `trellis.last.object()` to which we want to add a later. This may seem complicated, but once a few examples are considered, the method becomes very powerful, flexible and straightforward. In a multi-panel plot such as @fig-timePlotAnnotate it is also useful to specify which rows/columns should be added to. If they are not specified then the annotation will appear in all panels.
+有多种不同的添加注释的方法，我们这里所采用的方法是通过 `trellis.last.object()`调用上一个图表然后将我们需要注释的内容添加到它上面。这听起来很复杂，但是熟悉示例后会发现这这是一种强大、灵活和直观的方式。在像 @fig-timePlotAnnotate 这样的多面板图中，我们还需要只能将注释添加在哪一行那一列的子图中，否则注释会被尝试添加到所有的面板当中。
 
-First, a plot should be produced to which we wish to add some text.
+首先，我们先绘制待注释的基础图表。
 
 ```{r}
 #| label: annotatePbase
@@ -114,7 +116,7 @@ timePlot(selectByDate(mydata, year = 2003, month = "aug"),
          y.relation = "free")
 ```
 
-So, considering \@ref(fig:timePlotAnnotate), this is how the text \`some missing data' was added to the top panel.
+然后我们填加文本“some missing data” 到 @fig-timePlotAnnotate 中最上面的面板中。
 
 ```{r}
 #| label: annotateP1
@@ -124,13 +126,13 @@ trellis.last.object() +
                 labels = "some missing data"), rows = 1)
 ```
 
-So what does this do? First, the `trellis.last.object()` is simply the last plot that was plotted. Next the `layer` function is used to add some text. The text itself is added using the `ltext` [lattice]{.pkg} function. It is worth having a look at the help for `ltext` as that gives an overview of all the common annotations and other options. We have chosen to plot the text at position x = '2003-08-04' and y = 200 and the label itself. A useful option to `ltext` is `pos`. Values can be 1, 2, 3 and 4, and indicate positions below (the default), to the left of, above and to the right of the specified coordinates
+解释一下这段代码：首先，`trellis.last.object()` 即上一个绘制的图表；然后 `layer` 函数用于添加文本注释的图层。文本本身使用 [lattice]{.pkg} 中的`ltext` 函数添加。建议浏览 `ltext` 函数的帮助文档，了解注释的类型和配置选项。我们这里在X轴为“2003-08-04”、Y轴为200的位置添加文本。`ltext` 函数中的 `pos` 选择用来定义文本相对于坐标点的位置，值可以为1,2,3和4，分别代表位于坐标点的下（默认）、左、上和右边。
 
-## Adding text and a shaded area
+## 添加文本和阴影区域
 
-This time we will highlight an interval in row 2 (O~3~) and write some text on top. Note that this time we use the `lpolygon` function and choose to put it under everything else on the plot. For the text, we have chosen a colour (yellow) font type 2 (bold) and made it a bit bigger (`cex = 1.5`). Note also the `y` values extend beyond the actual limits shown on the plot --- just to make sure they cover the whole region.
+下面我们在第二行的面板（O~3~）中突出显示一段时间并且在上面添加相应的文字。这里使用 `lpolygon` 函数绘制矩形并且指定其位于底层。文本部分我们设置了颜色（黄色）、字体2（粗体）并且适当加大字号（`cex = 1.5`）。注意指定的Y值大于这短时间实际的值域范围是为了确保在何种情况下都能全部覆盖。
 
-The polygon could of course be horizontal and more than one producing a series of 'bands' e.g. air quality indexes. A more sophisticated approach is shown later for PM~2.5~
+`lpolygon` 也可以绘制更复杂的多边形，比如用横向的颜色“带”表示不用的空气质量级别，我们后面会介绍到。
 
 ```{r}
 #| label: annotateP2
@@ -148,7 +150,7 @@ trellis.last.object() +
                 font = 2, cex = 1.5), rows = 2)
 ```
 
-The small shaded, semi-transparent area shown in the bottom panel was added as follows:
+最底部面板中本透明小阴影区域的添加方式如下：
 
 ```{r}
 #| label: annotateP2a
@@ -161,9 +163,9 @@ plt <- plt +
                    alpha = 0.2), rows = 5)
 ```
 
-## Adding an arrow
+## 添加箭头
 
-The arrow shown on the first panel of @fig-timePlotAnnotate was added as follows. Note the `code = 3` placed arrows at both ends. Note that `angle` is the angle from the shaft of the arrow to the edge of the arrow head.
+@fig-timePlotAnnotate 中第一个面板中的箭头的添加方式如下。其中 `code = 3` 代表两端都有箭头， `angle` 代表箭柄和箭身的角度。 
 
 ```{r}
 #| label: annotateP3
@@ -174,9 +176,9 @@ trellis.last.object() +
                   100, code = 3, angle = 30), rows = 1)
 ```
 
-## Adding a reference line and text
+## 添加参考线和文本
 
-This code adds a vertical dashed reference line shown in the 4th panel (PM~10~) along with some text aligned at 90 degrees using the `srt` option of `ltext`.
+下面的代码在第四个面板（PM~10~）中添加了一条垂直的虚线，同时用`ltext`的`srt` 选项将文本逆时针转90度显示。
 
 ```{r}
 #| label: annotateP4
@@ -189,11 +191,12 @@ trellis.last.object() +
                 labels = "reference line", srt = 90), rows = 4)
 ```
 
-## Highlight a specific point
+## 突出显示指定的数据点
 
-Up until now annotations have been added using arbitrary coordinates in each panel. What if we wanted to highlight a particular point, or more generally work with the actual data that are plotted. Knowing how to refer to existing data greatly extends the power of these functions.
+到目前为止我们都是通过指定的坐标来决定注释的位置的。如何根据图表上的实际数据自动选定符合条件的点进行注释呢？解锁这一功能会对我们大有帮助。
 
-It is possible to refer to a specific point in a panel simply by indexing the point of interest i.e. `x`, `y`. For example, to mark the 200th PM~10~ concentration (without knowing the actual date or value):
+可以通过面板上点的序号构造出 `x`, `y` 坐标的方式来定位这个点。比如标记第200个PM~10~浓度（不管其具体的日期和浓度值）：
+
 
 ```{r}
 #| label: annotateP5
@@ -204,7 +207,7 @@ trellis.last.object() +
           rows = 4)
 ```
 
-What if we wanted to highlight the maximum O~3~ concentration? It is possible to work out the index first and then use that to refer to that point. Note the `}` to allow for the code to span multiple commands.
+如果我们想要标记最高的 O~3~ 浓度值呢？这需要 通过先索引再在索引位置上做标记和注释的方式实现。这里花括号`{ }`为包含多个命令的代码段。
 
 ```{r}
 #| label: annotateP6
@@ -222,9 +225,9 @@ trellis.last.object() +
                  pos = 4)}, rows = 2)
 ```
 
-## Add a filled polygon
+## 添加填充多边形
 
-It can be seen in the top panel of @fig-timePlotAnnotate that some data are highlighted by filling the area below the line. This approach can be useful more generally in plotting. While it is possible to draw polygons easily and refer to the data itself, there needs to be a way for dealing with gaps in data, otherwise these gaps could be filled in perhaps unpredictable ways. A function has been written to draw a polygon taking into account gaps (`poly.na`).
+在 @fig-timePlotAnnotate 的第一个面板中，我们在中间一段时间的浓度数据曲线下实现了填充效果，这是一种经常会用到的标注方式。但是在根据数值绘制多边形填充之前，先要解决数据缺失情况下的处理问题，否则直接填充会出现问题。下面的函数(`poly.na`)考虑了数据缺失的情况：
 
 ```{r}
 #| label: polyNA
@@ -238,7 +241,7 @@ poly.na <- function(x1, y1, x2, y2, col = "black", alpha = 0.2) {
 }
 ```
 
-This time we work out the ids of the data spanning an area of interest. Then the `poly.na` function is used. Note that the alpha transparency is by default 0.2 but another value can easily be supplied, as shown in the air quality 'bands' example.
+下面我们就可以索引出所有需要标记的数据点的id，然后使用`poly.na`函数进行标记了。这里透明度 alpha 设置为0.2，后面的空气质量等级“色带”示例中可以很容易的改变这个值。
 
 ```{r}
 #| label: annotateP7
@@ -250,9 +253,9 @@ trellis.last.object() +
                    col = "darkorange")}, rows = 1)
 ```
 
-## Add air quality bands as polygons
+## 添加空气质量等级色带
 
-It is a simple extension to go from using a polygon below the data to polygons at certain intervals e.g. air quality indexes. These are shown for PM~2.5~ and the bands considered are 0--20, 20--30, 30--40 and \>40.
+将上面的用法拓展便可以视线根据浓度段填色的效果，比如空气质量指数等级。下面的代码绘制了 PM~2.5~ 的浓度色带，按照0--20、20--30、30--40 和 \>40等几个浓度区间分段。
 
 ```{r}
 #| label: annotateP8
@@ -274,11 +277,11 @@ trellis.last.object() +
                   col = "red", alpha = 1), rows = 3)
 ```
 
-## Polar plot examples
+## 极坐标图示例
 
-Many of the examples considered above are relevant to all other functions e.g. how to add text, choosing rows and columns to plot in. Polar coordinate plots are different because of the coordinate system used and this section considers a few examples.
+上面所展示的添加文本注释、通过坐标定位注释的位置等功能方法，适用于`timePlot`以外的所以函数，但是那些在使用极坐标系的图中会有些不同，这一节会介绍几个这方面的例子。
 
-One useful approach is to be able to draw an arc, perhaps highlighting an area of interest. A simple, but flexible function has been written to do this. It takes arguments `theta1` and `theta2` that define the angular area of interest and `lower` and `upper` to set the lower and upper wind speed, respectively. It also has additional arguments `theta3` and `theta4` which optionally set the angles for the 'upper' wind speed.
+首先相对于矩形区域，我们可能会希望再极坐标图里标注一个弧形区域。下面代码构建了一个简单的绘制弧形的函数。其中参数`theta1` 和 `theta2` 指定了角度范围，`lower` 和 `upper` 则指定了极轴上风速的取值区间。`theta3` 和 `theta4`两个可选的参数指定了风速“上限”时的角度范围。 
 
 ```{r}
 #| label: arcCode
@@ -310,7 +313,7 @@ arc <- function(theta1 = 30, theta2 = 60, theta3 = theta1, theta4 = theta2,
 
 ```{r}
 #| label: fig-annonatePolar
-#| fig-cap: Annotations on a polar plot.
+#| fig-cap: 在极坐标图上添加注释
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
@@ -353,7 +356,7 @@ plt <- plt +
 plt
 ```
 
-Following on from the previous examples, some annotations have been added to the basic polar plot for SO~2~ as shown in @fig-annonatePolar. Note that in these plots (0, 0) is the middle of the plot and the radial distance will be determined by the wind speed --- or whatever the radial variable is. This way of plotting arcs can also be applied to other functions that show directional data. 
+和之前的例子一样，我们在 @fig-annonatePolar SO~2~ 极坐标图中也添加了几种注释。在极坐标系下(0, 0)位于图的中间，到这一点的距离代表风速（或者其它极轴所代表的变量）的大小。这种绘制弧形的方式适用于其它用于做定向性分析的极坐标图。
 
 ```{r}
 #| label: annotatePolar1
@@ -370,13 +373,13 @@ trellis.last.object() +
                                   upper = 15)$y, lty = 1, lwd = 2))
 ```
 
-## Using grid graphics --- identify locations interactively
+## 使用 grid 图形系统 ———— 已交互方式获取注释位置
 
-The examples above provide a precise way of annotating plots for single or multi-panels [openair]{.pkg} displays. However, these methods won't work for plots that consist of completely separate plots such as the four plots in `timeVariation`. There are however other methods that can be used to annotate such plots using the package `grid`, which forms the basis of [lattice]{.pkg} graphics. There is enormous capability for annotating plots using the `grid` package and only a few simple examples are given here.
+目前我们都是通过提供在[openair]{.pkg}单面板或多面板图表中精确位置的方式来进行标注的。但是这种方式可能不适用于由几个完全独立图表构成的组合图的，比如 `timeVariation` 函数产出的组合图。在这种情况下我们可以使用 `grid` 包来实现注释。`grid` 是 [lattice]{.pkg} 的底层图形系统，提供更广泛的基数绘图元素，我们这里只给出几个简单的用于注释的例子。
 
-Given a a basic `timeVariation` plot, how could texts be added at any location --- say in the middle monthly plot? One very useful function for this type of annotation that allows the user to interactively choose a location is the `grid.locator()` function in the `grid` package. That function can be called with different coordinate systems --- but the one we want defines the bottom-left corner as (0, 0) and the top right as (1, 1).
+在 `timeVariation` 图中，我们如何在任意位置添加文本呢？比如在月变化图的中间。这时我们可以用`grid`包中的 `grid.locator()` 函数来交互式的获得图中需要添加文本注释的位置信息。这个函数可以使用不同的坐标系————我们这里使用的是图左下角为 (0, 0)，右上角为(1, 1)。
 
-First, make a `timeVariation` plot.
+首先，生成需要添加注释的 `timeVariation` 图。
 
 ```{r}
 #| label: timeVarGrid
@@ -384,7 +387,7 @@ First, make a `timeVariation` plot.
 timeVariation(mydata)
 ```
 
-Now let's choose a location on the plot interactively using the mouse and selecting somewhere in the middle of the monthly plot.
+现在我们用鼠标点选其中月变化图中我们需要添加文本的位置。
 
 ```{r}
 #| label: gridLocate
@@ -394,7 +397,7 @@ library(grid)
 grid.locator(unit = "npc")
 ```
 
-What should happen is that in the R console the coordinates are given for that point. In my case these were x = 0.503 and y = 0.338. These coordinates can now be used as the basis of adding some text or other annotation. In the example below, the `grid.text` function is used to add some text for these coordinates making the font bigger (`cex = 2`), bold (`font = 2`) and blue (`col = "blue"`).
+这时在R控制台中会返回这个点的坐标，我这里是 x = 0.503 和 y = 0.338。这个坐标就是我们下一步添加合种注释所需要的位置。下面我们使用 `grid.text` 函数在得道的位置上添加文字，设置字体加大（`cex = 2`），加粗（`font = 2`）和蓝色（`col = "blue"`）。
 
 ```{r}
 #| label: addGridText
@@ -403,7 +406,7 @@ grid.text(x = 0.503, y = 0.338, label = "here!",
           gp = gpar(cex = 2, font = 2, col = "blue"))
 ```
 
-Even with this basic approach, some sophisticated annotation is possible with *any* [openair]{.pkg} plot. There are many other functions that can be used from the grid package that would allow for polygons, segments and other features to be drawn is a similar way to the examples earlier in this section. Continuing with the same example, here is how to add an arrow pointing to the maximum \nox concentration shown on the top plot for Saturday (again using the `grid.locator` function).
+即使只使用这种简单的方式也可以构建出各种复杂的注释效果，而且适用于*一切* [openair]{.pkg} 图表。`grid`包中也提供了各种函数可以绘制多边形、线段以及其它元素，具体的使用方法与前述示例类似。下面我们添加一个指向周六NO~x~峰值的箭头（位置坐标还是使用 `grid.locator` 获取）。 
 
 ```{r}
 #| label: addGridArrow
