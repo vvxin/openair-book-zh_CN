@@ -40,6 +40,6 @@
 - [ ] 27  Scatter plots
 - [ ] **References**
 - [ ] **Appendices**
-- [ ] A  Annotating openair plots
-- [ ] B  Production of HYSPLIT trajectory files
+- [x] A  Annotating openair plots
+- [x] B  Production of HYSPLIT trajectory files
 - [ ] C  A closer look at trends
