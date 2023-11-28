@@ -2,21 +2,22 @@
 author: David Carslaw
 ---
 
-# Production of HYSPLIT trajectory files {#sec-prod-hyspl-traj}
+# HYSPLIT轨迹数据生成 {#sec-prod-hyspl-traj}
 
-As discussed in @sec-trajPlot, [openair]{.pkg} can import pre-calculated trajectory data for specified locations for whole years run at a 3-hour interval. The data are stored on a Ricardo webserver to make it easy to import 96-hour back trajectory data. Several users have requested how they can run HYSPLIT themselves e.g. for different trajectory start heights or for many locations. It should be noted that Hysplit is a powerful and flexible model and to exploit its full potential, users should consider using Hysplit directly [@stein2015].
+在 @sec-trajPlot 中我们使用 [openair]{.pkg} 导入了伦敦一整年的计算好的轨迹数据进行分析。这些数据为3小时间隔的96小时后向轨迹，存储在Ricardo公司的服务器上。一些用户反馈希望能够得到定制的HYSPLIT模型结果，比如不同的轨迹初始高度或是其它地点的。这里必须要说的是HYSPLIT是一个功能强大并且可以灵活定制的模型，为了重复发挥其潜力，得到定制结果的最好方法肯定是去亲自运行HYSPLIT模型[@stein2015]。
 
-A well-written R package called [splitr]{.pkg} by Rich Iannone (see [here](https://github.com/rich-iannone/splitr)) provides a lot of flexibility for working with different meteorological inputs and Hysplit options. Users should consider [splitr]{.pkg} if they want more control over Hysplit options --- especially for the detailed investigation of short time periods such as pollution episodes where higher resolution meteorological data is useful.
+Rich Iannone (见 [这里](https://github.com/rich-iannone/splitr)) 开发了一个很好的R语言包 [splitr]{.pkg}，专门用于适配多种气象数据输入的HYSPLIT轨迹和扩散模型调用及结果可视化。如果用户希望有更多HYSPLIT模型的运行参数的定制空间，特别是针对短时间污染过程做高时间分辨率气象分析的场景，建议使用[splitr]{.pkg} 。
 
-This focus of this section is to run Hysplit with the Reanalysis meteorological data over periods of a year to allow for the analysis of longer-term air quality data analysis. The code below assumes that full years are run, but it could be adopted for shorter periods. There are three main parts to producing trajectory files:
+本节我们讨论的场景是使用气象再分析数据作为HTSPLIT模型输入进行长时间空气质量分析。下面的代码假定一次性运行一整年的数据，但是也可以调整为较短时间段。生成轨迹数据需要以下三方面准备工作：
 
-1.  Download and install the [NOAA Hysplit model](https://www.ready.noaa.gov/HYSPLIT.php), somewhere with write access (see below).
+1.  下载和安装 [NOAA HYSPLIT 模型](https://www.ready.noaa.gov/HYSPLIT.php)， 一些地方需要有写入权限（见下文）。
 
-2.  Download the monthly meteorological (.gbl) files also from the NOAA website.
+2.  从NOAA网站下载月度的气象数据文件(.gbl) 。
 
-3.  Obtain the code to run Hysplit.
+3.  获取HYSPLIT程序代码。
 
 To run back trajectories it is necessary to download the meteorological data files. The easiest way to download the meteorological files is using the function below.
+后向轨迹模型的运行需要气象数据作为输入文件。最简单的下载气象数据文件的方法是使用下面的函数。
 
 ```{r}
 #| label: getMet
@@ -41,7 +42,7 @@ getMet <- function(year = 2013, month = 1,
 }
 ```
 
-The function will download monthly met files (each about 120 MB) to the chosen directory. Note that the met data files only need be downloaded once. For example, to download files for 2013:
+该函数会下载月度气象数据包（每个文件与120M）到指定路径，这些历史数据的下载只是一次性的工作，例如下载2013年全年的数据：
 
 ```{r}
 #| label: getMet2
@@ -49,7 +50,7 @@ The function will download monthly met files (each about 120 MB) to the chosen d
 getMet(year = 2013, month = 1:12)
 ```
 
-It is first necessary on ensure that the [devtools]{.pkg} package is installed, which is needed to load some R functions stored as a *GitHub gist* (some code that can be shared publicly). Copy the code below and paste it into R, which will load the necessary functions needed to run Hysplit.
+下面需要安装[devtools]{.pkg}包来加载*GitHub gist*（一些在线公开共享的代码片段）上的函数。粘贴并运行下面的R语言代码，即可加载完成运行HYSPLIT模型所需要的功能函数。
 
 ```{r}
 #| label: getGist
@@ -58,9 +59,9 @@ source_gist("https://gist.github.com/davidcarslaw/c67e33a04ff6e1be0cd7357796e4bd
             filename = "run_hysplit.R")
 ```
 
-Now there should be several loaded functions, including `run_hysplit`. To run Hysplit, have a look at the examples [here](https://gist.github.com/davidcarslaw/c67e33a04ff6e1be0cd7357796e4bdf5).
+完成函数加载后，我们即可使用`run_hysplit`函数来调用HYSPLIT模型了，可以参考 [这里](https://gist.github.com/davidcarslaw/c67e33a04ff6e1be0cd7357796e4bdf5)。
 
-For example
+例：
 
 ```{r}
 #| label: run_hysplit
@@ -79,11 +80,11 @@ latitude = 36.134,
   site = "gibraltar")
 ```
 
-The `data_out` can then be used directly in [openair]{.pkg} trajectory functions. The code will also return information from Hysplit such as pressure, temperature, terrain and boundary layer height.
+`data_out`可以直接用于[openair]{.pkg} 的后向轨迹函数。上面的代码会同时返回HYSPLIT模型产出的气压、温度、地形和边界层高度等信息。
 
-Most of the options should be self-explanatory but `hysplit_exec` is the path to the Hysplit executable, `hysplit_input` is the path to the meteorological files (downloaded as described above) and `hysplit_output` is the directory where Hysplit will write its temporary files.
+上面大部分设置都比较好理解，三个路径 `hysplit_exec` 为HYSPLIT可执行文件所在目录，`hysplit_input`为（上面下载的）气象数据所在目录，`hysplit_output`为HYSPLIT临时文件写入目录。
 
-Once run it is then advisable to store the data somewhere. Save it like:
+运行完成后建议把生成文件存储为R数据对象：
 
 ```{r}
 #| label: saveHysplit
@@ -91,7 +92,7 @@ Once run it is then advisable to store the data somewhere. Save it like:
 saveRDS(data_out, file = "~/trajProc/myTrajData.rds")
 ```
 
-Then it is easy to read in later and use e.g.
+存储后的R数据对象很容易读取复用：
 
 ```{r}
 #| label: importTrajLocal
