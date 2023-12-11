@@ -42,4 +42,5 @@
 - [ ] **Appendices**
 - [x] A  Annotating openair plots
 - [x] B  Production of HYSPLIT trajectory files
-- [ ] C  A closer look at trends
+- [x] C  A closer look at trends
+- [x] D  Getting help
