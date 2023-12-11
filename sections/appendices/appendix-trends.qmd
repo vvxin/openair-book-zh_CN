@@ -2,15 +2,15 @@
 author: David Carslaw
 ---
 
-# A closer look at trends {#sec-trends-gam}
+# 趋势分析进阶 {#sec-trends-gam}
 
-Understanding trends is a core component of air quality and the atmospheric sciences in general. [openair]{.pkg} provides two main functions for considering trends (`smoothTrend` and `TheilSen`; see @sec-smoothTrend and @sec-TheilSen, the latter useful for linear trend estimates. Understanding trends and quantifying them robustly is not so easy and careful analysis would treat each time series individually and consider a wide range of diagnostics. In this section we take advantage of some of the excellent capabilities that R has to consider fitting trend models. Experience with real atmospheric composition data shows that trends are rarely linear, which is unfortunate given how much of statistics has been built around the linear model.
+理解趋势变化是空气质量分析甚至大气科学的核心组成部分。[openair]{.pkg}提供了`smoothTrend`和`TheilSen`两个函数用于趋势分析（参见@sec-smoothTrend 和 @sec-TheilSen ），其中后者对线性的趋势分析非常有用。对趋势进行严肃的定量并不是一件容易的事情，需要对每一个时间序列进行单独的考量并且进行完整充分的诊断。在这一节中，我们利用R语言在统计计算方面的优势来进行拟合趋势分析。多年大气成份数据分析的经验告诉我们，现实中的趋势很少是线性的。这多少有点儿让人沮丧，因为不得不放弃那些围绕线性模型建立的统计方法。
 
-Generalized Additive Models (GAMs) offer a flexible approach to calculating trends and in particular, the [mgcv]{.pkg} package contains many functions that are very useful for such modelling. Some of the details of this type of model are presented in @Wood2006 and the [mgcv]{.pkg} package itself.
+广义加法模型（GAM）提供了一种灵活的趋势计算方法，[mgcv]{.pkg} 包专门用于此类建模，详细信息可以参见 @Wood2006 和 [mgcv]{.pkg} 包本身的文档。
 
-The example considered is 23 years of O~3~ measurements at Mace Head on the West coast of Ireland. The example shows the sorts of steps that might be taken to build a model to explain the trend. The data are first imported and then the year, month and `trend' estimated. Note that`trend' here is simply a decimal date that can be used to construct various explanatory models.
+这里我们使用爱尔兰西海岸梅斯角站点历时23年的 O~3~ 监测数据作为示例，演示建立模型来回答趋势问题所需要的主要步骤。导入数据后，我们增加year、month和`trend`数据列。这里`trend`是构建解释模型所需要的简单代表每月的十进制日期。
 
-First we import the data:
+首先，导入数据：
 
 ```{r}
 #| echo: false
@@ -38,19 +38,19 @@ monthly$month <- as.numeric(format(monthly$date, "%m"))
 monthly <- transform(monthly, trend = year + (month - 1) / 12)
 ```
 
-It is *always* a good idea to plot the data first:
+绘制整体的数据情况*永远*是第一步分析的建议：
 
 ```{r}
 #| label: fig-MHplot
-#| fig-cap: Monthly mean O~3~ concentrations at Mace Head, Ireland (1998--2010).
+#| fig-cap: 爱尔兰梅斯角站点 O~3~ 月均浓度变化 (1998--2010)。
 #| fig-width: 10
 #| fig-height: 5
 timePlot(monthly, pollutant = "o3")
 ```
 
-@fig-MHplot shows that there is a clear seasonal variation in O~3~ concentrations, which is certainly expected. Less obvious is whether there is a trend.
+从@fig-MHplot 中可以看出 O~3~ 浓度呈现明显的季节性变化，这当然是意料之中的，但是这其中是否隐藏着趋势变化就不那么明显了。
 
-Even though it is known there is a seasonal signal in the data, we will first of all ignore it and build a simple model that only has a trend component (model M0).
+在已知数据存在季节性信号的情况下，我们仍然可以先忽略它并构建一个单一的趋势模型（model M0）。
 
 ```{r}
 #| label: mod1
@@ -58,18 +58,18 @@ M0 <- gam(o3 ~ s(trend), data = monthly)
 summary(M0)
 ```
 
-This model only explains about 2% of the variation as shown by the adjusted r^2^. More of a problem however is that no account has been taken of the seasonal variation. An easy way of seeing the effect of this omission is to plot the autocorrelation function (ACF) of the residuals, shown in @fig-M0ACF). This Figure clearly shows the residuals have a strong seasonal pattern. @Chatfield2004 provides lots of useful information on time series modelling.
+从决定系数adjusted r^2^可以看出，模型只能够解释大约2%的变异。造成这个问题的原因是没有考虑数据当中的季节性变化因素。我们可以通过残差的自相关函数（ACF）来观察上述缺失因素所带来的影响，见 @fig-M0ACF ，可以看到残差带有很强的季节性特征。 @Chatfield2004 中介绍了有关数据序列数据建模的大量信息。
 
 ```{r}
 #| label: fig-M0ACF
-#| fig-cap: ACF for the residuals of model M0.
+#| fig-cap: M0模型中残差的自相关函数（ACF）。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 70%
 acf(residuals(M0))
 ```
 
-A refined model should therefore take account of the seasonal variation in O~3~ concentrations. Therefore, we add a term taking account of the seasonal variation. Note also that we choose a cyclic spline for the monthly component (`bs = "cc"`), which joins the first and last points i.e. January and December.
+下面我们通过在拟合方程中加入一个描述O~3~浓度季节变化的自变量来优化模型。这里我们选取周期性样条曲线作为基函数（`bs = "cc"`），它会将首尾点连接以来，即12月和1月。
 
 ```{r}
 #| label: mod1a
@@ -77,11 +77,11 @@ M1 <- gam(o3 ~ s(trend) + s(month, bs = "cc"), data = monthly)
 summary(M1)
 ```
 
-Now we have a model that explains much more of the variation with an r^2^ of 0.65. Also, the p-values for the trend and seasonal components are both highly statistically significant. Let's have a look at the separate components for trend and seasonal variation:
+现在我们的模型已经大幅提高到可以解释r^2^为0.65的变异，而且趋势和季节变化两个变量的p值都很显著。下面分别看一下两个分量的变化曲线：
 
 ```{r}
 #| label: fig-M1trend
-#| fig-cap: The trend component of model M1.
+#| fig-cap: M1模型的趋势分量。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 70%
@@ -90,27 +90,27 @@ plot.gam(M1, select = 1, shade = TRUE)
 
 ```{r}
 #| label: fig-M1seas
-#| fig-cap: The seasonal component of model M1.
+#| fig-cap: M1模型的季节变化分量。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 70%
 plot.gam(M1, select = 2, shade = TRUE)
 ```
 
-The seasonal component shown in @fig-M1seas clearly shows the strong seasonal effect on O~3~ at this site (peaking in April). The trend component is actually linear in this case and could be modelled as such. This model looks much better, but as is often the case autocorrelation could remain important. The ACF is shown in @fig-M1ACF and shows there is still some short-term correlation in the residuals.
+@fig-M1seas 中的季节性变化分量清晰的显示出该站点 O~3~ 随季节变化的情况（峰值出现在四月）。在这个例子中趋势分量表现为线性，这对本模型来说也是可行的。M1模型已经有了大幅改进，但是从自相关函数图  @fig-M1ACF 中我们仍然可以看到残差中存在短期的自相关性。
 
-Note also that there are other diagnostic tests one should consider when comparing these models that are not shown here e.g. such as considering the normality of the residuals. Indeed a consideration of the residuals shows that the model fails to some extent in explaining the very low values of O~3~, which can be seen in @fig-MHplot. These few points (which skew the residuals) may well be associated with air masses from the polluted regions of Europe. Better and more useful models would likely be possible if the data were split my airmass origin, which is something that will be returned to when [openair]{.pkg} includes a consideration of back trajectories.
+注意在对比不同模型时还应考虑做更多的诊断测试，如残差的正态性，在这里不进一步阐述。从@fig-MHplot 中残差的表现看，这个模型似乎无法解释O~3~ 的极低值。这些（导致偏态）的极低值应该与来自欧洲内陆的高污染气团有关。理想的做法是按照不同的气团来源切分数据分别拟合，这也是当初决定在 [openair]{.pkg} 引入后向轨迹的初衷。
 
 ```{r}
 #| label: fig-M1ACF
-#| fig-cap: ACF for the residuals of model M1.
+#| fig-cap: M1模型中残差的自相关函数（ACF）。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 70%
 acf(residuals(M1))
 ```
 
-Further tests, also considering the partial autocorrelation function (PACF) suggest that an AR1 model is suitable for modelling this short-term autocorrelation. This is where modelling using a GAMM (Generalized Additive Mixed Model) comes in because it is possible to model the short-term autocorrelation using a linear mixed model. The `gamm` function uses the package [nmle]{.pkg} and the Generalized Linear Mixed Model (GLMM) fitting routine. In the M2 model below the correlation structure is considered explicitly.
+接下来偏自相关函数（PACF）的应用表明 AR1 模型能够拟合短期的自相关特性。该模型引入广义加法混合模型（gamm）使用线性混合模型来处理数据中短期的自相关。 `gamm` 函数使用[nmle]{.pkg} 包和广义线性混合模型（GLMM）的拟合路径。下面的M2模型中明确定义了相关性架构。
 
 ```{r}
 #| label: M3mod
@@ -120,18 +120,18 @@ M2 <- gamm(o3 ~ s(month, bs = "cc")  + s(trend),
 summary(M2$gam)
 ```
 
-The ACF plot is shown in @fig-M2ACF and shows that the autocorrelation has been dealt with and we can be rather more confident about the trend component (not plotted). Note that in this case we need to use the normalized residuals to get residuals that take account of the fitted correlation structure.
+新模型ACF图 @fig-M2ACF 中可以看出自相关已经处理完成，我们可以对趋势分量（未绘制）更有信心。请注意，在这种情况下，我们需要使用归一化选项来获得残差拟合的情况。
 
 ```{r}
 #| label: fig-M2ACF
-#| fig-cap: ACF for the residuals of model M2.
+#| fig-cap: M2模型中残差的自相关函数（ACF）。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 70%
 acf(residuals(M2$lme, type = "normalized"))
 ```
 
-Note that model M2 assumes that the trend and seasonal terms vary independently of one another. However, if the seasonal amplitude and/or phase change over time then a model that accounts for the interaction between the two may be better. Indeed, this does seem to be the case here, as shown by the improved fit of the model below. This model uses a tensor product smooth (`te`) and the reason for doing this and not using an isotropic smooth (`s`) is that the trend and seasonal components are essentially on different scales. We would not necessarily want to apply the same level of smoothness to both components. An example of covariates on the same scale would be latitude and longitude.
+模型M2假设趋势和季节变化两个分量是彼此独立变化的。但是如果季节变化的振幅和/或相位随时间变化，那么能够考虑两者之间相互作用的模型可能会更好。事实上这里似乎确实如此，下面使用张量积平滑（`te`）对拟合模型作进一步的改进。由于趋势和季节性分量本质上是不同的时间尺度，因此不使用各向同性平滑（`s`）的方法是有道理的。我们不一定总是希望对两个分量应用相同级别的平滑度，除了一个反例，即纬度和经度。
 
 ```{r}
 #| label: M3modGAMM
@@ -142,15 +142,15 @@ M3 <- gamm(o3 ~ s(month, bs = "cc")  +
 summary(M3$gam)
 ```
 
-It becomes a bit more difficult to plot the two-way interaction between the trend and the month, but it is possible with a surface as shown in @fig-perpsM3. This plot shows for example that during summertime the trends component varies little. However for the autumn and winter months there has been a much greater increase in the trend component for O~3~.
+绘制趋势和季节月份之间的双向作用关系有点儿困难，我们可以用@fig-perpsM3 中曲面的形式来表达。从图中可以看到在夏季趋势变化非常小，而在秋冬季，O~3~ 的趋势分量出现了明显的上升。
 
 ```{r}
 #| label: fig-perpsM3
-#| fig-cap: Plot showing the two-way interaction between the trend and seasonal components.
+#| fig-cap: 趋势和季节分量之间的双向作用。
 #| fig-width: 7
 #| fig-height: 7
 #| out-width: 75%
 plot(M3$gam, select = 2, scheme = 1, theta = 225, phi = 10,ticktype = "detailed")
 ```
 
-While there have been many steps involved in this short analysis, the data at Mace Head are not typical of most air quality data observed, say in urban areas. Much of the data considered in these areas does not appear to have significant autocorrelation in the residuals once the seasonal variation has been accounted for, therefore avoiding the complexities of taking account of the correlation structure of the data. It may be for example that sites like Mace Head and a pollutant such as O~3~ are much more prone to larger scale atmospheric processes that are not captured by these models.
+上面的简短分析涉及了多个分析方法和步骤，但是这些步骤也许并不是广泛适用，因为梅斯角站点的数据可能比较特殊。城市地区站点的典型数据在考虑了季节性特征之后大部分不会再出现明显的残差自相关，从而避免了考虑相关性结构带来的复杂性。也许对于梅斯角这一位置，以及这一位置上的O~3~ 这一污染物来说，还受到更大尺度大气过程的影响，是当前这些模型都难以捕捉到的。
