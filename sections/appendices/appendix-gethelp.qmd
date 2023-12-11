@@ -2,71 +2,70 @@
 author: Jack Davison
 ---
 
-# Getting help
+# 获取帮助
 
-The [openair]{.pkg} family was written to be as easy as possible to use for people who don't necessarily know a lot of R, and much of its core functionality is outlined in this book. However, we know from experience that sometimes things don't behave as they should! Whether the issue is dodgy data, a sneaky bug in the code, or functionality that isn't yet catered for, this page should guide you through the best way to find help.
+[openair]{.pkg} 系列函数在开发的过程中力求让缺少R语言编程基础的人也能够相对轻松的上手，其核心功能在这本书里都已经进行了介绍。但是经验也告诉我们数据分析之旅不可能一帆风顺，不论是数据环节还是代码环节都可能出现各种的问题卡住我们的工作，或者这些函数即使顺利运行也没有能够满足分析的需求。这一节我们介绍如何最快最好的寻求帮助。
 
-## Where to get help {#sec-where}
+## 从那里获得帮助 {#sec-where}
 
-The best place to ask for help is by posting an issue on GitHub. Don't worry if you haven't used it before - simply sign up, navigate to one of the repositories, and then click "Issues". There'll be a big green "New Issue" button that'll present you with a box to fill in to ask your questions. The GitHub repositories for the [openair]{.pkg} family of packages can be found at:
+寻求帮助的最佳方法是在Github上发贴提问。之前从来没有使用过Github也没关系，只需要注册、导航到相应的软件仓库，点击“Issues”标签页，然后再点击大个的绿色按钮“New Issue”就可以进入到问题填写页面了。[openair]{.pkg} 软件包在Github上的软件仓库地址如下：
 
 * <https://github.com/davidcarslaw/openair>
 
 * <https://github.com/davidcarslaw/openairmaps>
 
-* <https://github.com/davidcarslaw/worldmet>
+* <https://github.com/davidcarslaw/worldmet> 
 
-If your problems are with R more generally rather than being specific to [openair]{.pkg}, you might also consider posting to these other communities. Users there will be much less familiar with [openair]{.pkg} and air quality, but they are much greater in number. 
+如果你的问题更多的是针对R语言本身，而不是针对[openair]{.pkg}包所提供的功能。那么请考虑把你的问题发布到下面这些论坛。那里的用户可能对[openair]{.pkg}和空气质量没有那么了解，但是用户数量则要多得多。
 
-* [Posit Community](https://community.rstudio.com/), an R-specific forum for R users to ask any and all questions relating to R and RStudio.
+* [Posit Community](https://community.rstudio.com/)， 这是一个R语言用户论坛，交流关于R和RStudio的方方面面。 
 
-* [Stack Overflow](https://stackoverflow.com/), a more general programming community for coders to ask questions. This can be a little more intimidating than the Posit Community Forum, but the user base is a lot bigger!
+* [Stack Overflow](https://stackoverflow.com/)，这是一个比Posit Community大得多的程序开发者论坛，面向更广泛的编程语言。
 
-Regardless of where you choose to find answers, it is best to provide others with a "reproducible example". This means you need to provide code that will recreate your issue on someone else's computer.
+不管在哪里寻求帮助，最好都能够随问题提供“可重现示例”，也就是说提供相应的代码让别人可以在自己的电脑上重现你所遇到的问题。
 
-## Reproducible Examples {#sec-reprex}
+## 可重现示例 {#sec-reprex}
 
-While the [openair]{.pkg} authors can run code on our computers, we can't run *your* code on *your* computer using *your* data. To help us help you, you need to help bridge that gap - this is called providing a "reproducible example".
+虽然作为[openair]{.pkg}的作者我们可以在我们的电脑上运行代码，但是我们不能运行*你的*代码，在*你的*电脑上，输入*你的*数据。为了帮助我们帮助你，你需要主动的在你我之间建立一个桥梁，这就是提供“可重现示例”。
 
-Reproducible examples need to be three things; *minimal*, *complete*, and *reproducible*.
+好的可重现示例需要做到以下三点：*极简*、*完整*和 *可重现*。
 
-#### Minimal {-}
+#### 极简 {-}
 
-This means that you only need to provide just enough data to reproduce your problem. It also means that any code you provide should reproduce your problem in as few steps as possible. We don't need to see every step of your analysis up until the problem *unless it is relevant*.
+这意味是你只需要提供可以重现你所遇到问题的最少量的数据和最少步骤的代码。我们不需要了解你分析的每一步，直到你的问题出现，*除非那些步骤与出现的问题有关*。
 
-> For example, if your issue is that `windRose()` isn't working as expected, simply provide wind speed and wind direction data. We won't need a hundred columns of concentrations, and we don't need to see the hundred lines of code you used to read it in and tidy it!
+> 例如：如果你的问题出现在 `windRose()` 函数的产出，那么只需要提供风速和风向数据即可。我们不需要其它的浓度数据，也不需要你如何导入和清洗数据的那些代码。
 
-#### Complete {-}
+#### 完整 {-}
 
-This means that the example has all the information needed to reproduce your problem. We should be able to run the code on our computers successfully! Also **do not** provide screenshots or other images of code - copy and paste the lines so we can copy them into our R console.
+这代表你需要提供可以重现你问题的全部信息。我们应该可以顺利的在我们的电脑上尝试运行你提供的代码。*不要*使用屏幕截图或者其它以图片形式存在的代码，拷贝粘贴你的代码作为问题的一部分，这样我们也可以简单的直接拷贝到我们的R控制台当中。
 
-> For example, if your issue relates to some of your own data, don't send us code that contains `read_csv("my_data.csv")` if you haven't also provided "my_data.csv", else there's not a lot we can do!
+> 例如：如果问题与你的数据相关，那么不要提供包含类似 `read_csv("my_data.csv")`的代码。如果你同时上传了"my_data.csv"数据问题，否则我们实在是无能为力！
 
-#### Reproducible {-}
+#### 可重现 {-}
 
-This means that we can actually recreate and understand the problem you're having! Ensure that your code doesn't encounter any *other* problems when it is run, and you clearly describe what you think is going wrong.
+这代表我们可以真的再现你正在面对的问题。确保你的代码不会给我们带来*其它的*的问题，并且你已经清洗的描述了你认为出错的地方。
 
-> For example, an issue that states "timeaverage isn't working" isn't nearly as useful as "when `timeAverage(mydata, type = "month")` is run, the returned data isn't conditioned by month."
+> 例如：“时间平均报错” 就远没有 “`timeAverage(mydata, type = "month")`可以运行，但是返回的数据没有按月划分” 对问题的描述清晰。
 
 ::: {.callout-tip}
-## The `{reprex}` package
+## `{reprex}` 软件包
+检查可重现示例是否真的可重现的简单方法是使用`{reprex}`包。编写代码，复制，然后运行 `reprex::reprex()`。这将创建一个经过格式美化的、可重现的示例，并且已经复制到剪贴板，之后就可以直接在 GitHub 中粘贴使用了。
 
-An easy way to check if your reproducible example is actually reproducible is by using the `{reprex}` package. Create your code, copy it, and then run `reprex::reprex()`. This will create a nicely formatted reproducible example that is immediately copied to your clipboard, which can then be pasted into GitHub.
-
-The package is also very strict, so if the resulting output doesn't look right your example probably isn't actually reproducible!
+该软件包非常严格，因此如果生成的输出看起来不正确，说明您的示例实际上可能无法重现！
 :::
 
-## Providing data
+## 提供数据
 
-Sometimes the hardest thing about producing a reproducible example is providing data. There are many different ways of doing so when getting help with `{openair}`:
+生成可重现示例中最难的事情在很多时候是提供数据。在寻求`{openair}`帮助的时候你可以参考下面的方式来提供数据：
 
-* **Write your example with `openair::mydata`, `openairmaps::polar_data` or `openairmaps::traj_data`.** These data are built in to their respective packages so are easily accessible to anyone.
+* **使用`openair::mydata`、`openairmaps::polar_data`或`openairmaps::traj_data`来编写示例。** 这几个数据集是内置于相应软件包中的，所以任何人都可以直接访问到。
 
-* **Obtain data through `openair::importUKAQ()` or `worldmet::importNOAA()`.** These functions pull data straight into R from online databases, so will once again make your issue reproducible on other computers.
+* **使用`openair::importUKAQ()`或`worldmet::importNOAA()`获取数据。** 这两个函数不管在谁的电脑上运行都会直接从线上数据库导入数据到R语言环境中，所以可以保证在数据层面的可再现性。
 
-* **Attach your data (e.g., as a .csv file).** If your problem is specific to your data, you can attach your data to your GitHub issue. Remember that reproducible examples are *minimal* so you don't need to provide literally every column or row, only enough to recreate your issue. This also means you can remove private/personal data if it is a concern (e.g., we don't need real site names or locations, or even the specific species being measured).
+* **将原始数据（例如.csv文件）作为附件。** 如果问题只针对与自己的特定数据集，那么可以将数据上传作为 GitHub 问题的附件。请注意，在可重现示例的*极简*特性，所以不需要上传数据集全部的行和列，只要能再现问题就够了。这也意味着您可以（或应该）对数据进行脱敏（例如：我们不需要知道真实的站点名称和位置，甚至不需要知道具体的污染物名称）。
 
-* **Use `dput()`**. If your data is quite small, you can use the `dput()` function to generate a line of code that will recreate your data in someone else's R session.
+* **使用 `dput()`**。如果你的数据集很小，可以使用`dput()`函数来生成一行代码用于在其他人的R会话中重建该数据集。
 
 ```{r}
 dput(head(openair::mydata))
