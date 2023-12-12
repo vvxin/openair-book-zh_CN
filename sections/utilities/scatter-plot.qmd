@@ -2,37 +2,37 @@
 author: David Carslaw
 ---
 
-# Scatter plots {#sec-scatterPlot}
+# 散点图 {#sec-scatterPlot}
 
-## Purpose {#sec-ScatterPurpose}
+## 目的 {#sec-ScatterPurpose}
 
-Scatter plots are extremely useful and a very commonly used analysis technique for considering how variables relate to one another. R does of course have many capabilities for plotting data in this way. However, it can be tricky to add linear relationships, or split scatter plots by levels of other variables etc. The purpose of the `scatterPlot` function is to make it straightforward to consider how variables are related to one another in a way consistent with other [openair]{.pkg} functions. We have added several capabilities that can be used just by setting different options, some of which are shown below.
+散点图是分析变量之间关系最常用的可视化手段。R本身确实具备这方面的功能，但是面对线性拟合、按照其它参数切分数据等需求上处理起来可能还是会比较麻烦。`scatterPlot`函数采用[openair]{.pkg} 一贯的方式专门用于分析参数之间的关系。我们将定制的功能简化为函数中的几个设置选项，后面会逐一介绍。
 
-There is less need for this function now that [ggplot2]{.pkg} is available, but it still has some benefits for intercative use.
+[ggplot2]{.pkg} 包的出现可能进一步降低了对散点图绘制工具的需求，但是我们还是需要介绍一下这个专用工具的优势：
 
--   A smooth fit is automatically added to help reveal the underlying relationship between two variables together with the estimated 95% confidence intervals of the fit. This is in general an extremely useful thing to do because it helps to show the (possibly) non-linear relationship between variables in a very robust way --- or indeed whether the relationship is linear.
+-   自动添加平滑拟合曲线和95%置信区间以揭示两个变量之间的潜在关系。这非常有助于查看变量之间（可能的）非线性关系————或者是否存在线性关系。
 
--   It is easy to add a linear regression line. The resulting equation is shown on the plot together with the R$^2$ value.
+-   可以很方便的进行线性拟合，得到的方程和R$^2$值会一起显示在图上。
 
--   For large data sets there is the possibility to 'bin' the data using hexagonal binning or kernel density estimates. This approach is very useful when there is considerable over-plotting.
+-   对于大型数据集，可以采用六边形分箱和核密度估计的方法来可视化数据，有效避免了大量散点堆叠覆盖的问题。
 
--   It is easy to show how two variables are related to one another dependent on levels of a third variable. This capability is very useful for exploring how different variables depend on one another and can help reveal the underlying important relationships.
+-   可以方便的引入第三个变量，查看两个变量之间关系随第三个变量变化的情况，有助于解释更多隐藏的依赖关系。
 
--   A plot of two variables can be colour-coded by a continuous colour scale of a third variable.
+-   可以根据第三个变量数值的高低为图中的点进行着色。
 
--   It can handle date/time x-axis formats to provide an alternative way of showing time series, which again can be colour-coded by a third variable.
+-   可以将日期时间作为x轴，作为一种时间序列的可视化方式，同样可以根据第三个变量进行着色。
 
-The `scatterPlot` function isn't really specific to atmospheric sciences, in the same way as other plots. It is more a function for convenience, written in a style that is consistent with other [openair]{.pkg} functions. Nevertheless, along with the `timePlot` function they do form an important part of [openair]{.pkg} because of the usefulness of understanding how variables relate to one another. Furthermore, there are many options to make it easy to explore data in an interactive way without worrying about processing data or formatting plots.
+`scatterPlot` 并不是只能用于大气科学的，它更像是一个方便的工具，只是以和 [openair]{.pkg}其它函数一样的方式开发出来而已。`scatterPlot`和`timePlot`一起构成了 [openair]{.pkg}最重要的组成部分，因为理解变量之间的关系这一工作本身的重要而重要。此外，函数中的很多设置可以让我们交互式的探索数据，而不用操心数据的处理和图形的格式化。
 
-## Examples {#sec-ScatterEx}
+## 示例 {#sec-ScatterEx}
 
-We provide a few examples of use and as usual, users are directed towards the help pages (type `?scatterPlot`) for more extensive examples.
+我们接下来提供几个应用实例。用户可以在函数的帮助页（输入`?scatterPlot`）得到更多的示例。
 
-First we select a subset of data (2003) using the [openair]{.pkg} `selectByDate` function and plot NO~x~ vs. NO~2~
+首先我们使用[openair]{.pkg} 的`selectByDate`函数得到2003年数据的子集，然后绘制NO~x~ 和 NO~2~的散点图。
 
 ```{r}
 #| label: fig-scatterPlot1
-#| fig-cap: Scatter plot of hourly NO~x~ vs. NO~2~ at Marylebone Road for 2003.
+#| fig-cap: Marylebone路边交通站2003年NO~x~和NO~2~小时浓度散点图。
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
@@ -42,24 +42,24 @@ data2003 <- selectByDate(mydata, year = 2003)
 scatterPlot(data2003, x = "nox", y = "no2")
 ```
 
-Often with several years of data, points are over-plotted and it can be very difficult to see what the underlying relationship looks like. One very effective method to use in these situations is to 'bin' the data and to colour the intervals by the number of counts of occurrences in each bin. There are various ways of doing this, but 'hexagonal binning' is particularly effective because of the way hexagons can be placed next to one another.[^scatter-plot-1] To use hexagonal binning it will be necessary to install the [hexbin]{.pkg} package:
+在绘制几年的数据时，经常会发生散点大量覆盖和重叠的情况，使得本来的相互关系都不太容易看出来了。这时通常会采用数据分箱的方法，将绘制散点转化为绘制数据出现在某一区间的次数。分箱的方法也有多种，六边形分箱是比较常用的方法，因为六边形可以彼此相邻的平铺开来[^scatter-plot-1]。使用六边形分箱需要安装 [hexbin]{.pkg} 包。
 
-[^scatter-plot-1]: In fact it is not possible to have a shape with more than 6 sides that can be used to forma a lattice without gaps.
+[^scatter-plot-1]: 事实上不存在超过6个边的多边形可以实现没有间隙的平铺。
 
-### Hexaganol binning {#sec-hexbin}
+### 六边形分箱 {#sec-hexbin}
 
-Now it should be possible to make the plot by setting the method option to `method = "hexbin"`, as shown in @fig-scatterPlot2. The benefit of hexagonal binning is that it works equally well with enormous data sets e.g. several million records. In this case @fig-scatterPlot2 provides a clearer indication of the relationship between NO~x~ and NO~2~ than @fig-scatterPlot1 because it reveals where most of the points lie, which is not apparent from @fig-scatterPlot1. Note that For `method = "hexbin"` it can be useful to transform the scale if it is dominated by a few very high values. This is possible by supplying two functions: one that applies the transformation and the other that inverses it. For log scaling for example (the default), `trans = function(x) log(x)` and `inv = function(x) exp(x)`. For a square root transform use `trans = sqrt` and `inv =  function(x) x^2`. To not apply any transformation `trans = NULL` and `inv = NULL` should be used.
+现在通过`method = "hexbin"`方法选项生成@fig-scatterPlot2 。使用六边形分箱的好处是可以以同样的方式处理超大数据集，如百万行以上。这里@fig-scatterPlot2 比@fig-scatterPlot1 更加清晰的表征出了NO~x~ 和 NO~2~ 的关系，因为我们能够看到绝大部分点的具体位置，而不是像 @fig-scatterPlot1 那样大部分点被盖在下面。在使用`method = "hexbin"`的过程中，如果出现被个别极大值影响的情况，我们则需要进行标度的变换，这可以通过提供变换和逆变换函数实现。例如对数变换（默认使用）为`trans = function(x) log(x)`和`inv = function(x) exp(x)`；平方根变换为 `trans = sqrt`和`inv =  function(x) x^2`；不使用任何变换应该设置为`trans = NULL` and `inv = NULL`。
 
 ```{r}
 #| label: fig-scatterPlot2
-#| fig-cap: Scatter plot of hourly NO~x~ vs. NO~2~ at Marylebone Road using hexagonal binning. The number of occurrences in each bin is colour-coded (not on a linear scale). It is now possible to see where most of the data lie and a better indication of the relationship between NO~x~ and NO~2~ is revealed.
+#| fig-cap: Marylebone路边交通站2003年NO~x~和NO~2~小时浓度散点图。使用六边形分箱方式以便更好的揭示NO~x~ 和NO~2~之间的关系。分箱的颜色为点的个数（非线性标度）
 #| fig-width: 5
 #| fig-height: 5
 #| out-width: 60%
 scatterPlot(data2003, x = "nox", y = "no2", method = "hexbin", col= "turbo")
 ```
 
-Note that when `method = "hexbin"` there are various options that are useful e.g. a border around each bin and the number of bins. For example, to place a grey border around each bin and set the bin size try:
+`method = "hexbin"` 选择还有几个配套的设置选项，如六边形的边框和数量等。例如，设置灰色边框以及在x轴方向15个分箱可以使用如下代码：
 
 ```{r}
 #| label: hexbinAlt
@@ -69,11 +69,11 @@ scatterPlot(mydata, x = "nox", y = "no2",
             border = "grey", xbin = 15)
 ```
 
-The hexagonal binning and other binning methods are useful but often the choice of bin size is somewhat arbitrary. Another useful approach is to use a kernel density estimate to show where most points lie. This is possible in `scatterPlot` with the `method =   "density"` option. Such a plot is shown in @fig-scatterPlotDens.
+在六边形分箱和其他分箱方法中，bin的数量通常是随意设置的。我们可以使用核密度估计的方法来显示具体每一个位置上点的数量。这可以通过在`scatterPlot`函数中使用 `method =   "density"`来实现。见@fig-scatterPlotDens.
 
 ```{r}
 #| label: fig-scatterPlotDens
-#| fig-cap: Scatter plot of hourly NO~x~ vs. NO~2~ at Marylebone Road using a kernel density estimate to show where most of the points lie. The *intensity* is a measure of how many points lie in a unit area of NO~x~ and NO~2~ concentration.
+#| fig-cap: Marylebone路边交通站2003年NO~x~和NO~2~小时浓度散点图。使用核密度估计的方法以便更好的观察散点的分布。*密度*（intensity）为单位面积上NO~x~和NO~2~关系点个数的度量指标。
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: 60%
@@ -83,11 +83,11 @@ scatterPlot(selectByDate(mydata, year = 2003),
             cols = "turbo")
 ```
 
-Sometimes it is useful to consider how the relationship between two variables varies by levels of a third. In [openair]{.pkg} this approach is possible by setting the option `type`. When `type` is another numeric variables, four plots are produced for different quantiles of that variable. We illustrate this point by considering how the relationship between NO~x~ and NO~2~ varies with different levels of O~3~. We also take the opportunity to not plot the smooth line, but plot a linear fit instead and force the layout to be a 2 by 2 grid.
+有时我们需要观察两个参数之间的关系如何随第三个参数水平的变化而变化。这在[openair]{.pkg}中通过`type`选项来实现，当`type` 为数值型参数时，会划分为4个百分位区间下的数据分面板绘制。这里我们尝试观察NO~x~和NO~2~的关系如何随O~3~污染水平的变化而变化。我们同时利用这个机会设置为绘制线性拟合曲线，而不是平滑线，以及采用2行2列的布局方式。
 
 ```{r}
 #| label: fig-scatterPlot3
-#| fig-cap: Scatter plot of hourly NO~x~ vs. NO~2~ at Marylebone Road by different levels of O~3~.
+#| fig-cap: Marylebone路边交通站2003年NO~x~和NO~2~散点图随 O~3~ 污染水平的变化情况。
 #| fig-width: 6
 #| fig-height: 6
 #| out-width: 65%
@@ -96,7 +96,7 @@ scatterPlot(data2003, x = "nox", y = "no2",
             linear = TRUE, layout = c(2, 2))
 ```
 
-Below is an extended example that brings together data manipulation, refined plot options and linear fitting of two variables with NO~x~. The aim is to plot the weekly concentration of NO~x~ against PM~10~ and PM~2.5~ and fit linear equations to both relationships. To do this we need the $x$ variable as NO~x~ and the $y$ variable as PM~10~ or PM~2.5~, which means we also need a column that will act as a grouping column i.e. identifies whether the $y$ is PM~10~ or PM~2.5~.
+下面是一个扩展示例，包含了数据处理、精细的绘图选项配置以及NO~x~和两个变量之间的线性拟合等。我们的目标是利用周平均浓度数据绘制NO~x~和PM~10~以及NO~x~和PM~2.5~的线性拟合方程。为了实现这一目标，我们将 $x$ 轴设定为NO~x~，$y$ 轴设定为 PM~10~ 和PM~2.5~，这意味着我们需要在数据中有专门的一列用于分组，即 $y$ 轴上的PM~10~ 和PM~2.5~。
 
 ```{r}
 #| label: dataManip
@@ -113,11 +113,11 @@ subdat <- pivot_longer(subdat, cols = c(pm10, pm25),
 head(subdat)
 ```
 
-Now we will plot weekly NO~x~ versus PM~10~ and PM~2.5~ and fit a linear equation to both --- and adjust some of the symbols (shown in @fig-scatterPlotTwo).
+下面我们绘制 NO~x~ 周浓度随PM~10~ 和 PM~2.5~ 的分布情况并拟合线性方程，同时调整图中的一些要素。见@fig-scatterPlotTwo。
 
 ```{r}
 #| label: fig-scatterPlotTwo
-#| fig-cap: Scatter plot of weekly NO~x~ vs. PM~10~ *and* PM~2.5~ at Marylebone Road with linear equations shown and plot symbols modified.
+#| fig-cap: Marylebone路边交通站2003年NO~x~ 周浓度随PM~10~ *和* PM~2.5~ 的分布情况并拟合线性方程。
 #| fig-width: 6
 #| fig-height: 4.5
 #| out-width: 67%
@@ -131,7 +131,7 @@ scatterPlot(subdat, x = "nox", y = "value",
             ylab = "PM concentration (ug/m3)")
 ```
 
-To gain a better idea of where the data lie and the linear fits, adding some transparency helps:
+为了看清集中地带散点的分布，可以采用增加透明度的方式：
 
 ```{r}
 #| label: scatterPlotTwoAlpha
@@ -147,7 +147,7 @@ scatterPlot(subdat, x = "nox", y = "value",
             alpha = 0.2)
 ```
 
-The above example will also work with `type`. For example, to consider how NO~x~ againts PM~10~ and PM~2.5~ varies by season:
+上面这个示例仍然支持`type`选项。利用查看在不同季节下 NO~x~ 周浓度随PM~10~ 和 PM~2.5~ 的分布情况
 
 ```{r}
 #| label: scatterTwoSeas
@@ -162,13 +162,13 @@ scatterPlot(subdat, x = "nox", y = "value",
             type = "season")
 ```
 
-Finally, we show how to plot a continuous colour scale for a third *numeric* variable setting the value of `z` to the third variable. @fig-scatterPlot4 shows again the relationship between NO~x~ and NO~2~ but this time colour-coded by the concentration of O~3~. We also take the opportunity to split the data into seasons and weekday/weekend by setting `type =   c("season", "weekend")`. There is an enormous amount of information that can be gained from plots such as this. Differences between weekdays and the weekend can highlight changes in emission sources, splitting by seasons can show seasonal influences in meteorology and background O~3~ and colouring the data by the concentration of O~3~ helps to show how O~3~ concentrations affect NO~2~ concentrations. For example, consider the summertime-weekday panel where it clearly shows that the higher NO~2~ concentrations are associated with high O~3~ concentrations. Indeed there are some hours where NO~2~ is \>100 ppb at quite low concentrations of NO~x~ ($\approx$ 200 ppb). It would also be interesting instead of using O~3~ concentrations from Marylebone Road to use O~3~ from a background site.
+最后我们将第三个变量赋值给`z` 以便给第三个*数值型*变量绘制连续色标。@fig-scatterPlot4 同样显示了 NOx 和 NO2 之间的关系，但是用O~3~的浓度来填色。我们还借此机会通过设置 `type =   c("season", "weekend")` 将数据拆分为季节和工作日/周末，来得到这张包含大量信息图表。工作日和周末之间的差异可以凸显出排放源的变化，按季节划分可以显示气象条件和背景O~3~ 背景水平的季节性变化。按 O~3~ 浓度着色数据有助于显示O~3~ 浓度水平对NO~2~浓度的影响。例如，在夏季——工作日面板中可以清楚的看到NO~2~ 的高浓度与O~3~高浓度相关，在一些时次出现了NO~2~ \>100 ppb同时NO~x~ 较低（$\approx$ 200 ppb）的情况。考虑到Marylebone位交通站，这里也许使用背景站点的 O~3~ 数据会得到更有意思的结论。
 
-@fig-scatterPlot4 was very easily produced but contains a huge amount of useful information showing the relationship between NO~x~ and NO~2~ dependent upon the concentration of O~3~, the season and the day of the week. There are of course numerous other plots that are equally easily produced.
+像@fig-scatterPlot4 这样的图并不难制作，但是可以为我们提供海量的信息。他在表征NO~x~和NO~2~关系的同时还考虑了 O~3~ 的浓度、季节以及工作日和休息日等不同因素。我们可以用类似的方法大胆的去绘制其它参数。
 
 ```{r}
 #| label: fig-scatterPlot4
-#| fig-cap: Scatter plot of hourly NO~x~ vs. NO~2~ at Marylebone Road by different levels of O~3~ split by season and weekday-weekend.
+#| fig-cap: Marylebone路边交通站NO~x~和NO~2~散点图随 O~3~ 污染水平、季节、工作日/周末的变化情况。
 #| fig-width: 10
 #| fig-height: 5
 scatterPlot(data2003, 
@@ -177,11 +177,11 @@ scatterPlot(data2003,
             limits = c(0, 30))
 ```
 
-@fig-scatterPlot5 shows that `scatterPlot` can also handle dates on the x-axis; in this case shown for SO~2~ concentrations coloured by wind direction for August 2003.
+`scatterPlot` 也可以将日期作为x轴，@fig-scatterPlot5 展示了2023年八月SO~2~的情况，以风向着色。
 
 ```{r}
 #| label: fig-scatterPlot5
-#| fig-cap: Scatter plot of date vs. SO~2~- at Marylebone Road by different levels of wind direction for August 2003.
+#| fig-cap: 2003年八月Marylebone路边交通站日期和SO~2~散点图，以风向着色。
 #| fig-width: 6
 #| fig-height: 4
 #| out-width: 65%
@@ -190,11 +190,11 @@ scatterPlot(selectByDate(data2003, month = 8),
              z = "wd")
 ```
 
-Similar to @sec-timePlot, `scatterPlot` can also plot wind vector arrows if wind speed and wind direction are available in the data frame. @fig-scatterPlotwswd shows an example of using the `windflow` option. The Figure also sets many other options including showing the concentration of O~3~ as a colour, setting the colour scale used and selecting a few days of interest using the `selectByDate` function. @fig-scatterPlotwswd shows that when the wind direction changes to northerly, the concentration of NO~2~ decreases and that of O~3~ increases.
+与@sec-timePlot 类似，只要数据集中同时包含风速和风向数据，`scatterPlot`可以绘制风矢量箭头。@fig-scatterPlotwswd 是使用`windflow`选项的一个示例，这里我们还设置了使用O~3~浓度着色、指定调色盘，以及使用`selectByDate` 函数节选一小段时间等操作。 从@fig-scatterPlotwswd 可以看出北风条件下，NO~2~ 浓度下降而O~3~浓度上升。
 
 ```{r}
 #| label: fig-scatterPlotwswd
-#| fig-cap: Scatter plot of date vs. NO~2~ with the colour scale representing O~3~. The wind flow vectors are also shown.
+#| fig-cap: 日期和NO~2~浓度散点图，以O~3~浓度着色，显示风矢量箭头。
 #| fig-height: 4
 #| fig-width: 6
 #| out-width: 65%
