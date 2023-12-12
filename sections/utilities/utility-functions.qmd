@@ -2,13 +2,13 @@
 author: David Carslaw
 ---
 
-# Utility functions {#sec-utility}
+# 实用工具函数 {#sec-utility}
 
-## Selecting data by date {#sec-selectByDate}
+## 按日期时间选取数据 {#sec-selectByDate}
 
-Selecting by date/time in R can be intimidating for new users---and time-consuming for all users. The `selectByDate` function aims to make this easier by allowing users to select data based on the British way of expressing date i.e. d/m/y. This function should be very useful in circumstances where it is necessary to select only part of a data frame.
+在R语言中按照日期/时间灵活的选取数据，不论是对新手还是老手都是一件费时费力的事，`selectByDate` 函数力求让这件事变的简单一些。该函数基于英式日期（d/m/y）选取数据，适用于任何你想要处理分析部分时段数据的情形。
 
-First load the packages we need.
+首先加载所需软件包。
 
 ```{r}
 #| message: false
@@ -18,36 +18,36 @@ library(tidyverse)
 ```
 
 ```{r }
-## select all of 1999
+## 选取1999年所有数据
 data.1999 <- selectByDate(mydata, start = "1/1/1999", end = "31/12/1999")
 head(data.1999)
 tail(data.1999)
 
-## easier way
+## 更简洁的用法
 data.1999 <- selectByDate(mydata, year = 1999)
 
-## more complex use: select weekdays between the hours of 7 am to 7 pm
+## 选取所有工作日早7时到晚7时的数据。
 sub.data <- selectByDate(mydata, day = "weekday", hour = 7:19)
 
-## select weekends between the hours of 7 am to 7 pm in winter (Dec, Jan, Feb)
+## 选取所有冬季（12月、1月、2月）工作日早7时到晚7时的数据。
 sub.data <- selectByDate(mydata, day = "weekend", hour = 7:19,
-                           month = c("dec", "jan", "feb"))
+                           month = c(12, 1, 2))
 ```
 
-The function can be used directly in other functions. For example, to make a polar plot using year 2000 data:
+这个函数可以在其他函数的内部进行调用。例如，绘制2000年数据的极坐标图：
 
 ```{r}
 #| eval: false
 polarPlot(selectByDate(mydata, year = 2000), pollutant = "so2")
 ```
 
-## Making intervals --- cutData {#sec-cutData}
+## 分割数据 —— cutDate {#sec-cutData}
 
-The `cutData` function is a utility function that is called by most other functions but is useful in its own right. Its main use is to partition data in many ways, many of which are built-in to [openair]{.pkg}
+`cutData` 作为一个实用工具函数经常在后台被其他函数调用，但是它也可以独立使用，用于根据不同条件对数据进行分段。这些条件大部分是[openair]{.pkg}特有并已经内置的。
 
-Note that all the date-based types e.g. month/year are derived from a column `date`. If a user already has a column with a name of one of the date-based types it will not be used.
+注意当以日期时间作为分割条件时，如每年/每月，分割会基于数据框中名为 `date` 的列计算生成。用户自己命名的年/月列会被忽略。
 
-For example, to cut data into seasons:
+例如，按照季节分割数据：
 
 ```{r}
 #| label: cutdataexam
@@ -55,9 +55,9 @@ mydata <- cutData(mydata, type = "season")
 head(mydata)
 ```
 
-This adds a new field `season` that is split into four seasons. There is an option `hemisphere` that can be used to use southern hemisphere seasons when set as `hemisphere = "southern"`.
+分割后的数据会增加一个叫做 `season`的因子型字段，并且按照4个季节水平完成赋值。这里有一个`hemisphere`选项用来处理南半球的季节问题，即 `hemisphere = "southern"`。
 
-The `type` can also be another field in a data frame e.g.
+用于指定分段方法的 `type` 也可以是数据集中的另一个字段。例如：
 
 ```{r}
 #| label: cutdata2
@@ -66,28 +66,28 @@ head(mydata)
 data(mydata) ## re-load mydata fresh
 ```
 
-This divides PM~10~ concentrations into four *quantiles* --- roughly equal numbers of PM~10~ concentrations in four levels.
+这会按照PM~10~ 浓度的*百分位*进行分段————差不多相当于根据 PM~10~ 的浓度对所有样本做四等分。
 
-Most of the time users do not have to call `cutData` directly because most functions have a `type` option that is used to call `cutData` directly e.g.
+ 在大多数情况下，用户不需要自己用 `cutData` 进行数据操作，因为几乎所有的功能函数都支持 `type` 选项并在后台完成对 `cutData` 的调用。
 
 ```{r}
 #| eval: false
 polarPlot(mydata, pollutant = "so2", type = "season")
 ```
 
-However, it can be useful to call `cutData` *before* supplying the data to a function in a few cases. First, if one wants to set seasons to the southern hemisphere as above. Second, it is possible to override the division of a numeric variable into four quantiles by using the option `n.levels`. More details can be found in the `cutData` help file.
+仍有个别情况可能需要在做具体分析*之前*自行调用 `cutData` 进行数据预处理。一种就是之前提到的为南半球地区做季节分段的情形；另一种是需要用 `n.levels` 选项在覆盖缺省的4个百分位的设定，详细资料可以参见 `cutData` 的帮助文件。
 
-## Selecting run lengths of values above a threshold --- pollution episodes {#sec-selectRunning}
+## 筛选污染过程————连续高于指定阈值 {#sec-selectRunning}
 
-A seemingly easy thing to do that has relevance to air pollution episodes is to select run lengths of contiguous values of a pollutant above a certain threshold. For example, one might be interested in selecting O~3~ concentrations where there are at least 8 consecutive hours above 90\~ppb. In other words, a selection that combines both a threshold and *persistence*. These periods can be very important from a health perspective and it can be useful to study the conditions under which they occur. But how do you select such periods easily? The `selectRunning` utility function has been written to do this. It could be useful for all sorts of situations e.g.
+在空气污染过程的分析当中，一个显而易见的需求是筛选出连续高于某个浓度阈值的时间段。例如，我们可能需要筛选出所有 O~3~ 浓度连续8个小时超过90\~ppb 的数据，进而做健康影响方面的分析。在这个筛选过程中需要同时指定阈值和*持续时长*，如果快速实现呢？我们为此开发了 `selectRunning` 工具函数，可以在一下情形中使用：
 
--   Selecting hours when primary pollutant concentrations are persistently high --- and then applying other [openair]{.pkg} functions to analyse the data in more depth.
+-   筛选一段时间内特定污染物持续偏高的时次，然后再使用[openair]{.pkg} 中的函数做进一步分析。
 
--   In the study of particle suspension or deposition etc. it might be useful to select hours when wind speeds remain high or rainfall persists for several hours to see how these conditions affect particle concentrations.
+-   在做颗粒物的悬浮和沉降相关研究时，我们可能需要筛选出风速连续较高或者降水持续较长时间的数据，因为这些条件与颗粒物的浓度高度相关。
 
--   It could be useful in health impact studies to select blocks of data where pollutant concentrations remain above a certain threshold.
+-   在研究人体健康影响时通常需要筛选出污染物浓度达到某一阈值的数据子集。
 
-As an example we are going to consider O~3~ concentrations at a semi-rural site in south-west London (Teddington). The data can be downloaded as follows:
+下面我们使用伦敦市西南近郊的泰丁顿站点的 O~3~ 数据作为筛选对象。首先下载数据：
 
 ```{r}
 #| label: importTed
@@ -96,7 +96,7 @@ ted <- importKCL(site = "td0", year = 2005:2009, met = TRUE)
 nrow(ted)
 ```
 
-We are going to contrast two pollution roses of O~3~ concentration. The first shows hours where the criterion is not met, and the second where it is met. The subset of hours is defined by O~3~ concentrations above 90 ppb for periods of at least 8-hours i.e. what might be considered as ozone episode conditions.
+我们现在以 O~3~ 浓度连续8小时达到90 ppb为 O~3~ 作为重污染的标准，将数据分成未达到重污染和达到重污染两组，然后分别绘制污染玫瑰图。
 
 ```{r}
 #| label: episodeSelect
@@ -105,18 +105,18 @@ ted <- selectRunning(ted, pollutant = "o3",
                          run.len = 8)
 ```
 
-The `selectRunning` function returns a new column `criterion` that flags whether the condition is met or not. The user can control the text provided, which by default is "yes" and "no".
+ `selectRunning` 函数的返回结果当中新增了 `criterion` 因子列，并且赋予了达到或者未达到的水平值。缺省状况下使用“yes”和“no”来描述，用户也可以自定义这里的描述词汇。
 
 ```{r}
 #| label: criterion
 table(ted$criterion)
 ```
 
-Now we are going to produce two pollution roses shown in @fig-RunningRes. Note, however that many other types of analysis could be carried out now the data have been partitioned.
+接下来我们生成两种情景下的污染玫瑰图，如 @fig-RunningRes 所示。这里数据中已经定义好的情景因子同样适用于其它分析函数。
 
 ```{r}
 #| label: fig-RunningRes
-#| fig-cap: Example of using the `selectRunning` function to select episode hours to produce pollution roses of O~3~ concentration.
+#| fig-cap: 使用 `selectRunning` 函数区分重污染场景后绘制的 O~3~ 污染玫瑰图。
 #| fig-width: 8
 #| fig-height: 5
 #| out-width: 90%
@@ -124,9 +124,9 @@ pollutionRose(ted, pollutant = "o3",
           type = "criterion")
 ```
 
-The results are shown in @fig-RunningRes. The pollution rose for for the "no" criterion (left plot of @fig-RunningRes shows that the highest O~3~ concentrations tend to occur for wind directions from the south-west, where there is a high proportion of measurements. By contrast, the when the criterion is met (right plot of @fig-RunningRes is very different. In this case there is a clear set of conditions where these criteria are met i.e. lengths of at least 8-hours where the O~3~ concentration is at least 90 ppb. It is clear the highest concentrations are dominated by south-easterly conditions i.e. corresponding to easterly flow from continental Europe where there has been time to the O~3~ chemistry to take place.
+在@fig-RunningRes 中左图的非重污染情境下，可以看到O~3~的相对高浓度以更高的频率来自西南方向。但是在 @fig-RunningRes 中右图的重污染情境下分布测完全不同。当我们以连续8小时超过90ppb这一条件对数据进行筛选后，可以发现最高的浓度更多的来自东南方向，这主要是收到来自欧洲大陆方向 O~3~ 前体物的影响。
 
-The code below shows (as an example), that the summer of 2006 had a high proportion of conditions where the criterion was met.
+下面的代码可以进一步展示出，2006年夏季有更多符合阈值条件的重污染情况发生。
 
 ```{r}
 #| eval: false
@@ -136,7 +136,7 @@ timeProp(ted, pollutant = "o3",
          cols = "viridis")
 ```
 
-It is also useful to consider what controls the highest NO~x~ concentrations at a central London roadside site. For example, the code below (not plotted) shows very strongly that the persistently highest NO~x~ concentrations are dominated by south-westerly winds. As mentioned earlier, there are many other types of analysis that can be carried out now the data set identifies where the criterion is or is not met.
+我们也可以用同样的方法观察伦敦市路边交通站点的 NO~x~ 情况。下面代码所生成的图中可以看到连续的高NO~x~ 浓度绝大部分来自西南风场条件下。需要再次指出的是，各种分析函数都支持按照我们这里划分的情景来做相应的对比分析。
 
 ```{r}
 #| label: runningNOx
@@ -148,11 +148,11 @@ episode <- selectRunning(mydata, pollutant = "nox",
 pollutionRose(episode, pollutant = "nox", type = "criterion")
 ```
 
-## Calculating rolling means {#sec-rollingMean}
+## 计算滑动平均 {#sec-rollingMean}
 
-Some air pollution statistics such as for O~3~ and particulate matter are expressed as rolling means and it is useful to be able to calculate these. It can also be useful to help smooth-out data for clearer plotting. The `rollingMean` function makes these calculations. One detail that can be important is that for some statistics a mean is only considered valid if there are a sufficient number of valid readings over the averaging period. Often there is a requirement for at least 75% data capture. For example, with an averaging period of 8 hours and a data capture threshold of 75%, at least 6 hours are required to calculate the mean.
+O~3~ 和颗粒物等大气污染物采用滑动平均值这个统计指标来进行评价或者在绘图前用于平滑异常监测值。`rollingMean` 实用工具函数专门用于这方面的计算。这里有一个细节是在统计上平均值的计算通常需要在平均时段内有足够多的数据量才能够有效，在环境监测方面则意味着75%的数据捕获率。例如，对于8小时的滑动平均，如果要求数据捕获率的阈值为75%，那么每一个平均周期内至少需要有6个小时的有效数据。
 
-The function is called as follows; in this case to calculate 8-hour rolling mean concentrations of O~3~.
+下面演示一个计算O~3~浓度8小时滑动平均值的调用示例。
 
 ```{r}
 #| label: selectBydate
@@ -161,31 +161,31 @@ mydata <- rollingMean(mydata, pollutant = "o3", width = 8,
 tail(mydata)
 ```
 
-Note that calculating rolling means shortens the length of the data set. In the case of O~3~, no calculations are made for the last 7 hours.
+注意滑动平均的计算会减少数据集的总长度。在上面的O~3~ 的例子中，至少有7个小时是无法进行计算的。
 
-Type `?rollingMean` into R for more details. Note that the function currently only works with a single site.
+可以在R控制台中运行 `?rollingMean` 命令查看更多信息。目前本函数只能针对单一站点的数据使用。
 
-## Aggregating data by different time intervals {#sec-timeAverage}
+## 按不同时间周期聚合数据 {#sec-timeAverage}
 
-Aggregating data by different averaging periods is a common and important task. There are many reasons for aggregating data in this way:
+根据不同的平均时段对数据进行聚合是日常最常见的处理操作。数据聚合主要出于以下原因：
 
--   Data sets may have different averaging periods and there is a need to combine them. For example, the task of combining an hourly air quality data set with a 15-minute average meteorological data set. The need here would be to aggregate the 15-minute data to 1-hour before merging.
+-   合并不同时间分辨率的数据子集。例如空气质量数据为小时数据，而气象数据为15分钟数据，这时需要将15分钟分辨率的气象数据聚合为小时数据才能和空气质量数据合并起来。
 
--   It is extremely useful to consider data with different averaging times straightforwardly. Plotting a very long time series of hourly or higher resolution data can hide the main features and it would be useful to apply a specific (but flexible) averaging period to the data for plotting.
+-   聚合数据是根据分析需求进行数据变换的重要方法之一。比如，使用高时间分辨率的数据绘制长时间序列通常会看不清其中的特征，这是需要在绘制之前先对数据特点（但灵活的）均值聚合。 
 
--   Those who make measurements during field campaigns (particularly for academic research) may have many instruments with a range of different time resolutions. It can be useful to re-calculate time series with a common averaging period; or maybe help reduce noise.
+-   在进行外场的综合观测期间（尤其是科研性质的观测），不同的仪器设备通常会有不同的采样周期，监测数据的时间分辨率也就不同。这是我们就需要将其聚合为一个统一的时间分辨率，这样做也能够一定程度上降低监测的噪音。
 
--   It is useful to calculate statistics other than means when aggregating e.g. percentile values, maximums etc.
+-   使用平均值以外的统计方法聚合数据。例如分位数、最大值等。
 
--   For statistical analysis there can be short-term autocorrelation present. Being able to choose a longer averaging period is sometimes a useful strategy for minimising autocorrelation.
+-   统计上，更长的平均时间可以一定程度上介绍自相关效应的发生。
 
-In aggregating data in this way, there are a couple of other issues that can be useful to deal with at the same time. First, the calculation of proper vector-averaged wind direction is essential. Second, sometimes it is useful to set a minimum number of data points that must be present before the averaging is done. For example, in calculating monthly averages, it may be unwise to not account for data capture if some months only have a few valid points.
+数据聚合还有一些要特别注意的地方。首先是需要正确的处理风向数据的矢量平均。其次，在多数情况下我们需要为聚合计算设定数据有效性的最低要求。例如，如果一个月仅有几条有效数据，显然是不适合计算产生月均值的。
 
-When a data capture threshold is set through `data.thresh` it is necessary for `timeAverage` to know what the original time interval of the input time series is. The function will try and calculate this interval based on the most common time gap (and will print the assumed time gap to the screen). This works fine most of the time but there are occasions where it may not e.g. when very few data exist in a data frame. In this case the user can explicitly specify the interval through `interval` in the same format as `avg.time` e.g. `interval = "month"`. It may also be useful to set `start.date` and `end.date` if the time series do not span the entire period of interest. For example, if a time series ended in October and annual means are required, setting `end.date` to the end of the year will ensure that the whole period is covered and that `data.thresh` is correctly calculated. The same also goes for a time series that starts later in the year where `start.date` should be set to the beginning of the year.
+当我们使用`data.thresh`选项设置了数据捕获率要求阈值时，也需要同时告诉`timeAverage`输入数据的原始时间分辨率是什么。函数会尝试用常用的时间间隔进行计算（相关信息回输出到屏幕上），大多数情况下没问题，但是在数据量极少的情况下可能会出问题。因此我们最好用`interval`选项明确出来，其格式与`avg.time`相同，例如： `interval = "month"`。如果数据其对所在时间段的覆盖不够完整，我们还应该进行`start.date`和`end.date`的设置。例如数据截止在10月，但是需要计算当年的年均值，将`end.date`设置为当年的最后一天可以确保 `data.thresh`数据捕获率要求的判断完整的考虑了一年的情况。同理当数据的起点不是年初的时候也应该通过`start.date` 进行相应的设置。
 
-All these issues are (hopefully) dealt with by the `timeAverage` function. The options are shown below, but as ever it is best to check the help that comes with the [openair]{.pkg} package.
+`timeAverage`函数尽可能的自动处理数据聚合中可能需要的问题。下面是几个示例，仍然建议查看[openair]{.pkg} 包中的相关文档。
 
-To calculate daily means from hourly (or higher resolution) data:
+由小时（或更高分辨率）数据计算小时均值：
 
 ```{r}
 #| label: dailyAve
@@ -193,7 +193,7 @@ daily <- timeAverage(mydata, avg.time = "day")
 daily
 ```
 
-Monthly 95th percentile values:
+计算每月的95百分位值：
 
 ```{r}
 #| label: percentile95
@@ -203,7 +203,7 @@ monthly <- timeAverage(mydata, avg.time = "month",
 monthly
 ```
 
-2-week averages but only calculate if at least 75% of the data are available:
+计算双周均值，要求数据捕获率至少为75%：
 
 ```{r}
 #| label: twoweek
@@ -212,9 +212,9 @@ twoweek <- timeAverage(mydata, avg.time = "2 week",
 twoweek
 ```
 
-Note that `timeAverage` has a `type` option to allow for the splitting of variables by a grouping variable. The most common use for `type` is when data are available for different sites and the averaging needs to be done on a per site basis.
+`timeAverage`函数可以用`type`选项将数据按照一组参数的值进行预分组。这里我们通常使用`type`选项来对包含多个站点的数据集进行分站点聚合。
 
-First, retaining by site averages:
+按照站点名称计算年均值：
 
 ```{r}
 #| label: timeAvType
@@ -225,7 +225,7 @@ dat <- importAURN(c("kc1", "my1"), year = 2011:2013)
 timeAverage(dat, avg.time = "year", type = "site")
 ```
 
-Retain site name and site code:
+保留站点名和站点编号并计算年均值：
 
 ```{r}
 #| label: timeAvTypeCode
@@ -233,14 +233,14 @@ Retain site name and site code:
 timeAverage(dat, avg.time = "year", type = c("site", "code"))
 ```
 
-Average all data across sites (drops site and code):
+计算所有数据的年均值（不区分站点名和站点编号）：
 
 ```{r}
 #| label: timeAvNoType
 timeAverage(dat, avg.time = "year")
 ```
 
-`timeAverage` also works the other way in that it can be used to derive higher temporal resolution data e.g. hourly from daily data or 15-minute from hourly data. An example of usage would be the combining of daily mean particle data with hourly meteorological data. There are two ways these two data sets can be combined: either average the meteorological data to daily means or calculate hourly means from the particle data. The `timeAverage` function when used to 'expand' data in this way will repeat the original values the number of times required to fill the new time scale. In the example below we calculate 15-minute data from hourly data. As it can be seen, the first line is repeated four times and so on.
+`timeAverage`也可以进行反向的聚合，即衍生出更高时间分辨率的数据。例如从日数据生成小时数据、从小时数据生成15分钟数据等。一个实际应用案例是合并颗粒物的日数据和气象参数的小时数据。这是既可以将气象参数平均为日数据然后进行合并，也可以将颗粒物数据扩展为小时数据然进行合并。 `timeAverage`函数扩展数据的方法是在新的时间轴上需要添加数据的时间点上重复生成上一条数据。下面的例子演示小时数据到15分钟数据的转化，可以看到，第一行重复了四次，以此类推。
 
 ```{r}
 #| label: timeAvgFill
@@ -250,13 +250,13 @@ data15 <- timeAverage(mydata,
 head(data15, 20)
 ```
 
-The `timePlot` can apply this function directly to make it very easy to plot data with different averaging times and statistics.
+`timePlot` 会自动调用上述工具函数生成不同时间尺度的聚合数据然后绘制相应图表。
 
-## Calculating percentiles {#sec-calcPercentile}
+## 计算百分位{#sec-calcPercentile}
 
-`calcPercentile` makes it straightforward to calculate percentiles for a single pollutant. It can take account of different averaging periods, data capture thresholds --- see @sec-timeAverage for more details.
+`calcPercentile`可以之际计算单一污染物的百分位数。它考虑了不同的时间周几、数据捕获率周期等因素，请参见@sec-timeAverage 。 
 
-For example, to calculate the 25, 50, 75 and 95th percentiles of O~3~ concentration by year:
+例如：计算O~3~ 逐年的25、50、75、95百分比浓度值：
 
 ```{r}
 #| label: calcpercentile
@@ -265,35 +265,33 @@ calcPercentile(mydata, pollutant  = "o3",
                avg.time = "year")
 ```
 
-## Correlation matrices {#sec-corPlot}
+## 相关性矩阵 {#sec-corPlot}
 
-Understanding how different variables are related to one another is always important. However, it can be difficult to easily develop an understanding of the relationships when many different variables are present. One of the useful techniques used is to plot a *correlation matrix*, which provides the correlation between all pairs of data. The basic idea of a correlation matrix has been extended to help visualise relationships between variables by [@friendly2002] and [@Sarkar2008].
+了解变量之间的相关性常常是统计分析的重点。但是当存在许多个变量的时候，可能很难轻松理解掌握他们之间关系。*相关性矩阵*可以一次性绘制所有变量两两之间的相关性，是快速掌握变量间关系的好方法。[@friendly2002]和[@Sarkar2008]在相关矩阵的基本思想和可视化效果方面做了进一步的扩展和改进。
 
-The `corPlot` shows the correlation coded in three ways: by shape (ellipses), colour and the numeric value. The ellipses can be thought of as visual representations of scatter plot. With a perfect positive correlation a line at 45 degrees positive slope is drawn. For zero correlation the shape becomes a circle --- imagine a 'fuzz' of points with no relationship between them.
+ `corPlot`用形状（椭圆）、颜色和数值这三种可视化元素来指征相关性水平的高低。椭圆可以理解为散点图的整体化表达，在完全正相关的情况下成为一条45度正斜率的直线。在零相关的情况下则成为一个圆————想象为一团没有关系的散点。
 
-With many variables it can be difficult to see relationships between variables i.e. which variables tend to behave most like one another. For this reason hierarchical clustering is applied to the correlation matrices to group variables that are most similar to one another (if `cluster = TRUE`.)
+当变量的数量比较多时，可能仍然不太容易通过矩阵图看出哪些变量之间更加相关。因此我们可以在生成相关性矩阵的同时应用分层聚类（hierarchical clustering）的方法对更相关的变量进行分组（`cluster = TRUE`）。
 
-It is also possible to use the [openair]{.pkg} type option to condition the data in many flexible ways, although this may become difficult to visualise with too many panels.
-
-An example of the `corPlot` function is shown in @fig-corPlot. In this Figure it can be seen the highest correlation coefficient is between PM~10~ and PM~2.5~ (r = 0. 84) and that the correlations between SO~2~, NO~2~ and NO~x~ are also high. O~3~ has a negative correlation with most pollutants, which is expected due to the reaction between NO and O~3~. It is not that apparent in @fig-corPlot that the order the variables appear is due to their similarity with one another, through hierarchical cluster analysis. In this case we have chosen to also plot a *dendrogram* that appears on the right of the plot. Dendrograms provide additional information to help with visualising how groups of variables are related to one another. Note that dendrograms can only be plotted for `type = "default"` i.e. for a single panel plot.
+@fig-corPlot 是 `corPlot`函数的绘制示例。图中我们可以看到最强相关来自PM~10~和PM~2.5~（r = 0.84），SO~2~、NO~2~和NO~x~几项污染物之间的相关性也比较强。 O~3~和其他几项污染物呈负相关，这主要是NO和O~3~之前的化学反应导致的。@fig-corPlot 中参数的位置实际上是根据分层聚类的结果来排序的，但是不是很容易看出来，因此我们在这个例子当中特意在矩阵的右侧绘制了*树状图*（dendrogram）。树状图可以帮助我们更清晰的掌握多参数之间的相关关系。注意树状图只能在`type = "default"`即单一面板的情况下才可以绘制。
 
 ```{r}
 #| label: fig-corPlot
-#| fig-cap: Example of a correlation matrix showing the relationships between variables.
+#| fig-cap: 相关性矩阵示例，用于显示各变量之间的相关关系。
 #| fig-width: 7
 #| fig-height: 6
 #| out-width: 75%
 corPlot(mydata, dendrogram = TRUE)
 ```
 
-Note also that the `corPlot` accepts a `type` option, so it possible to condition the data in many flexible ways, although this may become difficult to visualise with too many panels. For example:
+`corPlot` 同样支持 `type`选项来灵活的分组数据后再绘图，尽管当面板个数太多时有可能会密密麻麻的看不清。例如：
 
 ```{r}
 #| eval: false
 corPlot(mydata, type = "season")
 ```
 
-When there are a very large number of variables present, the `corPlot` is a very effective way of quickly gaining an idea of how variables are related. As an example (not plotted) it is useful to consider the hydrocarbons measured at Marylebone Road. There is a lot of information in the hydrocarbon plot (about 40 species), but due to the hierarchical clustering it is possible to see that isoprene, ethane and propane behave differently to most of the other hydrocarbons. This is because they have different (non-vehicle exhaust) origins. Ethane and propane results from natural gas leakage whereas isoprene is biogenic in origin (although some is from vehicle exhaust too). It is also worth considering how the relationships change between the species over the years as hydrocarbon emissions are increasingly controlled, or maybe the difference between summer and winter blends of fuels and so on.
+变量的数量越多，`corPlot`的相关性矩阵就越可以更高效的了解变量之间的相互关系，比如我们可以用这种方法观察Marylebone路交通点碳氢化合物的情况。图中（未绘制）包含碳氢化合物（约40个组分）的大量信息，经过分层聚类，可以看到异戊二烯、乙烷和丙烷相比大多数其他碳氢有独特的相关性，这是因为它们具有不同的（非汽车尾气）来源。乙烷和丙烷是由天然气的挥发产生的，而异戊二烯主要为生物来源（尽管部分来自汽车尾气）。同样值得分析的问题是，随着碳氢化合物排放得到控制，近年来组分之间的相关关系如何变化；或者夏季和冬季不同燃料类型所带来的差异等等。
 
 ```{r}
 #| eval: false
