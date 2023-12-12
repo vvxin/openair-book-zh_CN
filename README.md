@@ -36,10 +36,9 @@
 - [ ] 24  Directional Analysis
 - [ ] 26  Trajectory Analysis
 - [ ] **Utility functions**
-- [ ] 26  Utility functions
-- [ ] 27  Scatter plots
+- [x] 26  Utility functions
+- [x] 27  Scatter plots
 - [ ] **References**
-- [ ] **Appendices**
 - [x] A  Annotating openair plots
 - [x] B  Production of HYSPLIT trajectory files
 - [x] C  A closer look at trends
