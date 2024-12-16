@@ -7,9 +7,9 @@ execute:
   cache: false
 ---
 
-## Installation
+## 安装
 
-[openairmaps]{.pkg} is on CRAN, so can be simply downloaded using `install.packages()`.
+[openairmaps]{.pkg} 包发布在 CRAN 官方软件残酷，所以可以通过 `install.packages()` 简单的完成下载安装。
 
 ```{r}
 #| label: install
@@ -17,7 +17,7 @@ execute:
 install.packages("openairmaps")
 ```
 
-If you would like to access new features and bug fixes before they're pushed to CRAN, the development version of [openairmaps]{.pkg} can be downloaded directly from GitHub.
+如果希望尝试还未正式发布的新功能和错误修复，可以从 GitHub 下载安装 [openairmaps]{.pkg} 的开发版本。
 
 ```{r}
 #| label: pak
@@ -26,7 +26,7 @@ If you would like to access new features and bug fixes before they're pushed to 
 pak::pak("davidcarslaw/openairmaps")
 ```
 
-If you would like to use [openairmaps]{.pkg} in your analysis, don't forget to load it using the `library()` function.
+在使用[openairmaps]{.pkg} 进行分析之前，别忘了先通过`library()`将之加载到运行环境当中。
 
 ```{r}
 #| label: library
@@ -36,12 +36,14 @@ library(tidyverse)
 ```
 
 ::: {.callout-note appearance="simple"}
-This chapter was produced using R version `r getRversion()` and [openairmaps]{.pkg} version `r packageDescription("openairmaps", field = "Version")`.
+本章使用R `r getRversion()` 版本和 [openairmaps]{.pkg} `r packageDescription("openairmaps", field = "Version")`版本制作生成。
 :::
 
-## Background
+## 背景
 
-As the R ecosystem developed, `{rmarkdown}` and, more recently, [Quarto](https://quarto.org/)) emerged as capable tools for combining data analysis with document preparation. While these approaches can render typical .docx and .pdf outputs, one of their most common output formats is the HTML document. This format has many strengths, but a key one is interactivity; HTML widgets allow documents to be more informative and engaging. Numerous packages have been developed to easily develop these interactive widgets, such as `{plotly}` for plots, `{DT}` for tables, and `{leaflet}` for maps. The [openairmaps]{.pkg} package concerns itself with making [leaflet]{.pkg} maps.
+As the R ecosystem developed, `{rmarkdown}` and, more recently, [Quarto](https://quarto.org/) emerged as capable tools for combining data analysis with document preparation. While these approaches can render typical .docx and .pdf outputs, one of their most common output formats is the HTML document. This format has many strengths, but a key one is interactivity; HTML widgets allow documents to be more informative and engaging. Numerous packages have been developed to easily develop these interactive widgets, such as `{plotly}` for plots, `{DT}` for tables, and `{leaflet}` for maps. The [openairmaps]{.pkg} package concerns itself with making [leaflet]{.pkg} maps.
+
+随着R语言生态系统的不断发展，`{rmarkdown}`和最近的[Quarto](https://quarto.org/)
 
 Air quality data analysis --- particularly as it pertains to long term monitoring data --- naturally lends itself to being visualised spatially on a map. Monitoring networks are geographically distributed, and ignoring their geographical context may lead to incomplete insights at best and incorrect conclusions at worst! Furthermore, many air quality analysis tools are *directional*, asking questions of the data along the lines of "do elevated concentrations come from the North, South, East or West?" The natural question that follows is "well, what actually is it to the North/South/East/West that could be causing elevated concentrations?" --- a map can help answer that question straightforwardly.
 
